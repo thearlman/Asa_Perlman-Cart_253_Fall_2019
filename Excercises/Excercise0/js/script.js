@@ -19,7 +19,7 @@ function preload() {
 
 }
 
-var head = {
+let head = {
   x:320,
   y:350,
   highlight: 1,
@@ -31,7 +31,7 @@ var head = {
   }
 }
 
-var hat = {
+let hat = {
   x:320,
   y:140,
   highlight:0,
@@ -62,7 +62,7 @@ var hat = {
   }
 }
 
-var leftEye = {
+let leftEye = {
   x:250,
   y:270,
   highlight:1,
@@ -91,7 +91,7 @@ var leftEye = {
     }
   }
 }
-var leftBrow = {
+let leftBrow = {
   x: 250,
   y: 240,
   highlight: 0,
@@ -129,7 +129,7 @@ var leftBrow = {
     }
   }
 
-var rightEye = {
+let rightEye = {
   x: 390,
   y: 270,
   highlight: 1,
@@ -158,7 +158,7 @@ var rightEye = {
       }
     }
   }
-  var rightBrow = {
+  let rightBrow = {
     x: 390,
     y: 240,
     highlight: 0,
@@ -196,7 +196,7 @@ var rightEye = {
       }
     }
 
-  var nose = {
+  let nose = {
     x: 320,
     y: 350,
     highlight: 1,
@@ -230,7 +230,7 @@ var rightEye = {
     }
   }
 
-    var mouth = {
+    let mouth = {
       x: 320,
       y: 470,
       highlight: 1,
@@ -258,7 +258,7 @@ var rightEye = {
         }
       }
     }
-    var moustache = {
+    let moustache = {
       x: 320,
       y: 410,
       highlight: 0,
@@ -297,8 +297,8 @@ var rightEye = {
 // draw()
 //
 // Initializes the dragging conditionable.
-var dragging = false;
-var textCol ={
+let dragging = false;
+let textCol ={
   r: 0,
   g: 0,
   b: 0,

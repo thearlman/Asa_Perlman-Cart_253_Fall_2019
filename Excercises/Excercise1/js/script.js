@@ -22,17 +22,18 @@ function preload() {
 // Description of setup
 
 function setup() {
+  frameRate(1);
   createCanvas(640,480);
-  fill(255,0,0);
-  stroke(0,255,0);
 }
-
 
 // draw()
 //
 // Description of draw()
-
+let seconds = 0;
 function draw() {
-  rect(0,0,50,50);
 
+
+
+  console.log(seconds + " seconds have passed");
+  seconds = seconds + 1;
 }
