@@ -45,8 +45,7 @@ let hat = {
     ellipse(this.x,this.y-15,10,30)
   },
   detect: function(){
-    if ((dist(hat.x,hat.y,mouseX,mouseY) < 20)
-                               &&(dragging == false)){ //CODE TO MOVE LEFT EYE
+    if ((dist(hat.x,hat.y,mouseX,mouseY) < 20)){
       cursor(HAND);
       hat.highlight = 2;
       if(mouseIsPressed){
@@ -54,10 +53,11 @@ let hat = {
         hat.x = mouseX;
         hat.y = mouseY;
       }
-    }
+
     else{
       hat.highlight =1;
       dragging = false;
+    }
     }
   }
 }
@@ -75,8 +75,7 @@ let leftEye = {
     ellipse(this.x,this.y,30)
   },
   detect: function(){
-    if ((dist(leftEye.x,leftEye.y,mouseX,mouseY) < 20)
-                               &&(dragging == false)){ //CODE TO MOVE LEFT EYE
+    if ((dist(leftEye.x,leftEye.y,mouseX,mouseY) < 20)){
       cursor(HAND);
       leftEye.highlight = 2;
       if(mouseIsPressed){
@@ -84,10 +83,13 @@ let leftEye = {
         leftEye.x = mouseX;
         leftEye.y = mouseY;
       }
+
+    else{
+      dragging = false;
+    }
     }
     else{
-      leftEye.highlight =1;
-      dragging = false;
+      leftEye.highlight = 1;
     }
   }
 }
@@ -112,8 +114,7 @@ let leftBrow = {
     ellipse(this.x+25,this.y,10);
   },
   detect: function(){
-    if ((dist(leftBrow.x,leftBrow.y,mouseX,mouseY) < 20)
-                          &&(dragging == false)){ //CODE TO MOVE RIGHT EYE
+    if ((dist(leftBrow.x,leftBrow.y,mouseX,mouseY) < 20)){
       cursor(HAND);
       leftBrow.highlight = 1;
       if(mouseIsPressed){
@@ -121,10 +122,14 @@ let leftBrow = {
         leftBrow.x = mouseX;
         leftBrow.y = mouseY;
       }
-    }
+
       else{
-        leftBrow.highlight = 0;
         dragging = false;
+      }
+      }
+      else {
+        leftBrow.highlight = 0;
+
       }
     }
   }
@@ -142,8 +147,7 @@ let rightEye = {
     ellipse(this.x,this.y,30)
     },
     detect: function(){
-      if ((dist(rightEye.x,rightEye.y,mouseX,mouseY) < 20)
-                                   &&(dragging == false)){ //CODE TO MOVE RIGHT EYE
+      if ((dist(rightEye.x,rightEye.y,mouseX,mouseY) < 20)){
         cursor(HAND);
         rightEye.highlight = 2;
         if(mouseIsPressed){
@@ -151,10 +155,14 @@ let rightEye = {
           rightEye.x = mouseX;
           rightEye.y = mouseY;
         }
-      }
+
       else{
-        rightEye.highlight = 1;
         dragging = false;
+      }
+      }
+      else {
+        rightEye.highlight = 1;
+
       }
     }
   }
@@ -179,8 +187,7 @@ let rightEye = {
       ellipse(this.x+25,this.y,10);
     },
     detect: function(){
-      if ((dist(rightBrow.x,rightBrow.y,mouseX,mouseY) < 20)
-                            &&(dragging == false)){ //CODE TO MOVE RIGHT EYE
+      if ((dist(rightBrow.x,rightBrow.y,mouseX,mouseY) < 20)){
         cursor(HAND);
         rightBrow.highlight = 1;
         if(mouseIsPressed){
@@ -188,10 +195,14 @@ let rightEye = {
           rightBrow.x = mouseX;
           rightBrow.y = mouseY;
         }
-      }
+
+        else{
+          dragging = false;
+        }
+        }
         else{
           rightBrow.highlight = 0;
-          dragging = false;
+
         }
       }
     }
@@ -213,8 +224,7 @@ let rightEye = {
       ellipse(this.x-17,this.y+42,10,3);
     },
     detect: function(){
-      if ((dist(nose.x,nose.y,mouseX,mouseY) < 20)
-                            &&(dragging == false)){ //CODE TO MOVE RIGHT EYE
+      if ((dist(nose.x,nose.y,mouseX,mouseY) < 20)){
         cursor(HAND);
         nose.highlight = 2;
         if(mouseIsPressed){
@@ -222,10 +232,14 @@ let rightEye = {
           nose.x = mouseX;
           nose.y = mouseY;
         }
+
+      else{
+        dragging = false;
+      }
       }
       else{
         nose.highlight = 1;
-        dragging = false;
+
       }
     }
   }
@@ -242,8 +256,7 @@ let rightEye = {
         line(this.x-45,this.y,this.x+45,this.y)
       },
       detect: function(){
-        if ((dist(mouth.x,mouth.y,mouseX,mouseY) < 20)
-                               &&(dragging == false)){ //CODE TO MOVE RIGHT EYE
+        if ((dist(mouth.x,mouth.y,mouseX,mouseY) < 20)){
           cursor(HAND);
           mouth.highlight = 2;
           if(mouseIsPressed){
@@ -251,10 +264,14 @@ let rightEye = {
             mouth.x = mouseX;
             mouth.y = mouseY;
           }
+
+        else{
+          dragging = false;
+        }
         }
         else{
           mouth.highlight = 1;
-          dragging = false;
+
         }
       }
     }
@@ -277,8 +294,7 @@ let rightEye = {
         ellipse(this.x+40,this.y+5,20);
       },
       detect: function(){
-        if ((dist(moustache.x,moustache.y,mouseX,mouseY) < 20)
-                                       &&(dragging == false)){ //CODE TO MOVE RIGHT EYE
+        if ((dist(moustache.x,moustache.y,mouseX,mouseY) < 20)){
           cursor(HAND);
           moustache.highlight = 2;
           if(mouseIsPressed){
@@ -286,17 +302,21 @@ let rightEye = {
             moustache.x = mouseX;
             moustache.y = mouseY;
           }
+
+        else{
+          dragging = false;
+        }
         }
         else{
           moustache.highlight = 0;
-          dragging = false;
+
         }
       }
     }
 
 // draw()
 //
-// Initializes the dragging conditionable.
+// Initializes the dragging conditional.
 let dragging = false;
 let textCol ={
   r: 0,
@@ -323,21 +343,22 @@ function draw() {
   background(127);
   head.display();
   leftEye.display();
+  leftEye.detect();
   leftBrow.display();
   leftBrow.detect();
-  leftEye.detect();
   rightBrow.display();
   rightBrow.detect();
   rightEye.display();
   rightEye.detect();
   nose.display();
-  mouth.detect();
   nose.detect();
   mouth.display();
+  mouth.detect();
   moustache.display();
   moustache.detect();
   hat.display();
   hat.detect();
+
   textSize(32);
   fill(textCol.r,textCol.g,textCol.b);
   noStroke();
