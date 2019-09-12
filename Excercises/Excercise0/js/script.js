@@ -19,6 +19,8 @@ function preload() {
 
 }
 
+let obj;
+
 let head = {
   x:320,
   y:350,
@@ -58,8 +60,8 @@ let hat = {
       hat.highlight =1;
       dragging = false;
     }
-    }
   }
+}
 }
 
 let leftEye = {
