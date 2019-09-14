@@ -94,23 +94,23 @@ function draw() {
 
     let jobzWins= new Promise(function(resolve, reject){
       if(jobzX > 640){
-      resolve("jobz");
+        resolve("jobz");
     }
 
     });
     let gatezWins= new Promise(function(resolve, reject){
       if(gatezX < 1){
-      resolve("gatez");
+        resolve("gatez");
     }
     });
 
-    Promise.race([jobzWins, gatezWins])
-      .then((winner)=>{
-        console.log(winner);
+    Promise.race([gatezWins, jobzWins])
+      .then((resolve)=>{
+        console.log(resolve);
+      })
+      .catch((resolve)=>{
+        console.log(resolve);
       });
-      // .catch((winner)=>{
-      //   console.log(winner);
-      // });
 
 
       // background(0);
