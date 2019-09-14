@@ -68,7 +68,8 @@ function setup() {
 
 function draw() {
   // We don't fill the background so we get a drawing effect
-  //Give transperency to images
+
+  //Give Stevie and Billy a transparency
   tint(255,175);
   //Draw Stevie
   image(jobz,jobzX+5,jobzY,150,150);
