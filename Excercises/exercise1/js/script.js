@@ -16,6 +16,7 @@ let squareY;
 let squareSize = 100;
 let raceOver = false;
 let winner;
+let winnerImage;
 
 
 // preload()
@@ -38,7 +39,8 @@ function setup() {
   //initialize img of steve jobz
   jobz = loadImage('assets/images/jobz.png')
   gatez = loadImage('assets/images/gatez.png')
-
+  windows = loadImage('assets/images/windows.png')
+  apple = loadImage('assets/images/apple.png')
 
 
   // Start the Steve off screen to the bottom left
@@ -91,23 +93,36 @@ function draw() {
     // Move square (& bill) up and to the left
     gatezX -= gatezSpeed +random(-2,2);
     gatezY -= gatezSpeed;
+
+    //Detect which image has crossed the x-axis finish line first
       if (jobzX > 640){
         winner = "JOBZ";
         raceOver = true;
+        winnerImage = apple;
     }
       if (gatezX < 1){
         winner = "GATEZ";
         raceOver = true;
+        winnerImage = windows;
     }
   }
+
   if (raceOver == true) {
-    background(0);
+    //background(0);
+    frameRate(24);
+    image(winnerImage, width/2,100,150,150);
+    rectMode(CENTER);
+    fill(0,255,0);
+    rect(width/2,height/2, 500, 100)
     fill(random(255),random(255),random(255));
     noStroke();
     textSize(32);
     text("THE WINNER IS " + winner + "!!!", 100, height/2);
     text(" Press enter to race again!!!", 100, height/2+32);
 
+  }
+  else{
+    frameRate(30);
   }
 console.log(winner);
 console.log(raceOver);
