@@ -34,7 +34,7 @@ function preload() {
 
 function setup() {
   // Create our canvas
-  createCanvas(640,640);
+  createCanvas(windowWidth,windowHeight);
   imageMode(CENTER);
   //initialize img of steve jobz
   jobz = loadImage('assets/images/jobz.png')
@@ -90,13 +90,13 @@ function draw() {
   if (raceOver == false) {
     // Move circle (& steve) up and to the right
     jobzX += jobzSpeed + random(-2,2);
-    jobzY -= jobzSpeed;
+    jobzY -= jobzSpeed-1;
     // Move square (& bill) up and to the left
     gatezX -= gatezSpeed +random(-2,2);
-    gatezY -= gatezSpeed;
+    gatezY -= gatezSpeed-1;
 
     //Detect which image has crossed the x-axis finish line first
-      if (jobzX > 640){
+      if (jobzX > windowWidth){
         winner = "JOBZ";
         raceOver = true;
         winnerImage = apple;
@@ -118,8 +118,9 @@ function draw() {
     fill(random(255),random(255),random(255));
     noStroke();
     textSize(32);
-    text("THE WINNER IS " + winner + "!!!", 100, height/2);
-    text(" Press enter to race again!!!", 100, height/2+32);
+    textAlign(CENTER);
+    text("THE WINNER IS " + winner + "!!!", width/2, height/2);
+    text(" Press enter to race again!!!", width/2, height/2+32);
 
   }
   else{
