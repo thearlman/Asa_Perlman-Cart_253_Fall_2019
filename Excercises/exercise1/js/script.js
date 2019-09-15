@@ -1,9 +1,15 @@
-// Exercise 1 - Movement
-// Pippin Barr
+// Exercise 1 - Movement or: battle of the titans.
+// Pippin Barr/Asa Perlman
 //
 // Starter code for exercise 1.
 // Draws a moving square and circle that intersect
 // in the middle of the canvas.
+
+//***Added to ^^^ is an image of Bill Gates over top of the Square,
+//and an image of Steve Jobs over top of the circle.
+//The program is a race to see who can reach the edge of the screen first,
+//thus claiming victory once and for all in the battle for computer
+//brand surpremacy.
 
 // The current position and size of the circle
 let circleX;
@@ -14,19 +20,21 @@ let circleSize = 100;
 let squareX;
 let squareY;
 let squareSize = 100;
+
+//Contitional inidcating the current state of the race.
 let raceOver = false;
+//Variable that takes a string containing the winner of the race.
 let winner;
+//Variable that takes an image of the logo of the winning brand.
 let winnerImage;
 
 
 // preload()
 //
 // Nothing here
-
 function preload() {
 
 }
-
 
 // setup()
 //
@@ -35,20 +43,22 @@ function preload() {
 function setup() {
   // Create our canvas
   createCanvas(windowWidth,windowHeight);
+  //Set the orgin of x/y for all images to center.
   imageMode(CENTER);
-  //initialize img of steve jobz
+  //initialize images of (in order): Steve Jobs, Bill Gates,
+  //Winows logo, Apple Logo
   jobz = loadImage('assets/images/jobz.png')
   gatez = loadImage('assets/images/gatez.png')
   windows = loadImage('assets/images/windows.png')
   apple = loadImage('assets/images/apple.png')
 
 
-  // Start the Steve off screen to the bottom left
+  // Start the circle (and Steve) off screen to the bottom left
   // We divide the size by two because we're drawing from the center
   jobzX = -circleSize/2;
   jobzY = height + circleSize/2;
 
-  // Start the Bill off screen to the bottom right
+  // Start the square (and Bill) off screen to the bottom right
   // We divide the size by two because we're drawing from the center
   gatezX = width + squareSize/2;
   gatezY = height + squareSize/2;
@@ -62,8 +72,8 @@ function setup() {
 
 // draw()
 //
-// Change the circle and square's positions so they move
-// Draw the circle and square on screen
+// Change the circle, square, Steve, and Bill's positions so they move
+// Draw the circle, square, Steve, and Bill on screen
 
 
 function draw() {
@@ -71,9 +81,9 @@ function draw() {
 
   //Give Stevie and Billy a transparency
   tint(255,175);
-  //Draw Stevie
+  //Display Stevie
   image(jobz,jobzX+5,jobzY,150,150);
-  //Draw Billy
+  //Display Billy
   image(gatez,gatezX-5,gatezY,150,150);
   // Make the circle transparent red
   fill(255,0,0,10);
@@ -84,7 +94,8 @@ function draw() {
   // Display the square
   rect(gatezX,gatezY,squareSize,squareSize);
 
-  //The random variables(s) affecting bill & Steve's speed.
+  //Every time through the loop, we regenerate the
+  //random variables(s) affecting bill & Steve's speed.
   jobzSpeed = random(4);
   gatezSpeed = random(4);
   if (raceOver == false) {
