@@ -68,7 +68,7 @@ function setup() {
 
 function draw() {
   // We don't fill the background so we get a drawing effect
-
+  background(255);
   //Give Stevie and Billy a transparency
   tint(255,175);
   //Draw Stevie
@@ -132,8 +132,7 @@ console.log(raceOver);
 }
 
 function mousePressed(){
-  //if (keyCode == RETURN){
-
+    createCanvas(windowWidth,windowHeight);
     clear();
     raceOver = false;
     // Start the Steve off screen to the bottom left
@@ -146,5 +145,4 @@ function mousePressed(){
     gatezX = width + squareSize/2;
     gatezY = height + squareSize/2;
 
-//  }
 }
