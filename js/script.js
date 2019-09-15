@@ -68,7 +68,7 @@ function setup() {
 
 function draw() {
   // We don't fill the background so we get a drawing effect
-  background(255);
+
   //Give Stevie and Billy a transparency
   tint(255,175);
   //Draw Stevie
