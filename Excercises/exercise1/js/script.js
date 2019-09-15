@@ -11,19 +11,23 @@
 //thus claiming victory once and for all in the battle for computer
 //brand surpremacy.
 
-// The current position and size of the circle
-let circleX;
-let circleY;
-let circleSize = 100;
+// The current position and size of the circle, and Steve
+let jobzX;
+let jobzY;
+let circleSize = 150;
 
-// The current position and size of the square
-let squareX;
-let squareY;
-let squareSize = 100;
+// The current position and size of the square, and Bill.
+let gatezX;
+let gatezY;
+let squareSize = 150;
+
+//Variables which will determine the speed at which Steve, Bill, Circle, and Square move.
+let jobzSpeed;
+let gatezSpeed;
 
 //Contitional inidcating the current state of the race.
 let raceOver = false;
-//Variable that takes a string containing the winner of the race.
+//Variable that takes a string containing the name of the winner of the race.
 let winner;
 //Variable that takes an image of the logo of the winning brand.
 let winnerImage;
@@ -82,9 +86,9 @@ function draw() {
   //Give Stevie and Billy a transparency
   tint(255,175);
   //Display Stevie
-  image(jobz,jobzX+5,jobzY,150,150);
+  image(jobz,jobzX+5,jobzY,circleSize,circleSize);
   //Display Billy
-  image(gatez,gatezX-5,gatezY,150,150);
+  image(gatez,gatezX-5,gatezY,squareSize,squareSize);
   // Make the circle transparent red
   fill(255,0,0,10);
   // Display the circle
@@ -94,11 +98,17 @@ function draw() {
   // Display the square
   rect(gatezX,gatezY,squareSize,squareSize);
 
-  //Every time through the loop, we regenerate the
-  //random variables(s) affecting bill & Steve's speed.
-  jobzSpeed = random(4);
-  gatezSpeed = random(4);
+
+  //If the raceOver Conditional is false, run this loop.
+  //Since we initialized raceOver as false to start, it should run.
   if (raceOver == false) {
+    //Set framerate back to default 60
+    frameRate(60);
+    //Every time through the loop, we regenerate the
+    //random number(s) affecting bill & Steve's speed, and
+    //reassign.
+    jobzSpeed = random(4);
+    gatezSpeed = random(4);
     // Move circle (& steve) up and to the right
     jobzX += jobzSpeed + random(-2,2);
     jobzY -= jobzSpeed-1;
@@ -106,56 +116,60 @@ function draw() {
     gatezX -= gatezSpeed +random(-2,2);
     gatezY -= gatezSpeed-1;
 
-    //Detect which image has crossed the x-axis finish line first
+    //Detect when Steve has reached the right-most perimiter of the screen.
       if (jobzX > windowWidth){
+        //assign "JOBZ" to the winner variable
         winner = "JOBZ";
+        //Change the raceOver conditional to true, thus breaking out of the parent loop
         raceOver = true;
+        //assign the apple logo as the image to be displayed
         winnerImage = apple;
     }
+    //Detect when Bill has reached the left-most perimiter of the screen.
       if (gatezX < 1){
+        //assign "GATEZ" to the winner variable
         winner = "GATEZ";
+        //Change the raceOver conditional to true, thus breaking out of the parent loop
         raceOver = true;
+        //assign the windows logo as the image to be displayed
         winnerImage = windows;
     }
   }
-
+  //if the the raceOver contitional is true, run this loop
   if (raceOver == true) {
-    //background(0);
-    frameRate(24);
-    image(winnerImage, width/2,100,150,150);
-    rectMode(CENTER);
+    //Lower the framerate to make for a better flashing text effect
+    frameRate(5);
+    //Display the logo of the winning company
+    image(winnerImage, width/2,height/2-160,150,150);
+    //Set the fill to green, and draw a rectangle in the center of the screen
     fill(0,255,0);
     rect(width/2,height/2, 500, 100)
+    //Set the fill to random colors, and display the message confirming the winner.
     fill(random(255),random(255),random(255));
     noStroke();
     textSize(32);
     textAlign(CENTER);
     text("THE WINNER IS " + winner + "!!!", width/2, height/2);
-    text("Clic to race again!!!", width/2, height/2+32);
+    text("clic to race again!!!", width/2, height/2+32);
 
   }
-  else{
-    frameRate(30);
-  }
-//console.log(winner);
-//console.log(raceOver);
 
 }
 
+//If the mouse is pressed:
 function mousePressed(){
-  //if (keyCode == RETURN){
+    //Redraw the canvas. (this is usefull when the app opens on a phone, and you want to switch from portrait
+    //to landscape, also when you've had the console window open)
     createCanvas(windowWidth,windowHeight);
-    clear();
-    raceOver = false;
-    // Start the Steve off screen to the bottom left
-    // We divide the size by two because we're drawing from the center
+    // Place Steve, and the circle back at the bottom left corner
     jobzX = -circleSize/2;
     jobzY = height + circleSize/2;
-
-    // Start the Bill off screen to the bottom right
-    // We divide the size by two because we're drawing from the center
+    // Place Bill, and the square back at the bottom right corner
     gatezX = width + squareSize/2;
     gatezY = height + squareSize/2;
-
+    //Erase everything from the canvas
+    clear();
+    //Change the raceOver conditional to false again, triggering the race to begin again.
+    raceOver = false;
 //  }
 }
