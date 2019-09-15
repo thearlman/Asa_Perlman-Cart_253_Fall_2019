@@ -126,14 +126,14 @@ function draw() {
   else{
     frameRate(30);
   }
-console.log(winner);
-console.log(raceOver);
+//console.log(winner);
+//console.log(raceOver);
 
 }
 
 function mousePressed(){
   //if (keyCode == RETURN){
-
+    createCanvas(windowWidth,windowHeight);
     clear();
     raceOver = false;
     // Start the Steve off screen to the bottom left
