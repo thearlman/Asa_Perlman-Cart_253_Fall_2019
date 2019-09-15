@@ -102,6 +102,7 @@ function draw() {
   //If the raceOver Conditional is false, run this loop.
   //Since we initialized raceOver as false to start, it should run.
   if (raceOver == false) {
+    //Set cursor style to loading clock
     cursor('progress');
     //Set framerate back to default 60
     frameRate(60);
@@ -159,7 +160,7 @@ function draw() {
 
 }
 
-//If the mouse is pressed:
+//If the mouse is pressed, and then released:
 function mouseReleased(){
     //Redraw the canvas. (this is usefull when the app opens on a phone, and you want to switch from portrait
     //to landscape, also when you've had the console window open)
