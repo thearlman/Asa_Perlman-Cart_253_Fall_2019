@@ -102,6 +102,7 @@ function draw() {
   //If the raceOver Conditional is false, run this loop.
   //Since we initialized raceOver as false to start, it should run.
   if (raceOver == false) {
+    cursor('progress');
     //Set framerate back to default 60
     frameRate(60);
     //Every time through the loop, we regenerate the
@@ -139,8 +140,10 @@ function draw() {
   if (raceOver == true) {
     //Lower the framerate to make for a better flashing text effect
     frameRate(5);
-    //Display the logo of the winning company
-    image(winnerImage, width/2,height/2-160,150,150);
+    //remove the cursor
+    noCursor();
+    //Display the logo of the winning company at location of cursor
+    image(winnerImage, mouseX,mouseY,150,150);
     //Set the fill to green, and draw a rectangle in the center of the screen
     fill(0,255,0);
     rect(width/2,height/2, 500, 100)
@@ -157,7 +160,7 @@ function draw() {
 }
 
 //If the mouse is pressed:
-function mousePressed(){
+function mouseReleased(){
     //Redraw the canvas. (this is usefull when the app opens on a phone, and you want to switch from portrait
     //to landscape, also when you've had the console window open)
     createCanvas(windowWidth,windowHeight);
