@@ -120,7 +120,7 @@ function draw() {
     textSize(32);
     textAlign(CENTER);
     text("THE WINNER IS " + winner + "!!!", width/2, height/2);
-    text(" Press enter to race again!!!", width/2, height/2+32);
+    text("Clic to race again!!!", width/2, height/2+32);
 
   }
   else{
@@ -131,8 +131,8 @@ console.log(raceOver);
 
 }
 
-function keyPressed(){
-  if (keyCode == RETURN){
+function mousePressed(){
+  //if (keyCode == RETURN){
 
     clear();
     raceOver = false;
@@ -146,5 +146,5 @@ function keyPressed(){
     gatezX = width + squareSize/2;
     gatezY = height + squareSize/2;
 
-  }
+//  }
 }
