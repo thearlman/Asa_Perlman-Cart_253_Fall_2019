@@ -103,12 +103,12 @@ function draw() {
     avatarY = height/2;
     // Reset the dodge counter
     dodges = 0;
+    enemySpeed = 5;
   }
 
   // Check if the avatar has gone off the screen (cheating!)
   if (avatarX < 0 || avatarX > width || avatarY < 0 || avatarY > height) {
     // If they went off the screen they lose in the same way as above.
-    console.log("YOU LOSE!");
     enemyX = 0;
     enemyY = random(0,height);
     avatarX = width/2;
@@ -118,6 +118,7 @@ function draw() {
 
   // Check if the enemy has moved all the way across the screen
   if (enemyX > width) {
+    enemySpeed += 1;
     // This means the player dodged so update its dodge statistic
     dodges = dodges + 1;
     // Tell them how many dodges they have made
@@ -129,6 +130,11 @@ function draw() {
 
   // Display the number of successful dodges in the console
   console.log(dodges);
+  textFont('Courier')
+  textSize(32);
+  textAlign(LEFT);
+  fill(0);
+  text("Score = " + dodges, 10, 40);
 
   // The player is black
   fill(0);
