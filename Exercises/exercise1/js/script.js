@@ -40,6 +40,14 @@ let winnerImage;
 //
 // Nothing here
 function preload() {
+  //initialize images of (in order): Steve Jobs, Bill Gates, Linus Torvalds
+  //Winows logo, Apple Logo, Linux Logo
+  jobz = loadImage('assets/images/jobz.png')
+  gatez = loadImage('assets/images/gatez.png')
+  linus = loadImage('assets/images/linus.png')
+  windows = loadImage('assets/images/windows.png')
+  apple = loadImage('assets/images/apple.png')
+  penguin = loadImage('assets/images/linux.png')
 
 }
 
@@ -52,17 +60,6 @@ function setup() {
   createCanvas(windowWidth,windowHeight);
   //Set the orgin of x/y for all images to center.
   imageMode(CENTER);
-  //initialize images of (in order): Steve Jobs, Bill Gates,
-  //Winows logo, Apple Logo
-  jobz = loadImage('assets/images/jobz.png')
-  gatez = loadImage('assets/images/gatez.png')
-  linus = loadImage('assets/images/linus.png')
-  windows = loadImage('assets/images/windows.png')
-  apple = loadImage('assets/images/apple.png')
-  penguin = loadImage('assets/images/linux.png')
-
-
-
   // Start the circle (and Steve) off screen to the bottom left
   // We divide the size by two because we're drawing from the center
   jobzX = -jobzSize/2;
