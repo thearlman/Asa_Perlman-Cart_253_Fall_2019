@@ -21,6 +21,11 @@ let livesCol = 0;
 
 let lives = 3;
 
+//Holds the highscore
+let highscore = 0;
+//holds the new score
+let newHighscore;
+
 // The position and size of our avatar circle
 let avatarX;
 let avatarY;
@@ -118,23 +123,12 @@ function draw() {
     // We do this by checking if the distance between the centre of the enemy
     // and the centre of the avatar is less that their combined radii
     if (dist(enemyX,enemyY,avatarX,avatarY) < enemySize/2 + avatarSize/2) {
-      lives = lives -1;
-      // Reset the enemy's position
-      enemyX = 0;
-      enemyY = random(0,height);
-      // Reset the avatar's position
-      avatarX = width/2;
-      avatarY = height/2;
+      death();
     }
 
     // Check if the avatar has gone off the screen (cheating!)
     if (avatarX < 0 || avatarX > width || avatarY < 0 || avatarY > height) {
-      // If they went off the screen they lose a life in the same way as above.
-      lives = lives -1;
-      enemyX = 0;
-      enemyY = random(0,height);
-      avatarX = width/2;
-      avatarY = height/2;
+      death();
     }
     // If player is on their last life, turn lives text colour red.
     if (lives === 0){
@@ -153,6 +147,8 @@ function draw() {
       // Reset the enemy's position to the left at a random height
       enemyX = 0;
       enemyY = random(0,height);
+
+      avatarY = random(0, height);
     }
     //If the enemy's size is too big to be fair, reset it to the original,
     //but increase it's speed
@@ -161,11 +157,12 @@ function draw() {
       enemySize = 50;
     }
     }
-    // if player is out of lives, change game over conditional to
-    //true
+    // if player is out of lives, change gameOver conditional to true
     if (lives < 0){
       gameOver = true;
   }
+
+
   //Display number of dodges and number of lives remaining
   textFont('Courier')
   textSize(32);
@@ -174,17 +171,22 @@ function draw() {
   text("Score = " + dodges, 10, 40);
   fill(livesCol,0,0);
   text("Lives = " + lives, 10, 80);
-  console.log(enemyVX);
+  newHighscore = dodges;
+  console.log(highscore);
 
-  // If the
   if (gameOver === true){
+    //check to see if the old highscore is lower than the new
+    if (newHighscore > highscore){
+      highscore = newHighscore;
+    }
+
     background(0);
     textFont('Courier')
     textSize(32);
     textAlign(CENTER);
     fill(255,0,0);
     text("GAME OVER", width/2, height/2);
-    text("HIGHTSCORE: "+highscore, width/2, height/2+60);
+    text("HIGHSCORE: " + highscore, width/2, height/2-60);
     rectMode(CENTER);
     rect(width/2,height/2+60, width, 50);
     fill(textFill);
@@ -205,4 +207,15 @@ function draw() {
         enemyX = 0;
       }
     }
+}
+
+function death(){
+  //take away one life
+  lives = lives -1;
+  // Reset the enemy's position
+  enemyX = 0;
+  enemyY = random(0,height);
+  // Reset the avatar's position
+  avatarX = width/2;
+  avatarY = height/2;
 }
