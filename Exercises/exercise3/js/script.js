@@ -104,6 +104,7 @@ function setup() {
     else if (r < 1.0) {
       image(decoyImage10,x,y);
     }
+
   }
 
   // Once we've displayed all decoys, we choose a random location for the target
@@ -120,6 +121,17 @@ function setup() {
 // Displays the game over screen if the player has won,
 // otherwise nothing (all the gameplay stuff is in mousePressed())
 function draw() {
+
+  noStroke();
+  fill(255,0,0);
+  rectMode(CENTER);
+  textAlign(CENTER);
+  rect(width-100, 40, 200, 200);
+  image(targetImage, width-100,60);
+  fill(0);
+  textSize(24);
+  text("^^Chien Perdu!^^", width-100,120);
+
   if (gameOver) {
     // Prepare our typography
     textFont("Helvetica");
