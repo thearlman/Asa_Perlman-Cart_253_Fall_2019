@@ -15,6 +15,9 @@ https://creativenerds.co.uk/freebies/80-free-wildlife-icons-the-best-ever-animal
 // Position and image of the sausage dog we're searching for
 let targetX;
 let targetY;
+let targetVX;
+let targetVY;
+let targetSpeed =2;
 let targetImage;
 
 // The ten decoy images
@@ -28,6 +31,13 @@ let decoyImage7;
 let decoyImage8;
 let decoyImage9;
 let decoyImage10;
+
+//The you won message
+let win = "YOU WINNED!!!";
+//the dog is getting away message
+let gettingAway = "HE'S GETTING \n AWAY!!!"
+//the dog got away message
+let dogGone = "HE'S GONE! \n GO FIND HIM!"
 
 // The number of decoys to show on the screen, randomly
 // chosen from the decoy images
@@ -59,10 +69,66 @@ function preload() {
 // Creates the canvas, sets basic modes, draws correct number
 // of decoys in random positions, then the target
 function setup() {
+  background("#ffff00");
   createCanvas(windowWidth,windowHeight);
   background("#ffff00");
   imageMode(CENTER);
+  //See displayDogs function below
+  displayDogs();
+}
 
+
+// draw()
+//
+// Displays the game over screen if the player has won,
+// otherwise nothing (all the gameplay stuff is in mousePressed())
+function draw() {
+  // Displays an image of the lost dog, with a propt to find them, and instructions for resetting.
+  noStroke();
+  fill(255,0,0);
+  rectMode(CENTER);
+  textAlign(CENTER);
+  rect(width-100, 40, 200, 300);
+  image(targetImage, width-100,50);
+  fill(0);
+  textSize(24);
+  text("^^Chien Perdu!^^ \n Press Backspace \n To Try Again", width-100, 120);
+
+  //Check to see if the player has found and clicked on the dog
+  winCheck();
+
+}
+
+// mousePressed()
+//
+// Checks if the player clicked on the target and if so tells them they won
+function mousePressed() {
+  // The mouse was clicked!
+  // Check if the cursor is in the x range of the target
+  // (We're subtracting the image's width/2 because we're using imageMode(CENTER) -
+  // the key is we want to determine the left and right edges of the image.)
+  if (mouseX > targetX - targetImage.width/2 && mouseX < targetX + targetImage.width/2) {
+    // Check if the cursor is also in the y range of the target
+    // i.e. check if it's within the top and bottom of the image
+    if (mouseY > targetY - targetImage.height/2 && mouseY < targetY + targetImage.height/2) {
+      gameOver = true;
+    }
+  }
+
+}
+
+//Checks to see if the player has requested a restart.
+function keyPressed(){
+  if(keyCode === BACKSPACE){
+    gameOver = false;
+    displayDogs();
+  }
+}
+
+
+function displayDogs(){
+  //Display the background
+  background("#ffff00");
   // Use a for loop to draw as many decoys as we need
   for (let i = 0; i < numDecoys; i++) {
     // Choose a random location on the canvas for this decoy
@@ -104,67 +170,64 @@ function setup() {
     else if (r < 1.0) {
       image(decoyImage10,x,y);
     }
-
   }
-
   // Once we've displayed all decoys, we choose a random location for the target
   targetX = random(0,width);
   targetY = random(0,height);
-
-  // And draw it (because it's the last thing drawn, it will always be on top)
+  //Draw the lost dog;
   image(targetImage,targetX,targetY);
 }
 
 
-// draw()
-//
-// Displays the game over screen if the player has won,
-// otherwise nothing (all the gameplay stuff is in mousePressed())
-function draw() {
-
-  noStroke();
-  fill(255,0,0);
-  rectMode(CENTER);
-  textAlign(CENTER);
-  rect(width-100, 40, 200, 200);
-  image(targetImage, width-100,60);
-  fill(0);
-  textSize(24);
-  text("^^Chien Perdu!^^", width-100,120);
-
-  if (gameOver) {
+function winCheck(){
+  //Only runs if the player has clicked the dog turning the gameOver contitional to true
+  if (gameOver === true) {
+    background("#ffff00");
     // Prepare our typography
     textFont("Helvetica");
     textSize(128);
     textAlign(CENTER,CENTER);
     noStroke();
     fill(random(255));
+    //Make the dog start running away again
+    targetVX = targetSpeed;
+    targetX += targetVX;
+    //Draw the found dog;
+    image(targetImage,targetX,targetY);
 
-    // Tell them they won!
-    text("YOU WINNED!",width/2,height/2);
-
-    // Draw a circle around the sausage dog to show where it is (even though
-    // they already know because they found it!)
-    noFill();
-    stroke(random(255));
-    strokeWeight(10);
-    ellipse(targetX,targetY,targetImage.width,targetImage.height);
-  }
-}
-
-// mousePressed()
-//
-// Checks if the player clicked on the target and if so tells them they won
-function mousePressed() {
-  // The mouse was clicked!
-  // Check if the cursor is in the x range of the target
-  // (We're subtracting the image's width/2 because we're using imageMode(CENTER) -
-  // the key is we want to determine the left and right edges of the image.)
-  if (mouseX > targetX - targetImage.width/2 && mouseX < targetX + targetImage.width/2) {
-    // Check if the cursor is also in the y range of the target
-    // i.e. check if it's within the top and bottom of the image
-    if (mouseY > targetY - targetImage.height/2 && mouseY < targetY + targetImage.height/2) {
-      gameOver = true;
+    //Once the dog is found, display the win message
+    if (targetX < width-200){
+      text(win,width/2,height/2);
+    }
+    //If the dog is almost off the screen, display the getting away message
+    else if((targetX > width-200) && (targetX < width-1)){
+      text(gettingAway, width/2, height/2);
+    }
+    //If the dog is off the screen, display the dogGone message
+    else{
+      //location of reset text
+      let resetX = width-150;
+      let resetY = height-80;
+      text(dogGone,width/2,height/2);
+      textSize(40);
+      noFill();
+      stroke(255,0,0);
+      //if the player id hovering over the reset button:
+      if(dist(mouseX,mouseY,resetX,resetY)<100){
+        //change the text fill to random
+          stroke(random(255));
+          //if the player presses the reset button while hovering:
+          if(mouseIsPressed){
+            //redraw the dogs
+            displayDogs();
+            //and change the gameover conditional to flase
+            gameOver = false;
+            noStroke();
+          }
+      }
+      strokeWeight(1);
+      rect(resetX,resetY, 300,100);
+      text("LET'S GO!...", resetX,resetY);
     }
   }
 }
