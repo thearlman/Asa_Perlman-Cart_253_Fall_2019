@@ -32,6 +32,8 @@ let decoyImage8;
 let decoyImage9;
 let decoyImage10;
 
+let dogSize = 128;
+
 //The you won message
 let win = "YOU WINNED!!!";
 //the dog is getting away message
@@ -94,6 +96,11 @@ function draw() {
   textSize(24);
   text("^^Chien Perdu!^^ \n Press Backspace \n To Try Again", width-100, 120);
 
+  console.log(dogSize);
+
+  console.log(numDecoys);
+
+  console.log(targetSpeed);
   //Check to see if the player has found and clicked on the dog
   winCheck();
 
@@ -141,41 +148,41 @@ function displayDogs(){
     // We'll talk more about this nice quality of random soon enough.
     // But basically each "if" and "else if" has a 10% chance of being true
     if (r < 0.1) {
-      image(decoyImage1,x,y);
+      image(decoyImage1,x,y,dogSize, dogSize);
     }
     else if (r < 0.2) {
-      image(decoyImage2,x,y);
+      image(decoyImage2,x,y,dogSize, dogSize);
     }
     else if (r < 0.3) {
-      image(decoyImage3,x,y);
+      image(decoyImage3,x,y,dogSize, dogSize);
     }
     else if (r < 0.4) {
-      image(decoyImage4,x,y);
+      image(decoyImage4,x,y,dogSize, dogSize);
     }
     else if (r < 0.5) {
-      image(decoyImage5,x,y);
+      image(decoyImage5,x,y,dogSize, dogSize);
     }
     else if (r < 0.6) {
-      image(decoyImage6,x,y);
+      image(decoyImage6,x,y,dogSize, dogSize);
     }
     else if (r < 0.7) {
-      image(decoyImage7,x,y);
+      image(decoyImage7,x,y,dogSize, dogSize);
     }
     else if (r < 0.8) {
-      image(decoyImage8,x,y);
+      image(decoyImage8,x,y,dogSize, dogSize);
     }
     else if (r < 0.9) {
-      image(decoyImage9,x,y);
+      image(decoyImage9,x,y,dogSize, dogSize);
     }
     else if (r < 1.0) {
-      image(decoyImage10,x,y);
+      image(decoyImage10,x,y,dogSize, dogSize);
     }
   }
   // Once we've displayed all decoys, we choose a random location for the target
   targetX = random(0,width);
   targetY = random(0,height);
   //Draw the lost dog;
-  image(targetImage,targetX,targetY);
+  image(targetImage,targetX,targetY,dogSize,dogSize);
 }
 
 
@@ -218,6 +225,12 @@ function winCheck(){
           stroke(random(255));
           //if the player presses the reset button while hovering:
           if(mouseIsPressed){
+            //increase number of decoy dogs by 20
+            numDecoys += 20;
+            //decrease the size of all dogs by 10 px
+            dogSize -= 10;
+            //increase speed at which dog will run away at next time.
+            targetSpeed += 1;
             //redraw the dogs
             displayDogs();
             //and change the gameover conditional to flase
