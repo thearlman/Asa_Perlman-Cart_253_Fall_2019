@@ -17,7 +17,7 @@ let targetX;
 let targetY;
 let targetVX;
 let targetVY;
-let targetSpeed =2;
+let targetSpeed = 2;
 let targetImage;
 
 // The ten decoy images
@@ -72,7 +72,7 @@ function preload() {
 // of decoys in random positions, then the target
 function setup() {
   background("#ffff00");
-  createCanvas(windowWidth,windowHeight);
+  createCanvas(windowWidth, windowHeight);
   background("#ffff00");
   imageMode(CENTER);
   //See displayDogs function below
@@ -87,22 +87,17 @@ function setup() {
 function draw() {
   // Displays an image of the lost dog, with a propt to find them, and instructions for resetting.
   noStroke();
-  fill(255,0,0);
+  fill(255, 0, 0);
   rectMode(CENTER);
   textAlign(CENTER);
-  rect(width-100, 40, 200, 300);
-  image(targetImage, width-100,50);
+  rect(width - 100, 40, 200, 300);
+  image(targetImage, width - 100, 50);
   fill(0);
   textSize(24);
-  text("^^Chien Perdu!^^ \n Press Backspace \n To Try Again", width-100, 120);
-
-  console.log(dogSize);
-
-  console.log(numDecoys);
-
-  console.log(targetSpeed);
+  text("^^Chien Perdu!^^ \n Press Backspace \n To Try Again", width - 100, 120);
   //Check to see if the player has found and clicked on the dog
   winCheck();
+
 
 }
 
@@ -114,10 +109,10 @@ function mousePressed() {
   // Check if the cursor is in the x range of the target
   // (We're subtracting the image's width/2 because we're using imageMode(CENTER) -
   // the key is we want to determine the left and right edges of the image.)
-  if (mouseX > targetX - targetImage.width/2 && mouseX < targetX + targetImage.width/2) {
+  if (mouseX > targetX - targetImage.width / 2 && mouseX < targetX + targetImage.width / 2) {
     // Check if the cursor is also in the y range of the target
     // i.e. check if it's within the top and bottom of the image
-    if (mouseY > targetY - targetImage.height/2 && mouseY < targetY + targetImage.height/2) {
+    if (mouseY > targetY - targetImage.height / 2 && mouseY < targetY + targetImage.height / 2) {
       gameOver = true;
     }
   }
@@ -125,22 +120,27 @@ function mousePressed() {
 }
 
 //Checks to see if the player has requested a restart.
-function keyPressed(){
-  if(keyCode === BACKSPACE){
+function keyPressed() {
+  if (keyCode === BACKSPACE) {
     gameOver = false;
     displayDogs();
+  }
+  if (value == 67) {
+    stroke(random(255));
+    noFill();
+    ellipse(targetX, targetY, targetImage.width);
   }
 }
 
 
-function displayDogs(){
+function displayDogs() {
   //Display the background
   background("#ffff00");
   // Use a for loop to draw as many decoys as we need
   for (let i = 0; i < numDecoys; i++) {
     // Choose a random location on the canvas for this decoy
-    let x = random(0,width);
-    let y = random(0,height);
+    let x = random(0, width);
+    let y = random(0, height);
     // Generate a random number we can use for probability
     let r = random();
     // Use the random number to display one of the ten decoy
@@ -148,99 +148,90 @@ function displayDogs(){
     // We'll talk more about this nice quality of random soon enough.
     // But basically each "if" and "else if" has a 10% chance of being true
     if (r < 0.1) {
-      image(decoyImage1,x,y,dogSize, dogSize);
-    }
-    else if (r < 0.2) {
-      image(decoyImage2,x,y,dogSize, dogSize);
-    }
-    else if (r < 0.3) {
-      image(decoyImage3,x,y,dogSize, dogSize);
-    }
-    else if (r < 0.4) {
-      image(decoyImage4,x,y,dogSize, dogSize);
-    }
-    else if (r < 0.5) {
-      image(decoyImage5,x,y,dogSize, dogSize);
-    }
-    else if (r < 0.6) {
-      image(decoyImage6,x,y,dogSize, dogSize);
-    }
-    else if (r < 0.7) {
-      image(decoyImage7,x,y,dogSize, dogSize);
-    }
-    else if (r < 0.8) {
-      image(decoyImage8,x,y,dogSize, dogSize);
-    }
-    else if (r < 0.9) {
-      image(decoyImage9,x,y,dogSize, dogSize);
-    }
-    else if (r < 1.0) {
-      image(decoyImage10,x,y,dogSize, dogSize);
+      image(decoyImage1, x, y, dogSize, dogSize);
+    } else if (r < 0.2) {
+      image(decoyImage2, x, y, dogSize, dogSize);
+    } else if (r < 0.3) {
+      image(decoyImage3, x, y, dogSize, dogSize);
+    } else if (r < 0.4) {
+      image(decoyImage4, x, y, dogSize, dogSize);
+    } else if (r < 0.5) {
+      image(decoyImage5, x, y, dogSize, dogSize);
+    } else if (r < 0.6) {
+      image(decoyImage6, x, y, dogSize, dogSize);
+    } else if (r < 0.7) {
+      image(decoyImage7, x, y, dogSize, dogSize);
+    } else if (r < 0.8) {
+      image(decoyImage8, x, y, dogSize, dogSize);
+    } else if (r < 0.9) {
+      image(decoyImage9, x, y, dogSize, dogSize);
+    } else if (r < 1.0) {
+      image(decoyImage10, x, y, dogSize, dogSize);
     }
   }
   // Once we've displayed all decoys, we choose a random location for the target
-  targetX = random(0,width);
-  targetY = random(0,height);
+  targetX = random(0, width);
+  targetY = random(0, height);
   //Draw the lost dog;
-  image(targetImage,targetX,targetY,dogSize,dogSize);
+  image(targetImage, targetX, targetY, dogSize, dogSize);
 }
 
 
-function winCheck(){
+function winCheck() {
   //Only runs if the player has clicked the dog turning the gameOver contitional to true
   if (gameOver === true) {
     background("#ffff00");
     // Prepare our typography
     textFont("Helvetica");
     textSize(128);
-    textAlign(CENTER,CENTER);
+    textAlign(CENTER, CENTER);
     noStroke();
     fill(random(255));
     //Make the dog start running away again
     targetVX = targetSpeed;
     targetX += targetVX;
     //Draw the found dog;
-    image(targetImage,targetX,targetY);
+    image(targetImage, targetX, targetY);
 
     //Once the dog is found, display the win message
-    if (targetX < width-200){
-      text(win,width/2,height/2);
+    if (targetX < width - 200) {
+      text(win, width / 2, height / 2);
     }
     //If the dog is almost off the screen, display the getting away message
-    else if((targetX > width-200) && (targetX < width-1)){
-      text(gettingAway, width/2, height/2);
+    else if ((targetX > width - 200) && (targetX < width - 1)) {
+      text(gettingAway, width / 2, height / 2);
     }
     //If the dog is off the screen, display the dogGone message
-    else{
+    else {
       //location of reset text
-      let resetX = width-150;
-      let resetY = height-80;
-      text(dogGone,width/2,height/2);
+      let resetX = width - 150;
+      let resetY = height - 80;
+      text(dogGone, width / 2, height / 2);
       textSize(40);
       noFill();
-      stroke(255,0,0);
+      stroke(255, 0, 0);
       //if the player id hovering over the reset button:
-      if(dist(mouseX,mouseY,resetX,resetY)<100){
+      if (dist(mouseX, mouseY, resetX, resetY) < 100) {
         //change the text fill to random
-          stroke(random(255));
-          //if the player presses the reset button while hovering:
-          if(mouseIsPressed){
-            //increase number of decoy dogs by 20
-            numDecoys += 20;
-            //decrease the size of all dogs by 10 px
-            dogSize -= 10;
-            //increase speed at which dog will run away at next time.
-            targetSpeed += 1;
-            //redraw the dogs
-            displayDogs();
-            //and change the gameover conditional to flase
-            gameOver = false;
-            noStroke();
-          }
+        stroke(random(255));
+        //if the player presses the reset button while hovering:
+        if (mouseIsPressed) {
+          //increase number of decoy dogs by 20
+          numDecoys += 20;
+          //decrease the size of all dogs by 10 px
+          dogSize -= 10;
+          //increase speed at which dog will run away at next time.
+          targetSpeed += 1;
+          //redraw the dogs
+          displayDogs();
+          //and change the gameover conditional to flase
+          gameOver = false;
+          noStroke();
+        }
       }
       strokeWeight(1);
-      rect(resetX,resetY, 300,100);
-      text("LET'S GO!...", resetX,resetY);
+      rect(resetX, resetY, 300, 100);
+      text("LET'S GO!...", resetX, resetY);
     }
   }
 }
