@@ -18,13 +18,16 @@ random movement, screen wrap.
 // Track whether the game is over
 let gameOver = false;
 
+//Player IMAGE
+let playerImage;
 // Player position, size, velocity
 let playerX;
 let playerY;
-let playerRadius = 25;
+let playerSize = 100;
 let playerVX = 0;
 let playerVY = 0;
-let playerMaxSpeed = 2;
+let playerNormalSpeed = 2;
+let playerMaxSpeed = 4;
 // Player health
 let playerHealth;
 let playerMaxHealth = 255;
@@ -38,6 +41,8 @@ let preyRadius = 25;
 let preyVX;
 let preyVY;
 let preyMaxSpeed = 4;
+let preyTX = 0;
+let preyTY = 100;
 // Prey health
 let preyHealth;
 let preyMaxHealth = 100;
@@ -48,6 +53,12 @@ let preyFill = 200;
 let eatHealth = 10;
 // Number of prey eaten during the game (the "score")
 let preyEaten = 0;
+
+
+function preload() {
+  playerImage = loadImage("assets/images/trash.png");
+}
+
 
 // setup()
 //
@@ -90,6 +101,7 @@ function setupPlayer() {
 // displays the two agents.
 // When the game is over, shows the game over screen.
 function draw() {
+  console.log(preyEaten);
   background(100, 100, 200);
 
   if (!gameOver) {
@@ -103,8 +115,7 @@ function draw() {
 
     drawPrey();
     drawPlayer();
-  }
-  else {
+  } else {
     showGameOver();
   }
 }
@@ -115,24 +126,26 @@ function draw() {
 function handleInput() {
   // Check for horizontal movement
   if (keyIsDown(LEFT_ARROW)) {
-    playerVX = -playerMaxSpeed;
-  }
-  else if (keyIsDown(RIGHT_ARROW)) {
-    playerVX = playerMaxSpeed;
-  }
-  else {
+    playerVX = -playerNormalSpeed;
+  } else if (keyIsDown(RIGHT_ARROW)) {
+    playerVX = playerNormalSpeed;
+  } else {
     playerVX = 0;
   }
 
   // Check for vertical movement
   if (keyIsDown(UP_ARROW)) {
-    playerVY = -playerMaxSpeed;
-  }
-  else if (keyIsDown(DOWN_ARROW)) {
-    playerVY = playerMaxSpeed;
-  }
-  else {
+    playerVY = -playerNormalSpeed;
+  } else if (keyIsDown(DOWN_ARROW)) {
+    playerVY = playerNormalSpeed;
+  } else {
     playerVY = 0;
+  }
+  //Check to see if shift is held down, and increase player speed to sprint
+  if (keyIsDown(SHIFT)) {
+    playerNormalSpeed = playerMaxSpeed;
+  } else {
+    playerNormalSpeed = 2;
   }
 }
 
@@ -149,8 +162,7 @@ function movePlayer() {
   if (playerX < 0) {
     // Off the left side, so add the width to reset to the right
     playerX = playerX + width;
-  }
-  else if (playerX > width) {
+  } else if (playerX > width) {
     // Off the right side, so subtract the width to reset to the left
     playerX = playerX - width;
   }
@@ -158,8 +170,7 @@ function movePlayer() {
   if (playerY < 0) {
     // Off the top, so add the height to reset to the bottom
     playerY = playerY + height;
-  }
-  else if (playerY > height) {
+  } else if (playerY > height) {
     // Off the bottom, so subtract the height to reset to the top
     playerY = playerY - height;
   }
@@ -181,6 +192,8 @@ function updateHealth() {
   }
 }
 
+
+
 // checkEating()
 //
 // Check if the player overlaps the prey and updates health of both
@@ -188,7 +201,7 @@ function checkEating() {
   // Get distance of player to prey
   let d = dist(playerX, playerY, preyX, preyY);
   // Check if it's an overlap
-  if (d < playerRadius + preyRadius) {
+  if (d < playerSize + preyRadius - 40) {
     // Increase the player health
     playerHealth = playerHealth + eatHealth;
     // Constrain to the possible range
@@ -218,15 +231,18 @@ function movePrey() {
   // Change the prey's velocity at random intervals
   // random() will be < 0.05 5% of the time, so the prey
   // will change direction on 5% of frames
-  if (random() < 0.05) {
+//  if (random() < 0.05) {
     // Set velocity based on random values to get a new direction
     // and speed of movement
     //
     // Use map() to convert from the 0-1 range of the random() function
     // to the appropriate range of velocities for the prey
-    preyVX = map(random(), 0, 1, -preyMaxSpeed, preyMaxSpeed);
-    preyVY = map(random(), 0, 1, -preyMaxSpeed, preyMaxSpeed);
-  }
+    preyVX = map(noise(preyTX), 0, 1, -preyMaxSpeed, preyMaxSpeed);
+    preyVY = map(noise(preyTY), 0, 1, -preyMaxSpeed, preyMaxSpeed);
+    preyTX += 1;
+    preyTY += 1;
+
+  //}
 
   // Update prey position based on velocity
   preyX = preyX + preyVX;
@@ -235,15 +251,13 @@ function movePrey() {
   // Screen wrapping
   if (preyX < 0) {
     preyX = preyX + width;
-  }
-  else if (preyX > width) {
+  } else if (preyX > width) {
     preyX = preyX - width;
   }
 
   if (preyY < 0) {
     preyY = preyY + height;
-  }
-  else if (preyY > height) {
+  } else if (preyY > height) {
     preyY = preyY - height;
   }
 }
@@ -258,10 +272,10 @@ function drawPrey() {
 
 // drawPlayer()
 //
-// Draw the player as an ellipse with alpha value based on health
+// Draw the player as a trash can with alpha value based on health
 function drawPlayer() {
-  fill(playerFill, playerHealth);
-  ellipse(playerX, playerY, playerRadius * 2);
+  tint(200, playerHealth);
+  image(playerImage, playerX, playerY, playerSize, playerSize);
 }
 
 // showGameOver()
