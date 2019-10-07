@@ -30,6 +30,13 @@ let playerMaxSpeed = 10;
 // Player health
 let playerHealth;
 let playerMaxHealth = 255;
+//colour of player health bar
+let healthColour = 0;
+//player stamina
+let playerStamina;
+let playerMaxStamina = 255;
+//Colour of stamina health bar
+let staminaColour = 0;
 // Player fill color
 let playerFill = 50;
 
@@ -95,6 +102,7 @@ function setupPlayer() {
   playerX = 4 * width / 5;
   playerY = height / 2;
   playerHealth = playerMaxHealth;
+  playerStamina = playerMaxStamina;
 }
 
 // draw()
@@ -115,6 +123,9 @@ function draw() {
     movePrey();
 
     updateHealth();
+    drawHealth();
+    updateStamina();
+    drawStamina();
     checkEating();
 
     drawPrey(preyImages[currentPrey]);
@@ -148,8 +159,36 @@ function handleInput() {
   //Check to see if shift is held down, and increase player speed to sprint
   if (keyIsDown(SHIFT)) {
     playerNormalSpeed = playerMaxSpeed;
+    playerStamina += -2;
   } else {
     playerNormalSpeed = 2;
+    playerStamina = playerStamina;
+  }
+}
+
+//Reduce stamina level if player is sprinting
+function updateStamina(){
+  // Reduce player health
+  playerStamina += 0.2;
+  // Constrain the result to a sensible range
+  playerStamina = constrain(playerStamina, 0, playerMaxStamina);
+
+  if (playerStamina < 5){
+    playerMaxSpeed = 2;
+  } else{
+    playerMaxSpeed = 4;
+  }
+}
+//Draw the stamina health bar
+function drawStamina(){
+  fill(staminaColour,0,0);
+  noStroke();
+  rect(0,height,50, -playerStamina);
+  //if player health is getting low, turn health bar red
+  if (playerStamina < playerMaxStamina/3){
+    staminaColour = 255;
+  } else{
+    staminaColour = 0;
   }
 }
 
@@ -186,13 +225,24 @@ function movePlayer() {
 // Check if the player is dead
 function updateHealth() {
   // Reduce player health
-  playerHealth = playerHealth - 0.5;
+  playerHealth = playerHealth - 0.2;
   // Constrain the result to a sensible range
   playerHealth = constrain(playerHealth, 0, playerMaxHealth);
   // Check if the player is dead (0 health)
   if (playerHealth === 0) {
     // If so, the game is over
     gameOver = true;
+  }
+}
+
+function drawHealth(){
+  fill(healthColour,0,0);
+  noStroke();
+  rect(width-50,height,width-50, -playerHealth);
+  if (playerHealth < playerMaxHealth/3){
+    healthColour = 255;
+  } else{
+    healthColour = 0;
   }
 }
 
@@ -269,18 +319,15 @@ function movePrey() {
 
 // drawPrey()
 //
-// Draw the prey as an ellipse with alpha based on health
-function drawPrey(img) {
-  //tint(255,preyHealth);
+// Draw the prey as the current image assigned from the variable
+function drawPrey(img){
   image(img, preyX, preyY, preySize, preySize);
-  //ellipse(preyX, preyY, preySize * 2);
 }
 
 // drawPlayer()
 //
 // Draw the player as a trash can with alpha value based on health
 function drawPlayer() {
-  tint(200, playerHealth);
   image(playerImage, playerX, playerY, playerSize, playerSize);
 }
 
@@ -294,7 +341,7 @@ function showGameOver() {
   fill(0);
   // Set up the text to display
   let gameOverText = "GAME OVER\n"; // \n means "new line"
-  gameOverText = gameOverText + "You ate " + preyEaten + " prey\n";
+  gameOverText = gameOverText + "you picked up " + preyEaten + " pieces of trash\n";
   gameOverText = gameOverText + "before you died."
   // Display it in the centre of the screen
   text(gameOverText, width / 2, height / 2);
