@@ -39,12 +39,18 @@ let playerMaxStamina = 255;
 let staminaColour = 0;
 // Player fill color
 let playerFill = 50;
-
+ //number of player lives
+let playerLives = 3;
+//Colour of the lives text
+let livesColour = 0;
 
 
 // Prey position, size, velocity
 //Array holding all of the prey images
 let preyImages = [];
+//Variable containing the array size to make it easay to change is in many
+//different parts of the oce at the same time (must be one larger than the size of the array)
+let preyArraySize = 3;
 //Variable to assign current prey
 let currentPrey;
 
@@ -70,10 +76,12 @@ let preyEaten = 0;
 //Icon for reset button
 let resetImage;
 
+
 function preload() {
   playerImage = loadImage("assets/images/trash.png");
   preyImages[0] = loadImage("assets/images/prey0.png");
   preyImages[1] = loadImage("assets/images/prey1.png");
+  preyImages[2] = loadImage("assets/images/prey2.png");
   resetImage = loadImage("assets/images/trash.png");
 
 }
@@ -83,12 +91,13 @@ function preload() {
 // Sets up the basic elements of the game
 function setup() {
   createCanvas(windowWidth,windowHeight);
-
   noStroke();
   // We're using simple functions to separate code out
   setupPrey();
   currentPrey = 0;
   setupPlayer();
+  //change the font to courrier
+  textFont("Courier")
 }
 
 // setupPrey()
@@ -120,7 +129,7 @@ function setupPlayer() {
 // displays the two agents.
 // When the game is over, shows the game over screen.
 function draw() {
-  console.log(preyEaten);
+  console.log(playerLives);
   background(100, 100, 200);
 
   if (!gameOver) {
@@ -131,6 +140,8 @@ function draw() {
 
     updateHealth();
     drawHealth();
+    drawPlayerLives()
+
     updateStamina();
     drawStamina();
     checkEating();
@@ -176,7 +187,7 @@ function handleInput() {
 //Reduce stamina level if player is sprinting
 function updateStamina(){
   // Reduce player health
-  playerStamina += 0.2;
+  playerStamina +=  width/3000;
   // Constrain the result to a sensible range
   playerStamina = constrain(playerStamina, 0, playerMaxStamina);
 
@@ -188,8 +199,12 @@ function updateStamina(){
 }
 //Draw the stamina health bar
 function drawStamina(){
+  push()
   fill(staminaColour,0,0);
   noStroke();
+  textAlign(LEFT);
+  textSize(32);
+  text("STAMINA", 80, height-20);
   rect(0,height,50, -playerStamina);
   //if player health is getting low, turn health bar red
   if (playerStamina < playerMaxStamina/3){
@@ -197,6 +212,7 @@ function drawStamina(){
   } else{
     staminaColour = 0;
   }
+pop()
 }
 
 // movePlayer()
@@ -231,26 +247,65 @@ function movePlayer() {
 // Reduce the player's health (happens every frame)
 // Check if the player is dead
 function updateHealth() {
-  // Reduce player health
-  playerHealth = playerHealth - 0.5;
+  // Reduce player health based on width of the display
+  playerHealth = playerHealth - width/3000;
   // Constrain the result to a sensible range
   playerHealth = constrain(playerHealth, 0, playerMaxHealth);
   // Check if the player is dead (0 health)
   if (playerHealth === 0) {
     // If so, the game is over
-    gameOver = true;
+    playerHealth = playerMaxHealth;
+    updatePlayerLives();
   }
 }
 
+//Each time the health drops to zero, remove one of the playr's lives
+function updatePlayerLives(){
+  playerLives = playerLives  -1;
+  drawPlayerLives(playerLives)
+  //if the player has no more lives, make gameOver true
+  if (playerLives < 0){
+    gameOver = true;
+  } else {
+    return playerLives;
+  }
+}
+
+//draws the player lives using mini versions of the trash can
+function drawPlayerLives(){
+  imageMode(CENTER);
+  noStroke();
+  fill(livesColour, 0, 0);
+  textSize(32);
+  textAlign(RIGHT);
+  text("LIVES", width/2- 50, height-20);
+  let livesX = width/2;
+  for (let i=0; i < playerLives; i++){
+    image(playerImage, livesX, height - 30, 25,25);
+    livesX = livesX + 50;
+  }
+  if (playerLives < 1){
+    livesColour = 255;
+  } else{
+    livesColour = 0;
+  }
+
+}
+
 function drawHealth(){
+  push()
   fill(healthColour,0,0);
   noStroke();
+  textSize(32);
+  textAlign(RIGHT);
+  text("HEALTH", width-80, height -20)
   rect(width-50,height,width-50, -playerHealth);
   if (playerHealth < playerMaxHealth/3){
     healthColour = 255;
   } else{
     healthColour = 0;
   }
+  pop();
 }
 
 
@@ -282,10 +337,10 @@ function checkEating() {
       preyHealth = preyMaxHealth;
       // Track how many prey were eaten
       preyEaten = preyEaten + 1;
-      //change the current prey to th enext in the array
+      //change the current prey to the next in the array
       currentPrey +=1;
       //if we gave eaten all the prey in the array, start the cycle again
-      if (currentPrey >= 2){
+      if (currentPrey >= preyArraySize){
         currentPrey = 0;
       }
 
@@ -361,14 +416,18 @@ function showGameOver() {
   image(resetImage, resetX, resetY, 100,100);
   //if mouse is over reset icon, change it to one of the prey, inticing the player to click........
   if (dist(resetX, resetY, mouseX, mouseY) < 50){
-    resetImage = preyImages[1];
+    frameRate(2);
+    resetImage = preyImages[int(random(0,preyArraySize))]
     //if mouse is presased while hovering over button, reset health to max and start game again
     if (mouseIsPressed){
+      frameRate(60);
       playerHealth = playerMaxHealth;
+      playerStamina = playerMaxStamina;
+      playerLives = 3;
       gameOver = false;
     }
   } else{
+    frameRate(60)
     resetImage = playerImage;
   }
-
 }
