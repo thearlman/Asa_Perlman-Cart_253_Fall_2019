@@ -40,6 +40,8 @@ let staminaColour = 0;
 // Player fill color
 let playerFill = 50;
 
+
+
 // Prey position, size, velocity
 //Array holding all of the prey images
 let preyImages = [];
@@ -65,10 +67,15 @@ let eatHealth = 10;
 // Number of prey eaten during the game (the "score")
 let preyEaten = 0;
 
+//Icon for reset button
+let resetImage;
+
 function preload() {
   playerImage = loadImage("assets/images/trash.png");
   preyImages[0] = loadImage("assets/images/prey0.png");
   preyImages[1] = loadImage("assets/images/prey1.png");
+  resetImage = loadImage("assets/images/trash.png");
+
 }
 
 // setup()
@@ -225,7 +232,7 @@ function movePlayer() {
 // Check if the player is dead
 function updateHealth() {
   // Reduce player health
-  playerHealth = playerHealth - 0.2;
+  playerHealth = playerHealth - 0.5;
   // Constrain the result to a sensible range
   playerHealth = constrain(playerHealth, 0, playerMaxHealth);
   // Check if the player is dead (0 health)
@@ -334,6 +341,7 @@ function drawPlayer() {
 // showGameOver()
 //
 // Display text about the game being over!
+
 function showGameOver() {
   // Set up the font
   textSize(32);
@@ -342,7 +350,25 @@ function showGameOver() {
   // Set up the text to display
   let gameOverText = "GAME OVER\n"; // \n means "new line"
   gameOverText = gameOverText + "you picked up " + preyEaten + " pieces of trash\n";
-  gameOverText = gameOverText + "before you died."
+  gameOverText = gameOverText + "before you died.\n Click To The Can Play Again"
   // Display it in the centre of the screen
   text(gameOverText, width / 2, height / 2);
+  //location of the reset icon
+  let resetX = width/2;
+  let resetY = height/2+150;
+  imageMode(CENTER);
+  //draw reset icon
+  image(resetImage, resetX, resetY, 100,100);
+  //if mouse is over reset icon, change it to one of the prey, inticing the player to click........
+  if (dist(resetX, resetY, mouseX, mouseY) < 50){
+    resetImage = preyImages[1];
+    //if mouse is presased while hovering over button, reset health to max and start game again
+    if (mouseIsPressed){
+      playerHealth = playerMaxHealth;
+      gameOver = false;
+    }
+  } else{
+    resetImage = playerImage;
+  }
+
 }
