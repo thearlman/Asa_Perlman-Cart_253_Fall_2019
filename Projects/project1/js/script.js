@@ -14,7 +14,6 @@ Includes: Physics-based movement, keyboard controls, health/stamina,
 random movement, screen wrap.
 
 ******************************************************/
-
 // Track whether the game is over
 let gameOver = false;
 
@@ -27,7 +26,7 @@ let playerSize = 100;
 let playerVX = 0;
 let playerVY = 0;
 let playerNormalSpeed = 2;
-let playerMaxSpeed = 4;
+let playerMaxSpeed = 10;
 // Player health
 let playerHealth;
 let playerMaxHealth = 255;
@@ -35,9 +34,14 @@ let playerMaxHealth = 255;
 let playerFill = 50;
 
 // Prey position, size, velocity
+//Array holding all of the prey images
+let preyImages = [];
+//Variable to assign current prey
+let currentPrey;
+
 let preyX;
 let preyY;
-let preyRadius = 25;
+let preySize = 50;
 let preyVX;
 let preyVY;
 let preyMaxSpeed = 4;
@@ -54,22 +58,22 @@ let eatHealth = 10;
 // Number of prey eaten during the game (the "score")
 let preyEaten = 0;
 
-
 function preload() {
   playerImage = loadImage("assets/images/trash.png");
+  preyImages[0] = loadImage("assets/images/prey0.png");
+  preyImages[1] = loadImage("assets/images/prey1.png");
 }
-
 
 // setup()
 //
 // Sets up the basic elements of the game
 function setup() {
-  createCanvas(500, 500);
+  createCanvas(windowWidth,windowHeight);
 
   noStroke();
-
   // We're using simple functions to separate code out
   setupPrey();
+  currentPrey = 0;
   setupPlayer();
 }
 
@@ -113,7 +117,7 @@ function draw() {
     updateHealth();
     checkEating();
 
-    drawPrey();
+    drawPrey(preyImages[currentPrey]);
     drawPlayer();
   } else {
     showGameOver();
@@ -201,7 +205,7 @@ function checkEating() {
   // Get distance of player to prey
   let d = dist(playerX, playerY, preyX, preyY);
   // Check if it's an overlap
-  if (d < playerSize + preyRadius - 40) {
+  if (d < playerSize + preySize - 100) {
     // Increase the player health
     playerHealth = playerHealth + eatHealth;
     // Constrain to the possible range
@@ -210,6 +214,7 @@ function checkEating() {
     preyHealth = preyHealth - eatHealth;
     // Constrain to the possible range
     preyHealth = constrain(preyHealth, 0, preyMaxHealth);
+
 
     // Check if the prey died (health 0)
     if (preyHealth === 0) {
@@ -220,6 +225,13 @@ function checkEating() {
       preyHealth = preyMaxHealth;
       // Track how many prey were eaten
       preyEaten = preyEaten + 1;
+      //change the current prey to th enext in the array
+      currentPrey +=1;
+      //if we gave eaten all the prey in the array, start the cycle again
+      if (currentPrey >= 2){
+        currentPrey = 0;
+      }
+
     }
   }
 }
@@ -228,19 +240,12 @@ function checkEating() {
 //
 // Moves the prey based on random velocity changes
 function movePrey() {
-  // Change the prey's velocity at random intervals
-  // random() will be < 0.05 5% of the time, so the prey
-  // will change direction on 5% of frames
-//  if (random() < 0.05) {
-    // Set velocity based on random values to get a new direction
-    // and speed of movement
-    //
-    // Use map() to convert from the 0-1 range of the random() function
+    // Use map() to convert from the 0-1 range of the noise() function
     // to the appropriate range of velocities for the prey
     preyVX = map(noise(preyTX), 0, 1, -preyMaxSpeed, preyMaxSpeed);
     preyVY = map(noise(preyTY), 0, 1, -preyMaxSpeed, preyMaxSpeed);
-    preyTX += 1;
-    preyTY += 1;
+    preyTX += .01;
+    preyTY += .01;
 
   //}
 
@@ -265,9 +270,10 @@ function movePrey() {
 // drawPrey()
 //
 // Draw the prey as an ellipse with alpha based on health
-function drawPrey() {
-  fill(preyFill, preyHealth);
-  ellipse(preyX, preyY, preyRadius * 2);
+function drawPrey(img) {
+  //tint(255,preyHealth);
+  image(img, preyX, preyY, preySize, preySize);
+  //ellipse(preyX, preyY, preySize * 2);
 }
 
 // drawPlayer()
