@@ -3,7 +3,7 @@
 /******************************************************
 
 Game - Chaser
-Pippin Barr
+Pippin Barr/ Asa Perlman
 
 A game of cat and mouse themed in the ocean. The player is a trash can, and can be moved with keys,
 if they overlap the (randomly floating) pieces of trash, they "eat them". The player "dies" slowly over time so they have to keep
@@ -24,7 +24,7 @@ let playerY;
 let playerSize = 100;
 let playerVX = 0;
 let playerVY = 0;
-let playerNormalSpeed = 1;
+let playerNormalSpeed = 2;
 let playerMaxSpeed = 10;
 // Player health
 let playerHealth;
@@ -36,7 +36,6 @@ let playerMaxStamina = 255;
 
  //number of player lives
 let playerLives = 3;
-//Colour of the lives text
 
 //Array holding all of the prey images
 let preyImages = [];
@@ -68,27 +67,36 @@ let eatHealth = 10;
 // Number of prey eaten during the game (the "score")
 let preyEaten = 0;
 
+//counter to keep track of when to change level
+let levelUp = 0;
+//current level
+let level = 0;
+
 //Icon for reset button
 let resetImage;
 
-//the colors for the lives, health, and stamina indicators
+//the colors for the life, health, and stamina indicators
 let livesColor = 120;
 let staminaColor = 120;
 let healthColor = 120;
 
+//variables for the sound effects
 let bubbles;
 let tickTock;
 let fogHorn;
 let waves;
 
 function preload() {
-  //Load image of the player, and all of the prey.
+  //Load image of the player
   playerImage = loadImage("assets/images/trash.png");
+  //Load and all of the prey, into an array!
   preyImages[0] = loadImage("assets/images/prey0.png");
   preyImages[1] = loadImage("assets/images/prey1.png");
   preyImages[2] = loadImage("assets/images/prey2.png");
+  //Declare the trashcan image as another variable, for use as a reset button
+  //in game over screen.
   resetImage = loadImage("assets/images/trash.png");
-
+  //Load all sound effects
   bubbles = loadSound("assets/sounds/bubbles.wav");
   tickTock = loadSound("assets/sounds/tickTock.wav");
   tickTock.playMode("untilDone");
@@ -148,6 +156,7 @@ function setupPlayer() {
 // displays number of lives,
 // When the game is over, shows the gameOver screen.
 function draw(){
+  console.log(level);
   background(200, 255, 100);
   if (!gameOver) {
     push();
@@ -170,8 +179,12 @@ function draw(){
     //to the drawPrey() function
     drawStamina();
     drawHealth();
+    drawLevel();
     drawPrey(preyImages[currentPrey]);
     drawPlayer();
+
+    //check to see what level the player is on.
+    gameLevelCheck();
 
 
   } else {
@@ -205,7 +218,7 @@ function handleInput() {
     playerNormalSpeed = playerMaxSpeed;
     playerStamina += -2;
   } else {
-    playerNormalSpeed = 1;
+    playerNormalSpeed = 2;
     playerStamina = playerStamina;
   }
 }
@@ -283,7 +296,6 @@ function updateHealth() {
     updatePlayerLives();
   }
 }
-
 //Each time the health drops to zero, remove one of the player's lives
 function updatePlayerLives(){
   playerLives = playerLives  -1;
@@ -302,8 +314,8 @@ function drawPlayerLives(){
   fill(livesColor, 255, 100);
   textSize(32);
   textAlign(RIGHT);
-  text("LIVES", width/2- 50, height-20);
-  let livesX = width/2;
+  text("LIVES", width/2-100, height-20);
+  let livesX = width/2-70;
   for (let i=0; i < playerLives; i++){
     image(playerImage, livesX, height - 30, 25,25);
     livesX = livesX + 50;
@@ -364,6 +376,7 @@ function checkEating() {
       bubbles.play();
       //change the current prey to the next in the array
       currentPrey +=1;
+      levelUp +=1;
       //if we gave eaten all the prey in the array, start the cycle again
       if (currentPrey >= preyArraySize){
         currentPrey = 0;
@@ -371,6 +384,22 @@ function checkEating() {
 
     }
   }
+}
+
+function gameLevelCheck(){
+  if (levelUp === 10){
+    level += 1;
+    preyMaxSpeed +=1;
+    levelUp = 0;
+  }
+}
+
+function drawLevel(){
+  noStroke();
+  fill(120, 255, 100);
+  textSize(32);
+  textAlign(LEFT);
+  text("Level: " + level, width/2+80, height-20);
 }
 
 // movePrey()
@@ -448,19 +477,19 @@ function showGameOver() {
   image(resetImage, resetX, resetY, 100,100);
   //if mouse is over reset icon, change it to one of the prey, inticing the player to click........
   if (dist(resetX, resetY, mouseX, mouseY) < 50){
-    frameRate(2);
-    resetImage = preyImages[int(random(0,preyArraySize))]
-    //if mouse is presased while hovering over button, stop the wave sounds, reset health to max and start game again
+    resetImage = preyImages[1];
+    //if mouse is presased while hovering over button, stop the wave sounds, reset health, lives, and level counter,
+     //and start game again
     if (mouseIsPressed){
       waves.stop();
-      frameRate(60);
       playerHealth = playerMaxHealth;
       playerStamina = playerMaxStamina;
+      level = 0;
+      levelUp = 0;
       playerLives = 3;
       gameOver = false;
     }
   } else{
-    frameRate(60)
     resetImage = playerImage;
   }
 }
