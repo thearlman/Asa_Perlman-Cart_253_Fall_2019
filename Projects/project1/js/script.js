@@ -5,9 +5,8 @@
 Game - Chaser
 Pippin Barr
 
-A "simple" game of cat and mouse. The player is a circle and can move with keys,
-if they overlap the (randomly moving) prey they "eat it" by sucking out its life
-and adding it to their own. The player "dies" slowly over time so they have to keep
+A game of cat and mouse themed in the ocean. The player is a trash can, and can be moved with keys,
+if they overlap the (randomly floating) pieces of trash, they "eat them". The player "dies" slowly over time so they have to keep
 eating to stay alive.
 
 Includes: Physics-based movement, keyboard controls, health/stamina,
@@ -25,34 +24,30 @@ let playerY;
 let playerSize = 100;
 let playerVX = 0;
 let playerVY = 0;
-let playerNormalSpeed = 2;
+let playerNormalSpeed = 1;
 let playerMaxSpeed = 10;
 // Player health
 let playerHealth;
 let playerMaxHealth = 255;
-//colour of player health bar
-let healthColour = 0;
+
 //player stamina
 let playerStamina;
 let playerMaxStamina = 255;
-//Colour of stamina health bar
-let staminaColour = 0;
-// Player fill color
-let playerFill = 50;
+
  //number of player lives
 let playerLives = 3;
 //Colour of the lives text
-let livesColour = 0;
 
-
-// Prey position, size, velocity
 //Array holding all of the prey images
 let preyImages = [];
 //Variable containing the array size to make it easay to change is in many
-//different parts of the oce at the same time (must be one larger than the size of the array)
+//different parts of the code at the same time (must be one larger than the size of the array)
 let preyArraySize = 3;
 //Variable to assign current prey
 let currentPrey;
+
+
+// Prey position, size, velocity
 
 let preyX;
 let preyY;
@@ -76,14 +71,30 @@ let preyEaten = 0;
 //Icon for reset button
 let resetImage;
 
+//the colors for the lives, health, and stamina indicators
+let livesColor = 120;
+let staminaColor = 120;
+let healthColor = 120;
+
+let bubbles;
+let tickTock;
+let fogHorn;
+let waves;
 
 function preload() {
+  //Load image of the player, and all of the prey.
   playerImage = loadImage("assets/images/trash.png");
   preyImages[0] = loadImage("assets/images/prey0.png");
   preyImages[1] = loadImage("assets/images/prey1.png");
   preyImages[2] = loadImage("assets/images/prey2.png");
   resetImage = loadImage("assets/images/trash.png");
 
+  bubbles = loadSound("assets/sounds/bubbles.wav");
+  tickTock = loadSound("assets/sounds/tickTock.wav");
+  tickTock.playMode("untilDone");
+  fogHorn = loadSound("assets/sounds/fogHorn.wav");
+  waves = loadSound("assets/sounds/waves.mp3");
+  waves.playMode("untildone");
 }
 
 // setup()
@@ -97,8 +108,12 @@ function setup() {
   currentPrey = 0;
   setupPlayer();
   //change the font to courrier
-  textFont("Courier")
+  textFont("Courier");
+  //Setting the Color mode of the program to HSB (hugh, sturation, brightness)
+  //setting to 360, means the first value (the hugh) should be visualized as a color wheel
+  colorMode(HSB,360,100);
 }
+
 
 // setupPrey()
 //
@@ -123,31 +138,42 @@ function setupPlayer() {
 
 // draw()
 //
-// While the game is active, checks input
+// While the game is active, checks input,
 // updates positions of prey and player,
 // checks health (dying), checks eating (overlaps)
-// displays the two agents.
-// When the game is over, shows the game over screen.
-function draw() {
-  console.log(playerLives);
-  background(100, 100, 200);
-
+// checks stamina (sprinting)
+// displays the two agents,
+// displays health leve,
+// displays stamina level,
+// displays number of lives,
+// When the game is over, shows the gameOver screen.
+function draw(){
+  background(200, 255, 100);
   if (!gameOver) {
+    push();
+    fill(0,0,100);
+    noStroke();
+    rect(0,height-70,width,height);
+    pop();
+
     handleInput();
 
     movePlayer();
     movePrey();
 
     updateHealth();
-    drawHealth();
     drawPlayerLives()
 
     updateStamina();
-    drawStamina();
     checkEating();
-
+    //here we are sending the current prey from the array (heh heh heh)
+    //to the drawPrey() function
+    drawStamina();
+    drawHealth();
     drawPrey(preyImages[currentPrey]);
     drawPlayer();
+
+
   } else {
     showGameOver();
   }
@@ -179,18 +205,19 @@ function handleInput() {
     playerNormalSpeed = playerMaxSpeed;
     playerStamina += -2;
   } else {
-    playerNormalSpeed = 2;
+    playerNormalSpeed = 1;
     playerStamina = playerStamina;
   }
 }
 
 //Reduce stamina level if player is sprinting
 function updateStamina(){
-  // Reduce player health
+  // increase player stamina
   playerStamina +=  width/3000;
   // Constrain the result to a sensible range
   playerStamina = constrain(playerStamina, 0, playerMaxStamina);
-
+  //if the players stamina level drops below 5, reduce
+  //player's max speed to 2, return to 4 after stamina regenerates.
   if (playerStamina < 5){
     playerMaxSpeed = 2;
   } else{
@@ -199,8 +226,7 @@ function updateStamina(){
 }
 //Draw the stamina health bar
 function drawStamina(){
-  push()
-  fill(staminaColour,0,0);
+  fill(staminaColor, 255, 100);
   noStroke();
   textAlign(LEFT);
   textSize(32);
@@ -208,11 +234,10 @@ function drawStamina(){
   rect(0,height,50, -playerStamina);
   //if player health is getting low, turn health bar red
   if (playerStamina < playerMaxStamina/3){
-    staminaColour = 255;
+    staminaColor = 0;
   } else{
-    staminaColour = 0;
+    staminaColor = 120;
   }
-pop()
 }
 
 // movePlayer()
@@ -253,21 +278,20 @@ function updateHealth() {
   playerHealth = constrain(playerHealth, 0, playerMaxHealth);
   // Check if the player is dead (0 health)
   if (playerHealth === 0) {
-    // If so, the game is over
+    // If so, update how many lives the player has left
     playerHealth = playerMaxHealth;
     updatePlayerLives();
   }
 }
 
-//Each time the health drops to zero, remove one of the playr's lives
+//Each time the health drops to zero, remove one of the player's lives
 function updatePlayerLives(){
   playerLives = playerLives  -1;
-  drawPlayerLives(playerLives)
+  fogHorn.play();
+  drawPlayerLives()
   //if the player has no more lives, make gameOver true
   if (playerLives < 0){
     gameOver = true;
-  } else {
-    return playerLives;
   }
 }
 
@@ -275,7 +299,7 @@ function updatePlayerLives(){
 function drawPlayerLives(){
   imageMode(CENTER);
   noStroke();
-  fill(livesColour, 0, 0);
+  fill(livesColor, 255, 100);
   textSize(32);
   textAlign(RIGHT);
   text("LIVES", width/2- 50, height-20);
@@ -285,30 +309,29 @@ function drawPlayerLives(){
     livesX = livesX + 50;
   }
   if (playerLives < 1){
-    livesColour = 255;
+    livesColor = 0;
   } else{
-    livesColour = 0;
+    livesColor = 120;
   }
-
 }
 
 function drawHealth(){
   push()
-  fill(healthColour,0,0);
+  fill(healthColor, 255, 100);
   noStroke();
   textSize(32);
   textAlign(RIGHT);
   text("HEALTH", width-80, height -20)
   rect(width-50,height,width-50, -playerHealth);
   if (playerHealth < playerMaxHealth/3){
-    healthColour = 255;
+    healthColor = 0;
+    tickTock.play();
   } else{
-    healthColour = 0;
+    healthColor = 120;
+    tickTock.stop();
   }
   pop();
 }
-
-
 
 // checkEating()
 //
@@ -337,6 +360,8 @@ function checkEating() {
       preyHealth = preyMaxHealth;
       // Track how many prey were eaten
       preyEaten = preyEaten + 1;
+      //play the bubble trash eating sound
+      bubbles.play();
       //change the current prey to the next in the array
       currentPrey +=1;
       //if we gave eaten all the prey in the array, start the cycle again
@@ -359,8 +384,6 @@ function movePrey() {
     preyTX += .01;
     preyTY += .01;
 
-  //}
-
   // Update prey position based on velocity
   preyX = preyX + preyVX;
   preyY = preyY + preyVY;
@@ -381,16 +404,23 @@ function movePrey() {
 
 // drawPrey()
 //
-// Draw the prey as the current image assigned from the variable
+// Draw the trash as the current image assigned from the variable
 function drawPrey(img){
   image(img, preyX, preyY, preySize, preySize);
 }
 
 // drawPlayer()
 //
-// Draw the player as a trash can with alpha value based on health
+// Draw the player as a trash can, display number of pieces of trash collected below player.
 function drawPlayer() {
   image(playerImage, playerX, playerY, playerSize, playerSize);
+  push();
+  noStroke();
+  fill(0,0,0);
+  textAlign(CENTER,CENTER);
+  textSize(14);
+  text(preyEaten, playerX, playerY+60);
+  pop();
 }
 
 // showGameOver()
@@ -398,6 +428,8 @@ function drawPlayer() {
 // Display text about the game being over!
 
 function showGameOver() {
+  //play soothing wave sounds to ease the pain of losing
+  waves.play();
   // Set up the font
   textSize(32);
   textAlign(CENTER, CENTER);
@@ -418,8 +450,9 @@ function showGameOver() {
   if (dist(resetX, resetY, mouseX, mouseY) < 50){
     frameRate(2);
     resetImage = preyImages[int(random(0,preyArraySize))]
-    //if mouse is presased while hovering over button, reset health to max and start game again
+    //if mouse is presased while hovering over button, stop the wave sounds, reset health to max and start game again
     if (mouseIsPressed){
+      waves.stop();
       frameRate(60);
       playerHealth = playerMaxHealth;
       playerStamina = playerMaxStamina;
