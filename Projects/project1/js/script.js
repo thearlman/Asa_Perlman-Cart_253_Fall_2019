@@ -2,19 +2,20 @@
 
 /******************************************************
 
-Game - Chaser
-Pippin Barr/ Asa Perlman
+Game - Underwater Trash Adventure
+Asa Perlman/ Pippin Barr
 
-A game of cat and mouse themed in the ocean. The player is a trash can, and can be moved with keys,
+A game of can and trash in the ocean. The player is a trash can, and can be moved with keys,
 if they overlap the (randomly floating) pieces of trash, they "eat them". The player "dies" slowly over time so they have to keep
 eating to stay alive.
 
-Includes: Physics-based movement, keyboard controls, health/stamina,
+Includes: "Physics-based" movement, keyboard controls, health/stamina,
 random movement, screen wrap.
 
 ******************************************************/
 // Track whether the game is over
-let gameOver = false;
+let gameOver = true;
+let start = true;
 
 //Player IMAGE
 let playerImage;
@@ -26,6 +27,7 @@ let playerVX = 0;
 let playerVY = 0;
 let playerNormalSpeed = 2;
 let playerMaxSpeed = 10;
+
 // Player health
 let playerHealth;
 let playerMaxHealth = 255;
@@ -34,20 +36,10 @@ let playerMaxHealth = 255;
 let playerStamina;
 let playerMaxStamina = 255;
 
- //number of player lives
+//number of player lives
 let playerLives = 3;
 
-//Array holding all of the prey images
-let preyImages = [];
-//Variable containing the array size to make it easay to change is in many
-//different parts of the code at the same time (must be one larger than the size of the array)
-let preyArraySize = 3;
-//Variable to assign current prey
-let currentPrey;
-
-
 // Prey position, size, velocity
-
 let preyX;
 let preyY;
 let preySize = 50;
@@ -59,18 +51,16 @@ let preyTY = 100;
 // Prey health
 let preyHealth;
 let preyMaxHealth = 100;
-// Prey fill color
-let preyFill = 200;
 
 // Amount of health obtained per frame of "eating" (overlapping) the prey
 let eatHealth = 10;
 // Number of prey eaten during the game (the "score")
 let preyEaten = 0;
 
-//counter to keep track of when to change level
+//counter to keep track of when to change levels
 let levelUp = 0;
 //current level
-let level = 0;
+let level = 1;
 
 //Icon for reset button
 let resetImage;
@@ -85,6 +75,15 @@ let bubbles;
 let tickTock;
 let fogHorn;
 let waves;
+let bell;
+
+//Array holding all of the prey images
+let preyImages = [];
+//Variable containing the array size to make it easay to change is in many
+//different parts of the code at the same time (must be one larger than the size of the array)
+let preyArraySize = 10;
+//Variable to assign current prey from the array
+let currentPrey = 0;
 
 function preload() {
   //Load image of the player
@@ -93,6 +92,15 @@ function preload() {
   preyImages[0] = loadImage("assets/images/prey0.png");
   preyImages[1] = loadImage("assets/images/prey1.png");
   preyImages[2] = loadImage("assets/images/prey2.png");
+  preyImages[3] = loadImage("assets/images/prey3.png");
+  preyImages[4] = loadImage("assets/images/prey4.png");
+  preyImages[5] = loadImage("assets/images/prey5.png");
+  preyImages[6] = loadImage("assets/images/prey6.png");
+  preyImages[7] = loadImage("assets/images/prey7.png");
+  preyImages[8] = loadImage("assets/images/prey8.png");
+  preyImages[9] = loadImage("assets/images/prey9.png");
+
+
   //Declare the trashcan image as another variable, for use as a reset button
   //in game over screen.
   resetImage = loadImage("assets/images/trash.png");
@@ -103,23 +111,23 @@ function preload() {
   fogHorn = loadSound("assets/sounds/fogHorn.wav");
   waves = loadSound("assets/sounds/waves.mp3");
   waves.playMode("untildone");
+  bell = loadSound("assets/sounds/bell.wav");
 }
 
 // setup()
 //
 // Sets up the basic elements of the game
 function setup() {
-  createCanvas(windowWidth,windowHeight);
-  noStroke();
+  //set the canvas size to the width and height of the browser window
+  createCanvas(windowWidth, windowHeight);
   // We're using simple functions to separate code out
   setupPrey();
-  currentPrey = 0;
   setupPlayer();
   //change the font to courrier
   textFont("Courier");
   //Setting the Color mode of the program to HSB (hugh, sturation, brightness)
   //setting to 360, means the first value (the hugh) should be visualized as a color wheel
-  colorMode(HSB,360,100);
+  colorMode(HSB, 360, 100);
 }
 
 
@@ -146,23 +154,29 @@ function setupPlayer() {
 
 // draw()
 //
-// While the game is active, checks input,
+// While the game is active: checks input,
 // updates positions of prey and player,
 // checks health (dying), checks eating (overlaps)
-// checks stamina (sprinting)
+// checks stamina (sprinting),
 // displays the two agents,
-// displays health leve,
+// displays health level,
 // displays stamina level,
 // displays number of lives,
+// displays current level,
 // When the game is over, shows the gameOver screen.
-function draw(){
+function draw() {
   console.log(level);
+  //light and breezy ocean blue background
   background(200, 255, 100);
-  if (!gameOver) {
+  //display the welcome screen
+  welcomeScreen();
+
+  if (!gameOver && start === false) {
+    //white rectangle so we can see the info displayed better
     push();
-    fill(0,0,100);
+    fill(0, 0, 100);
     noStroke();
-    rect(0,height-70,width,height);
+    rect(0, height - 50, width, height);
     pop();
 
     handleInput();
@@ -171,20 +185,17 @@ function draw(){
     movePrey();
 
     updateHealth();
-    drawPlayerLives()
-
     updateStamina();
     checkEating();
+    gameLevelCheck();
     //here we are sending the current prey from the array (heh heh heh)
     //to the drawPrey() function
     drawStamina();
     drawHealth();
+    drawPlayerLives()
     drawLevel();
     drawPrey(preyImages[currentPrey]);
     drawPlayer();
-
-    //check to see what level the player is on.
-    gameLevelCheck();
 
 
   } else {
@@ -224,31 +235,31 @@ function handleInput() {
 }
 
 //Reduce stamina level if player is sprinting
-function updateStamina(){
+function updateStamina() {
   // increase player stamina
-  playerStamina +=  width/3000;
+  playerStamina += width / 3000;
   // Constrain the result to a sensible range
   playerStamina = constrain(playerStamina, 0, playerMaxStamina);
   //if the players stamina level drops below 5, reduce
   //player's max speed to 2, return to 4 after stamina regenerates.
-  if (playerStamina < 5){
+  if (playerStamina < 5) {
     playerMaxSpeed = 2;
-  } else{
+  } else {
     playerMaxSpeed = 4;
   }
 }
 //Draw the stamina health bar
-function drawStamina(){
+function drawStamina() {
   fill(staminaColor, 255, 100);
   noStroke();
   textAlign(LEFT);
-  textSize(32);
-  text("STAMINA", 80, height-20);
-  rect(0,height,50, -playerStamina);
+  textSize(22);
+  text("<--STAMINA", width/10, height -20);
+  rect(0, height, 50, -playerStamina);
   //if player health is getting low, turn health bar red
-  if (playerStamina < playerMaxStamina/3){
+  if (playerStamina < playerMaxStamina / 3) {
     staminaColor = 0;
-  } else{
+  } else {
     staminaColor = 120;
   }
 }
@@ -269,7 +280,7 @@ function movePlayer() {
   } else if (playerX > width) {
     // Off the right side, so subtract the width to reset to the left
     playerX = playerX - width;
-  }
+  }drawPlayerLives
 
   if (playerY < 0) {
     // Off the top, so add the height to reset to the bottom
@@ -286,59 +297,64 @@ function movePlayer() {
 // Check if the player is dead
 function updateHealth() {
   // Reduce player health based on width of the display
-  playerHealth = playerHealth - width/3000;
+  playerHealth = playerHealth - width / 3000;
   // Constrain the result to a sensible range
   playerHealth = constrain(playerHealth, 0, playerMaxHealth);
   // Check if the player is dead (0 health)
   if (playerHealth === 0) {
-    // If so, update how many lives the player has left
+    // If so, reset health, and update how many lives the player has left
     playerHealth = playerMaxHealth;
     updatePlayerLives();
   }
 }
-//Each time the health drops to zero, remove one of the player's lives
-function updatePlayerLives(){
-  playerLives = playerLives  -1;
+//Each time player health drops to zero, remove one of the player's lives
+function updatePlayerLives() {
+  playerLives = playerLives - 1;
+  //play sad fog horn sound
   fogHorn.play();
+  //display the new number of lives
   drawPlayerLives()
   //if the player has no more lives, make gameOver true
-  if (playerLives < 0){
+  if (playerLives < 1) {
     gameOver = true;
   }
 }
 
-//draws the player lives using mini versions of the trash can
-function drawPlayerLives(){
+//draws player lives using mini versions of the trash can
+function drawPlayerLives() {
   imageMode(CENTER);
   noStroke();
   fill(livesColor, 255, 100);
-  textSize(32);
+  textSize(22);
   textAlign(RIGHT);
-  text("LIVES", width/2-100, height-20);
-  let livesX = width/2-70;
-  for (let i=0; i < playerLives; i++){
-    image(playerImage, livesX, height - 30, 25,25);
+  text("LIVES:", width / 2 - 100, height - 20);
+  let livesX = width / 2 - 70;
+  for (let i = 0; i < playerLives; i++) {
+    image(playerImage, livesX, height - 20, 25, 25);
     livesX = livesX + 50;
   }
-  if (playerLives < 1){
+  //if the player has no more extra lives, turn text red
+  if (playerLives < 2) {
     livesColor = 0;
-  } else{
+  } else {
     livesColor = 120;
   }
 }
 
-function drawHealth(){
+//displays the players health as a dynamicly changing rectangle on the right side of the screen
+function drawHealth() {
   push()
   fill(healthColor, 255, 100);
   noStroke();
-  textSize(32);
+  textSize(22);
   textAlign(RIGHT);
-  text("HEALTH", width-80, height -20)
-  rect(width-50,height,width-50, -playerHealth);
-  if (playerHealth < playerMaxHealth/3){
+  text("HEALTH-->", width/1.1, height - 20)
+  rect(width - 50, height, width - 50, -playerHealth);
+  //if the players health is gettin glow, turn the recangle red, and play a ticking clock sound
+  if (playerHealth < playerMaxHealth / 3) {
     healthColor = 0;
     tickTock.play();
-  } else{
+  } else {
     healthColor = 120;
     tickTock.stop();
   }
@@ -375,10 +391,11 @@ function checkEating() {
       //play the bubble trash eating sound
       bubbles.play();
       //change the current prey to the next in the array
-      currentPrey +=1;
-      levelUp +=1;
+      currentPrey += 1;
+      //add one to the variable storing the progress in advancing levels
+      levelUp += 1;
       //if we gave eaten all the prey in the array, start the cycle again
-      if (currentPrey >= preyArraySize){
+      if (currentPrey >= preyArraySize) {
         currentPrey = 0;
       }
 
@@ -386,32 +403,36 @@ function checkEating() {
   }
 }
 
-function gameLevelCheck(){
-  if (levelUp === 10){
+//if the player had scored 10 points, increase the level counter by one, play a happy bell sound, and increase the
+//prey's max speed by 1. Finally reset the variable storing level progress
+function gameLevelCheck() {
+  if (levelUp === 10) {
     level += 1;
-    preyMaxSpeed +=1;
+    bell.play();
+    preyMaxSpeed += 1;
     levelUp = 0;
   }
 }
 
-function drawLevel(){
+//draw what level the player is on at bottom of screen
+function drawLevel() {
   noStroke();
   fill(120, 255, 100);
-  textSize(32);
+  textSize(22);
   textAlign(LEFT);
-  text("Level: " + level, width/2+80, height-20);
+  text("Level: " + level, width / 2 + 80, height - 20);
 }
 
 // movePrey()
 //
 // Moves the prey based on random velocity changes
 function movePrey() {
-    // Use map() to convert from the 0-1 range of the noise() function
-    // to the appropriate range of velocities for the prey
-    preyVX = map(noise(preyTX), 0, 1, -preyMaxSpeed, preyMaxSpeed);
-    preyVY = map(noise(preyTY), 0, 1, -preyMaxSpeed, preyMaxSpeed);
-    preyTX += .01;
-    preyTY += .01;
+  // Use map() to convert from the 0-1 range of the noise() function
+  // to the appropriate range of velocities for the prey
+  preyVX = map(noise(preyTX), 0, 1, -preyMaxSpeed, preyMaxSpeed);
+  preyVY = map(noise(preyTY), 0, 1, -preyMaxSpeed, preyMaxSpeed);
+  preyTX += .01;
+  preyTY += .01;
 
   // Update prey position based on velocity
   preyX = preyX + preyVX;
@@ -433,8 +454,8 @@ function movePrey() {
 
 // drawPrey()
 //
-// Draw the trash as the current image assigned from the variable
-function drawPrey(img){
+// Draw the prey (the piece of trash) as the current image assigned from the variable
+function drawPrey(img) {
   image(img, preyX, preyY, preySize, preySize);
 }
 
@@ -445,51 +466,96 @@ function drawPlayer() {
   image(playerImage, playerX, playerY, playerSize, playerSize);
   push();
   noStroke();
-  fill(0,0,0);
-  textAlign(CENTER,CENTER);
+  fill(0, 0, 0);
+  textAlign(CENTER, CENTER);
   textSize(14);
-  text(preyEaten, playerX, playerY+60);
+  text(preyEaten, playerX, playerY + 60);
   pop();
 }
 
+//Display welcome message
+function welcomeScreen() {
+  if (gameOver && start === true) {
+    //play soothing wave sounds to welcome the player
+    waves.play();
+    // Set up the font
+    textSize(22);
+    textAlign(CENTER, CENTER);
+    fill(0);
+    // Set up the text to display
+    let gameOverText = "WELCOME TO:\n The Great Ocean Trash Adventure!!\n"; // \n means "new line"
+    gameOverText = gameOverText + "Pick up as much trash as you can!\n";
+    gameOverText = gameOverText + "Use the arrow keys to control the trash can\n Hold shift to sprint!!! \n"
+    gameOverText = gameOverText + "Click the can to start!"
+    // Display it in the centre of the screen
+    text(gameOverText, width / 2, height / 2);
+    //location of the reset icon
+    let resetX = width / 2;
+    let resetY = height / 2 + 150;
+    imageMode(CENTER);
+    //draw reset icon
+    image(resetImage, resetX, resetY, 100, 100);
+    //if mouse is over reset icon, change it to one of the prey, inticing the player to click........
+    if (dist(resetX, resetY, mouseX, mouseY) < 50) {
+      resetImage = preyImages[1];
+      //if mouse is presased while hovering over button, stop the wave sounds, reset health, lives, and level counter,
+      //and start game again
+      if (mouseIsPressed) {
+        waves.stop();
+        playerHealth = playerMaxHealth;
+        playerStamina = playerMaxStamina;
+        level = 1;
+        levelUp = 0;
+        playerLives = 3;
+        gameOver = false;
+        start = false;
+      }
+    } else {
+      resetImage = playerImage;
+    }
+
+  }
+}
 // showGameOver()
 //
 // Display text about the game being over!
-
 function showGameOver() {
   //play soothing wave sounds to ease the pain of losing
-  waves.play();
-  // Set up the font
-  textSize(32);
-  textAlign(CENTER, CENTER);
-  fill(0);
-  // Set up the text to display
-  let gameOverText = "GAME OVER\n"; // \n means "new line"
-  gameOverText = gameOverText + "you picked up " + preyEaten + " pieces of trash\n";
-  gameOverText = gameOverText + "before you died.\n Click To The Can Play Again"
-  // Display it in the centre of the screen
-  text(gameOverText, width / 2, height / 2);
-  //location of the reset icon
-  let resetX = width/2;
-  let resetY = height/2+150;
-  imageMode(CENTER);
-  //draw reset icon
-  image(resetImage, resetX, resetY, 100,100);
-  //if mouse is over reset icon, change it to one of the prey, inticing the player to click........
-  if (dist(resetX, resetY, mouseX, mouseY) < 50){
-    resetImage = preyImages[1];
-    //if mouse is presased while hovering over button, stop the wave sounds, reset health, lives, and level counter,
-     //and start game again
-    if (mouseIsPressed){
-      waves.stop();
-      playerHealth = playerMaxHealth;
-      playerStamina = playerMaxStamina;
-      level = 0;
-      levelUp = 0;
-      playerLives = 3;
-      gameOver = false;
+  if (start === false) {
+    waves.play();
+    // Set up the font
+    textSize(22);
+    textAlign(CENTER, CENTER);
+    fill(0);
+    // Set up the text to display
+    let gameOverText = "GAME OVER\n"; // \n means "new line"
+    gameOverText = gameOverText + "you picked up " + preyEaten + " pieces of trash\n";
+    gameOverText = gameOverText + "before you died.\n Click To The Can Play Again"
+    // Display it in the centre of the screen
+    text(gameOverText, width / 2, height / 2);
+    //location of the reset icon
+    let resetX = width / 2;
+    let resetY = height / 2 + 150;
+    imageMode(CENTER);
+    //draw reset icon
+    image(resetImage, resetX, resetY, 100, 100);
+    //if mouse is over reset icon, change it to one of the prey, inticing the player to click........
+    if (dist(resetX, resetY, mouseX, mouseY) < 50) {
+      resetImage = preyImages[1];
+      //if mouse is presased while hovering over button, stop the wave sounds, reset health, score, lives, and level counter,
+      //and start game again
+      if (mouseIsPressed) {
+        waves.stop();
+        playerHealth = playerMaxHealth;
+        playerStamina = playerMaxStamina;
+        level = 1;
+        levelUp = 0;
+        playerLives = 3;
+        preyEaten = 0;
+        gameOver = false;
+      }
+    } else {
+      resetImage = playerImage;
     }
-  } else{
-    resetImage = playerImage;
   }
 }
