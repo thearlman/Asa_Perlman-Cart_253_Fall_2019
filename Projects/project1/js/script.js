@@ -2,16 +2,15 @@
 
 /******************************************************
 
-Game - Underwater Trash Adventure
+Game - The Great Underwater Trash Adventure
 Asa Perlman/ Pippin Barr
 
-A game of can and trash in the ocean. The player is a trash can, and can be moved with keys,
-if they overlap the (randomly floating) pieces of trash, they "eat them". The player "dies" slowly over time so they have to keep
-eating to stay alive.
-
-Includes: "Physics-based" movement, keyboard controls, health/stamina,
-random movement, screen wrap.
-
+A game of can vs trash in the ocean. The player is a trash can, and can be moved with the arrow keys.
+If the trashcan overlaps the (randomly floating) pieces of trash, it "eats them". The player "dies" slowly over time so they have to keep
+eating to stay alive. Each time the player gains 10 points, they level up, causing the prey to move faster, and more erratically.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~Sound is Recomended~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ******************************************************/
 // Track whether the game is over
 let gameOver = true;
@@ -64,6 +63,8 @@ let level = 1;
 
 //Icon for reset button
 let resetImage;
+//distraction fishy
+let fishy;
 
 //the colors for the life, health, and stamina indicators
 let livesColor = 120;
@@ -77,10 +78,10 @@ let fogHorn;
 let waves;
 let bell;
 
-//Array holding all of the prey images
+//Empty aray which will hold all of the prey images
 let preyImages = [];
-//Variable containing the array size to make it easay to change is in many
-//different parts of the code at the same time (must be one larger than the size of the array)
+//Variable containing the reset of the array loop to make it easier to change lower
+//down in the code (must be one larger than the size of the array)
 let preyArraySize = 10;
 //Variable to assign current prey from the array
 let currentPrey = 0;
@@ -100,13 +101,13 @@ function preload() {
   preyImages[8] = loadImage("assets/images/prey8.png");
   preyImages[9] = loadImage("assets/images/prey9.png");
 
-
-  //Declare the trashcan image as another variable, for use as a reset button
-  //in game over screen.
+  //Declare the trashcan image as another variable, for use as a reset button in game over screen.
   resetImage = loadImage("assets/images/trash.png");
+
   //Load all sound effects
   bubbles = loadSound("assets/sounds/bubbles.wav");
   tickTock = loadSound("assets/sounds/tickTock.wav");
+  //we use "untilDone" so that it doesn't endlessly restart when in a conditional
   tickTock.playMode("untilDone");
   fogHorn = loadSound("assets/sounds/fogHorn.wav");
   waves = loadSound("assets/sounds/waves.mp3");
@@ -126,7 +127,7 @@ function setup() {
   //change the font to courrier
   textFont("Courier");
   //Setting the Color mode of the program to HSB (hugh, sturation, brightness)
-  //setting to 360, means the first value (the hugh) should be visualized as a color wheel
+  //setting to 360, means the first value (the hugh) should be visualized as a color wheel (360 degrees)
   colorMode(HSB, 360, 100);
 }
 
@@ -158,19 +159,20 @@ function setupPlayer() {
 // updates positions of prey and player,
 // checks health (dying), checks eating (overlaps)
 // checks stamina (sprinting),
-// displays the two agents,
+// displays trash and can (player and prey),
 // displays health level,
 // displays stamina level,
 // displays number of lives,
 // displays current level,
 // When the game is over, shows the gameOver screen.
 function draw() {
-  console.log(level);
+  console.log(preyMaxSpeed);
   //light and breezy ocean blue background
   background(200, 255, 100);
-  //display the welcome screen
+  //display the welcome screen first time around.
   welcomeScreen();
-
+  //since we set start to false in the welcome screen, this should now be true until the
+  //browser is refreshed.
   if (!gameOver && start === false) {
     //white rectangle so we can see the info displayed better
     push();
@@ -183,29 +185,26 @@ function draw() {
 
     movePlayer();
     movePrey();
+    //  moveDistractionFish();
 
     updateHealth();
     updateStamina();
     checkEating();
     gameLevelCheck();
-    //here we are sending the current prey from the array (heh heh heh)
-    //to the drawPrey() function
+
     drawStamina();
     drawHealth();
     drawPlayerLives()
     drawLevel();
+    //here we are sending the current prey from the array (heh heh heh)
+    //to the drawPrey() function:
     drawPrey(preyImages[currentPrey]);
     drawPlayer();
-
-
   } else {
     showGameOver();
   }
 }
 
-// handleInput()
-//
-// Checks arrow keys and adjusts player velocity accordingly
 function handleInput() {
   // Check for horizontal movement
   if (keyIsDown(LEFT_ARROW)) {
@@ -254,7 +253,7 @@ function drawStamina() {
   noStroke();
   textAlign(LEFT);
   textSize(22);
-  text("<--STAMINA", width/10, height -20);
+  text("<--STAMINA", width / 10, height - 20);
   rect(0, height, 50, -playerStamina);
   //if player health is getting low, turn health bar red
   if (playerStamina < playerMaxStamina / 3) {
@@ -280,7 +279,8 @@ function movePlayer() {
   } else if (playerX > width) {
     // Off the right side, so subtract the width to reset to the left
     playerX = playerX - width;
-  }drawPlayerLives
+  }
+  drawPlayerLives
 
   if (playerY < 0) {
     // Off the top, so add the height to reset to the bottom
@@ -348,7 +348,7 @@ function drawHealth() {
   noStroke();
   textSize(22);
   textAlign(RIGHT);
-  text("HEALTH-->", width/1.1, height - 20)
+  text("HEALTH-->", width / 1.1, height - 20)
   rect(width - 50, height, width - 50, -playerHealth);
   //if the players health is gettin glow, turn the recangle red, and play a ticking clock sound
   if (playerHealth < playerMaxHealth / 3) {
@@ -398,7 +398,6 @@ function checkEating() {
       if (currentPrey >= preyArraySize) {
         currentPrey = 0;
       }
-
     }
   }
 }
@@ -454,7 +453,7 @@ function movePrey() {
 
 // drawPrey()
 //
-// Draw the prey (the piece of trash) as the current image assigned from the variable
+// Draw the prey (the piece of trash) as the current image assigned from the array
 function drawPrey(img) {
   image(img, preyX, preyY, preySize, preySize);
 }
@@ -513,7 +512,6 @@ function welcomeScreen() {
     } else {
       resetImage = playerImage;
     }
-
   }
 }
 // showGameOver()
@@ -530,7 +528,7 @@ function showGameOver() {
     // Set up the text to display
     let gameOverText = "GAME OVER\n"; // \n means "new line"
     gameOverText = gameOverText + "you picked up " + preyEaten + " pieces of trash\n";
-    gameOverText = gameOverText + "before you died.\n Click To The Can Play Again"
+    gameOverText = gameOverText + "before you died.\n Click The Can Play Again"
     // Display it in the centre of the screen
     text(gameOverText, width / 2, height / 2);
     //location of the reset icon
@@ -548,6 +546,7 @@ function showGameOver() {
         waves.stop();
         playerHealth = playerMaxHealth;
         playerStamina = playerMaxStamina;
+        preyMaxSpeed = 4;
         level = 1;
         levelUp = 0;
         playerLives = 3;
