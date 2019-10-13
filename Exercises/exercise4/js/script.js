@@ -16,6 +16,7 @@ let playing = false;
 let bgColor = 0;
 let fgColor = 255;
 
+
 // BALL
 
 // A ball object with the properties of
@@ -45,6 +46,19 @@ let leftPaddle = {
   score: 0
 }
 
+// Basic definition of the left paddles defense wall, which grows whenever it is scored on.
+let leftPaddleWall = {
+  topX: 0,
+  topY: 0,
+  topWidth: 10,
+  topHeight: 0,
+
+  bottomX: 0,
+  bottomY: 480,
+  bottomWidth: 10,
+  bottomHeight: 480
+}
+
 // RIGHT PADDLE
 
 // Basic definition of a left paddle object with its key properties of
@@ -61,14 +75,29 @@ let rightPaddle = {
   score: 0
 }
 
+// Basic definition of the left paddles defense wall, which grows whenever it is scored on.
+let rightPaddleWall = {
+  topX: 640,
+  topY: 0,
+  topWidth: 630,
+  topHeight: 0,
+
+  bottomX: 640,
+  bottomY: 480,
+  bottomWidth: 630,
+  bottomHeight: 480
+}
+
 // A variable to hold the beep sound we will play on bouncing
 let beepSFX;
+//let screenHeight;
 
 // preload()
 //
 // Loads the beep audio for the sound of bouncing
 function preload() {
   beepSFX = new Audio("assets/sounds/beep.wav");
+  //screenHeight = height;
 }
 
 // setup()
@@ -109,8 +138,10 @@ function draw() {
   background(bgColor);
 
   //Print the two paddle's scores
-  console.log("left paddle's score = " + leftPaddle.score);
-  console.log("right paddle's score = " + rightPaddle.score);
+  // console.log("left paddle's score = " + leftPaddle.score);
+  // console.log("right paddle's score = " + rightPaddle.score);
+
+  console.log(leftPaddleWall.bottomHeight);
 
   if (playing) {
     // If the game is in play, we handle input and move the elements around
@@ -123,6 +154,11 @@ function draw() {
     checkBallWallCollision();
     checkBallPaddleCollision(leftPaddle);
     checkBallPaddleCollision(rightPaddle);
+    //Draw the defense walls for the paddles
+    drawPaddleDefenseWalls();
+
+    checkBallDefenseWallCollision(leftPaddleWall, 10);
+    checkBallDefenseWallCollision(rightPaddleWall, width -10);
 
     // Check if the ball went out of bounds and respond if so
     // (Note how we can use a function that returns a truth value
@@ -189,19 +225,34 @@ function updateBall() {
 // Checks if the ball has gone off the left or right
 // Returns true if so, false otherwise
 function ballIsOutOfBounds() {
-  // Check for ball going off on left side of screen: if so, add one point to right paddle's score
+  // Check for ball going off on left side of screen: if so, add one point to right paddle's score and make their own wall smaller, giving them an advantage
   if (ball.x < 0){
     rightPaddle.score += 1;
+    leftPaddleWall.topHeight += 5;
+    leftPaddleWall.bottomHeight += -5;
     return true;
   }
-    // Check for ball going off on right side of screen: if so, add one point to left paddle's score
+    // Check for ball going off on right side of screen: if so, add one point to left paddle's score and make their own wall smaller, giving them an advantage
   else if (ball.x > width) {
     leftPaddle.score += 1;
+    rightPaddleWall.topHeight += 5;
+    rightPaddleWall.bottomHeight += -5;
     return true;
   }
   else {
     return false;
   }
+}
+
+function drawPaddleDefenseWalls(){
+  push();
+  rectMode(CORNERS);
+  rect(leftPaddleWall.topX,leftPaddleWall.topY,leftPaddleWall.topWidth,leftPaddleWall.topHeight);
+  rect(leftPaddleWall.bottomX,leftPaddleWall.bottomY,leftPaddleWall.bottomWidth,leftPaddleWall.bottomHeight);
+
+  rect(rightPaddleWall.topX,rightPaddleWall.topY,rightPaddleWall.topWidth,rightPaddleWall.topHeight);
+  rect(rightPaddleWall.bottomX, rightPaddleWall.bottomY,rightPaddleWall.bottomWidth,rightPaddleWall.bottomHeight);
+  pop();
 }
 
 // checkBallWallCollision()
@@ -220,6 +271,22 @@ function checkBallWallCollision() {
   }
 }
 
+//checkBallDefenseWallCollision()
+//
+//checks for collision between the defense wall of each specified paddle.
+
+function checkBallDefenseWallCollision(defenseWall, boundry){
+
+  //Checks to see if the ball is within the verticle range, of the defense wall && at the edge of the screen.
+  if ( (ball.y < defenseWall.topHeight) && (ball.x === boundry) ||
+  (ball.y > defenseWall.bottomHeight) && (ball.x === boundry) ){
+    //If so, treats the defense wall like the paddle, returning the ball.
+    ball.vx = -ball.vx;
+    beepSFX.currentTime = 0;
+    beepSFX.play();
+    console.log("BOUNCE");
+  }
+}
 // checkBallPaddleCollision(paddle)
 //
 // Checks for collisions between the ball and the specified paddle
