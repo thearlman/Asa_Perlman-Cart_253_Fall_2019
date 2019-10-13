@@ -32,7 +32,7 @@ let ball = {
 // PADDLES
 
 // Basic definition of a left paddle object with its key properties of
-// position, size, velocity, and speed
+// position, size, velocity, speed and score
 let leftPaddle = {
   x: 0,
   y: 0,
@@ -41,13 +41,14 @@ let leftPaddle = {
   vy: 0,
   speed: 5,
   upKey: 87,
-  downKey: 83
+  downKey: 83,
+  score: 0
 }
 
 // RIGHT PADDLE
 
 // Basic definition of a left paddle object with its key properties of
-// position, size, velocity, and speed
+// position, size, velocity, speed and score
 let rightPaddle = {
   x: 0,
   y: 0,
@@ -56,7 +57,8 @@ let rightPaddle = {
   vy: 0,
   speed: 5,
   upKey: 38,
-  downKey: 40
+  downKey: 40,
+  score: 0
 }
 
 // A variable to hold the beep sound we will play on bouncing
@@ -105,6 +107,10 @@ function setupPaddles() {
 function draw() {
   // Fill the background
   background(bgColor);
+
+  //Print the two paddle's scores
+  console.log("left paddle's score = " + leftPaddle.score);
+  console.log("right paddle's score = " + rightPaddle.score);
 
   if (playing) {
     // If the game is in play, we handle input and move the elements around
@@ -183,8 +189,14 @@ function updateBall() {
 // Checks if the ball has gone off the left or right
 // Returns true if so, false otherwise
 function ballIsOutOfBounds() {
-  // Check for ball going off the sides
-  if (ball.x < 0 || ball.x > width) {
+  // Check for ball going off on left side of screen: if so, add one point to right paddle's score
+  if (ball.x < 0){
+    rightPaddle.score += 1;
+    return true;
+  }
+    // Check for ball going off on right side of screen: if so, add one point to left paddle's score
+  else if (ball.x > width) {
+    leftPaddle.score += 1;
     return true;
   }
   else {
