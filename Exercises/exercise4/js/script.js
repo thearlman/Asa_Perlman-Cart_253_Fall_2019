@@ -16,10 +16,6 @@ let playing = false;
 let bgColor = 0;
 let fgColor = 255;
 
-let lastPoint;
-let leftPaddlePoint;
-let rightPaddlePoint;
-
 // BALL
 
 // A ball object with the properties of
@@ -47,10 +43,11 @@ let leftPaddle = {
   upKey: 87,
   downKey: 83,
   score: 0,
-  wonLastPoint: false
+  wonLastPoint: false,
+  giftKey:50
 }
 
-// Basic definition of the left paddles defense wall, which grows whenever it is scored on.
+// Basic definition of the left paddle's defense wall, which grows whenever it is scored on.
 let leftPaddleWall = {
   topX: 0,
   topY: 0,
@@ -77,7 +74,8 @@ let rightPaddle = {
   upKey: 38,
   downKey: 40,
   score: 0,
-  wonLastPoint: true
+  wonLastPoint: true,
+  giftKey: 16
 }
 
 // Basic definition of the left paddles defense wall, which grows whenever it is scored on.
@@ -142,13 +140,10 @@ function draw() {
   // Fill the background
   background(bgColor);
 
-
-
-
   if (playing) {
     // If the game is in play, we handle input and move the elements around
-    handleInput(leftPaddle);
-    handleInput(rightPaddle);
+    handleInput(leftPaddle,leftPaddleWall);
+    handleInput(rightPaddle,rightPaddleWall);
     updatePaddle(leftPaddle);
     updatePaddle(rightPaddle);
     updateBall();
@@ -179,15 +174,17 @@ function draw() {
 
   // We always display the paddles and ball so it looks like Pong!
   displayPaddle(leftPaddle);
-  displayPaddle(rightPaddle);
+  displayPaddle(rightPaddle);      // beepSFX.currentTime = 0;
+      // beepSFX.play();
   displayBall();
 }
 
 // handleInput()
 //
 // Checks the mouse and keyboard input to set the velocities of the
-// left and right paddles respectively.
-function handleInput(paddle) {
+// left and right paddles respectively. Also check to see if the players
+// are tearing down their walls to make space for the game to continue
+function handleInput(paddle,tearDownTheWall) {
   // Move the paddle based on its up and down keys
   // If the up key is being pressed
   if (keyIsDown(paddle.upKey)) {
@@ -203,6 +200,15 @@ function handleInput(paddle) {
     // Otherwise stop moving
     paddle.vy = 0;
   }
+  //prevent the paddle from moving off of the screen
+  paddle.y = constrain(paddle.y,paddle.h/2,height -paddle.h/2);
+
+  //if respective gift keys are being pressed, tear down your wall one pixel at a time.
+  if(keyIsDown(paddle.giftKey)){
+    tearDownTheWall.topHeight -= 1;
+    tearDownTheWall.bottomHeight += 1;
+  }
+
 }
 
 // updatePositions()
@@ -259,9 +265,14 @@ function ballIsOutOfBounds() {
 function drawPaddleDefenseWalls(){
   push();
   rectMode(CORNERS);
+  //constrain the defense walls to within the scope of the edge of the screen, and half way up/down
+  leftPaddleWall.topHeight = constrain(leftPaddleWall.topHeight,0,height/2);
+  leftPaddleWall.bottomHeight = constrain(leftPaddleWall.bottomHeight, height/2, height);
+  rightPaddleWall.topHeight = constrain(rightPaddleWall.topHeight,0,height/2);
+  rightPaddleWall.bottomHeight = constrain(rightPaddleWall.bottomHeight, height/2, height);
+  //draw the defense walls
   rect(leftPaddleWall.topX,leftPaddleWall.topY,leftPaddleWall.topWidth,leftPaddleWall.topHeight);
   rect(leftPaddleWall.bottomX,leftPaddleWall.bottomY,leftPaddleWall.bottomWidth,leftPaddleWall.bottomHeight);
-
   rect(rightPaddleWall.topX,rightPaddleWall.topY,rightPaddleWall.topWidth,rightPaddleWall.topHeight);
   rect(rightPaddleWall.bottomX, rightPaddleWall.bottomY,rightPaddleWall.bottomWidth,rightPaddleWall.bottomHeight);
   pop();
@@ -278,8 +289,8 @@ function checkBallWallCollision() {
     // It hit so reverse velocity
     ball.vy = -ball.vy;
     // Play our bouncing sound effect by rewinding and then playing
-    beepSFX.currentTime = 0;
-    beepSFX.play();
+    // beepSFX.currentTime = 0;
+    // beepSFX.play();
   }
 }
 
@@ -292,8 +303,8 @@ function checkBallDefenseWallCollision(defenseWall, boundry){
   (ball.y > defenseWall.bottomHeight) && (ball.x === boundry) ){
     //If so, treats the defense wall like the paddle, returning the ball.
     ball.vx = -ball.vx;
-    beepSFX.currentTime = 0;
-    beepSFX.play();
+    // beepSFX.currentTime = 0;
+    // beepSFX.play();
     console.log("BOUNCE");
   }
 }
@@ -323,8 +334,8 @@ function checkBallPaddleCollision(paddle) {
       // Reverse its vx so it starts travelling in the opposite direction
       ball.vx = -ball.vx;
       // Play our bouncing sound effect by rewinding and then playing
-      beepSFX.currentTime = 0;
-      beepSFX.play();
+      // beepSFX.currentTime = 0;
+      // beepSFX.play();
     }
   }
 }
