@@ -16,6 +16,9 @@ let playing = false;
 let bgColor = 0;
 let fgColor = 255;
 
+let lastPoint;
+let leftPaddlePoint;
+let rightPaddlePoint;
 
 // BALL
 
@@ -33,7 +36,7 @@ let ball = {
 // PADDLES
 
 // Basic definition of a left paddle object with its key properties of
-// position, size, velocity, speed and score
+// position, size, velocity, speed, last point status, and score
 let leftPaddle = {
   x: 0,
   y: 0,
@@ -43,7 +46,8 @@ let leftPaddle = {
   speed: 5,
   upKey: 87,
   downKey: 83,
-  score: 0
+  score: 0,
+  wonLastPoint: false
 }
 
 // Basic definition of the left paddles defense wall, which grows whenever it is scored on.
@@ -62,7 +66,7 @@ let leftPaddleWall = {
 // RIGHT PADDLE
 
 // Basic definition of a left paddle object with its key properties of
-// position, size, velocity, speed and score
+// position, size, velocity, speed, last point status, and score
 let rightPaddle = {
   x: 0,
   y: 0,
@@ -72,7 +76,8 @@ let rightPaddle = {
   speed: 5,
   upKey: 38,
   downKey: 40,
-  score: 0
+  score: 0,
+  wonLastPoint: true
 }
 
 // Basic definition of the left paddles defense wall, which grows whenever it is scored on.
@@ -137,11 +142,8 @@ function draw() {
   // Fill the background
   background(bgColor);
 
-  //Print the two paddle's scores
-  // console.log("left paddle's score = " + leftPaddle.score);
-  // console.log("right paddle's score = " + rightPaddle.score);
 
-  console.log(leftPaddleWall.bottomHeight);
+
 
   if (playing) {
     // If the game is in play, we handle input and move the elements around
@@ -225,25 +227,35 @@ function updateBall() {
 // Checks if the ball has gone off the left or right
 // Returns true if so, false otherwise
 function ballIsOutOfBounds() {
-  // Check for ball going off on left side of screen: if so, add one point to right paddle's score and make their own wall smaller, giving them an advantage
+  // Check for ball going off on left side of screen: if so, add one
+  //point to right paddle's score, make their opponents defense wall bigger,
+  //and set the boolean stating if they have won the last point to true, setting the opponent's to false
   if (ball.x < 0){
     rightPaddle.score += 1;
-    leftPaddleWall.topHeight += 5;
-    leftPaddleWall.bottomHeight += -5;
+    leftPaddleWall.topHeight += 10;
+    leftPaddleWall.bottomHeight += -10;
+    rightPaddle.wonLastPoint = true;
+    leftPaddle.wonLastPoint = false;
     return true;
   }
-    // Check for ball going off on right side of screen: if so, add one point to left paddle's score and make their own wall smaller, giving them an advantage
-  else if (ball.x > width) {
+    // Check for ball going off on right side of screen: if so, add one
+    //point to left paddle's score, make their opponents defense wall bigger,
+    //and set the boolean stating if they have won the last point to true, setting the opponent's to false
+    else if (ball.x > width) {
     leftPaddle.score += 1;
-    rightPaddleWall.topHeight += 5;
-    rightPaddleWall.bottomHeight += -5;
+    rightPaddleWall.topHeight += 10;
+    rightPaddleWall.bottomHeight += -10;
+    rightPaddle.wonLastPoint = false;
+    leftPaddle.wonLastPoint = true;
     return true;
   }
   else {
     return false;
   }
 }
-
+//drawPaddleDefenseWalls()
+//
+//draws the two defense walls for the paddles. via four rectangles.
 function drawPaddleDefenseWalls(){
   push();
   rectMode(CORNERS);
@@ -274,9 +286,7 @@ function checkBallWallCollision() {
 //checkBallDefenseWallCollision()
 //
 //checks for collision between the defense wall of each specified paddle.
-
 function checkBallDefenseWallCollision(defenseWall, boundry){
-
   //Checks to see if the ball is within the verticle range, of the defense wall && at the edge of the screen.
   if ( (ball.y < defenseWall.topHeight) && (ball.x === boundry) ||
   (ball.y > defenseWall.bottomHeight) && (ball.x === boundry) ){
@@ -337,13 +347,19 @@ function displayBall() {
 
 // resetBall()
 //
-// Sets the starting position and velocity of the ball
+// Sets the starting position and velocity of the ball, depending on which player has won the last point
 function resetBall() {
   // Initialise the ball's position and velocity
   ball.x = width / 2;
-  ball.y = height / 2;
+  ball.y = random(5, height);
+  if (rightPaddle.wonLastPoint === true){
   ball.vx = ball.speed;
   ball.vy = ball.speed;
+} else if (leftPaddle.wonLastPoint === true){
+  ball.vx = -ball.speed;
+  ball.vy = -ball.speed;
+}
+
 }
 
 // displayStartMessage()
