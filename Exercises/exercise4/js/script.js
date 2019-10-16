@@ -410,7 +410,7 @@ function displayStartMessage() {
   push();
   textAlign(CENTER, CENTER);
   textSize(32);
-  text("Welcome To Co-Opong \n" +
+  text("Welcome To Co-OPong \n" +
     "Right Paddle: Arrow Keys\n" +
     "Left Paddle: 'S' 'W'\n" +
     "(shift & 2 break down the walls)\n" +
