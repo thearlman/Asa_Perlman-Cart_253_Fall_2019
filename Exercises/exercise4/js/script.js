@@ -1,13 +1,22 @@
 "use strict";
 
-// Pong
-// by Pippin Barr
+// Co-OPong
+// by Asa Perlman (kind of) & Pippin Barr
 //
-// A "simple" implementation of Pong with no scoring system
-// just the ability to play the game with the keyboard.
+// A "simple" implementation of Pong themed loosely around the sometimes fine
+// between (co)operation and conflict. Every time a player is scored on, their
+// defense is automatically enhanced via an ever-growing wall. Eventually,
+// it is no longer possible to score on ones opponent, raising the question:
+// who is the winner? Is it the player that cause the other to build the wall?
+// or is the the player who may now never be scored on.
+//
+// There is, however, a twist! By pressing SHIFT or "2" respectively, on eplayer,
+//or both can choose to dismantle their walls, allowing for the brick chucking fun
+//to continue indefinetely.
+
 //
 // Up and down keys control the right hand paddle, W and S keys control
-// the left hand paddle
+// the left hand paddle, SHIFT and "2" dismantle the walls.
 
 // Whether the game has started
 let playing = false;
@@ -23,7 +32,7 @@ let fgColor = 255;
 let ball = {
   x: 0,
   y: 0,
-  size: 20,
+  size: 50,
   vx: 0,
   vy: 0,
   speed: 5
@@ -32,43 +41,43 @@ let ball = {
 // PADDLES
 
 // Basic definition of a left paddle object with its key properties of
-// position, size, velocity, speed, last point status, and score
+// position, size, velocity, speed, last point status, giftkey identifier and score
 let leftPaddle = {
   x: 0,
   y: 0,
-  w: 20,
-  h: 70,
+  w: 40,
+  h: 90,
   vy: 0,
   speed: 5,
   upKey: 87,
   downKey: 83,
   score: 0,
   wonLastPoint: false,
-  giftKey:50
+  giftKey: 50
 }
 
 // Basic definition of the left paddle's defense wall, which grows whenever it is scored on.
 let leftPaddleWall = {
   topX: 0,
   topY: 0,
-  topWidth: 10,
+  topWidth: 20,
   topHeight: 0,
 
   bottomX: 0,
   bottomY: 480,
-  bottomWidth: 10,
+  bottomWidth: 20,
   bottomHeight: 480
 }
 
 // RIGHT PADDLE
 
 // Basic definition of a left paddle object with its key properties of
-// position, size, velocity, speed, last point status, and score
+// position, size, velocity, speed, last point status, giftkey identifier and score
 let rightPaddle = {
   x: 0,
   y: 0,
-  w: 20,
-  h: 70,
+  w: 40,
+  h: 90,
   vy: 0,
   speed: 5,
   upKey: 38,
@@ -82,25 +91,37 @@ let rightPaddle = {
 let rightPaddleWall = {
   topX: 640,
   topY: 0,
-  topWidth: 630,
+  topWidth: 620,
   topHeight: 0,
 
   bottomX: 640,
   bottomY: 480,
-  bottomWidth: 630,
+  bottomWidth: 620,
   bottomHeight: 480
 }
+//rate at which paddle walls grow whenever they are passed
+let paddleWallGrowthRate = 20;
 
-// A variable to hold the beep sound we will play on bouncing
-let beepSFX;
-//let screenHeight;
+// Variables to hold the various sounds we'll be playing
+let wallSound;
+let paddleSound;
+let defenseWallSound;
+let pointSound;
+// Variables to hold the images of the paddles and ball
+let ballImage;
+let paddleImage;
 
 // preload()
 //
-// Loads the beep audio for the sound of bouncing
+// Loads the sound and image files
 function preload() {
-  beepSFX = new Audio("assets/sounds/beep.wav");
-  //screenHeight = height;
+  wallSound = new Audio("assets/sounds/wallSound.wav");
+  paddleSound = new Audio("assets/sounds/paddleSound.wav");
+  defenseWallSound = new Audio("assets/sounds/defenseWallSound.wav");
+  pointSound = new Audio("assets/sounds/pointSound.wav");
+
+  ballImage = loadImage("assets/images/ballImage.png");
+  paddleImage = loadImage("assets/images/paddle.png")
 }
 
 // setup()
@@ -114,7 +135,7 @@ function setup() {
   rectMode(CENTER);
   noStroke();
   fill(fgColor);
-
+  imageMode(CENTER);
   setupPaddles();
   resetBall();
 }
@@ -135,27 +156,29 @@ function setupPaddles() {
 // draw()
 //
 // Calls the appropriate functions to run the game
-// See how tidy it looks?!
+// See how tidy it looks?! <--- probably looked tidier before :-S
 function draw() {
   // Fill the background
   background(bgColor);
 
   if (playing) {
     // If the game is in play, we handle input and move the elements around
-    handleInput(leftPaddle,leftPaddleWall);
-    handleInput(rightPaddle,rightPaddleWall);
+    handleInput(leftPaddle, leftPaddleWall);
+    handleInput(rightPaddle, rightPaddleWall);
     updatePaddle(leftPaddle);
     updatePaddle(rightPaddle);
     updateBall();
-
+    displayBall();
     checkBallWallCollision();
     checkBallPaddleCollision(leftPaddle);
     checkBallPaddleCollision(rightPaddle);
-    //Draw the defense walls for the paddles
+
+    //Draws the defense walls for the paddles
     drawPaddleDefenseWalls();
 
+    //checks to see if the ball has hit the edge of the defense wall
     checkBallDefenseWallCollision(leftPaddleWall, 10);
-    checkBallDefenseWallCollision(rightPaddleWall, width -10);
+    checkBallDefenseWallCollision(rightPaddleWall, width - 10);
 
     // Check if the ball went out of bounds and respond if so
     // (Note how we can use a function that returns a truth value
@@ -165,26 +188,28 @@ function draw() {
       resetBall();
       // This is where we would likely count points, depending on which side
       // the ball went off...
+      //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      // I did this in ballIsOutOfBounds(), is there a reason it would be better
+      // to do it here?
+      //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     }
-  }
-  else {
+  } else {
     // Otherwise we display the message to start the game
     displayStartMessage();
   }
 
-  // We always display the paddles and ball so it looks like Pong!
+  // We always display the paddles (sometimes ball) so it looks like Pong!
   displayPaddle(leftPaddle);
-  displayPaddle(rightPaddle);      // beepSFX.currentTime = 0;
-      // beepSFX.play();
-  displayBall();
+  displayPaddle(rightPaddle);
+
 }
 
 // handleInput()
 //
 // Checks the mouse and keyboard input to set the velocities of the
-// left and right paddles respectively. Also check to see if the players
+// left and right paddles respectively. Also checks to see if the players
 // are tearing down their walls to make space for the game to continue
-function handleInput(paddle,tearDownTheWall) {
+function handleInput(paddle, tearDownTheWall) {
   // Move the paddle based on its up and down keys
   // If the up key is being pressed
   if (keyIsDown(paddle.upKey)) {
@@ -195,20 +220,18 @@ function handleInput(paddle,tearDownTheWall) {
   else if (keyIsDown(paddle.downKey)) {
     // Move down
     paddle.vy = paddle.speed;
-  }
-  else {
+  } else {
     // Otherwise stop moving
     paddle.vy = 0;
   }
   //prevent the paddle from moving off of the screen
-  paddle.y = constrain(paddle.y,paddle.h/2,height -paddle.h/2);
+  paddle.y = constrain(paddle.y, paddle.h / 2, height - paddle.h / 2);
 
   //if respective gift keys are being pressed, tear down your wall one pixel at a time.
-  if(keyIsDown(paddle.giftKey)){
+  if (keyIsDown(paddle.giftKey)) {
     tearDownTheWall.topHeight -= 1;
     tearDownTheWall.bottomHeight += 1;
   }
-
 }
 
 // updatePositions()
@@ -235,46 +258,50 @@ function updateBall() {
 function ballIsOutOfBounds() {
   // Check for ball going off on left side of screen: if so, add one
   //point to right paddle's score, make their opponents defense wall bigger,
-  //and set the boolean stating if they have won the last point to true, setting the opponent's to false
-  if (ball.x < 0){
+  //and set the boolean stating if they have won the last point to true, setting
+  //the opponent's to false, play the sound of cashing in on another point.....
+  //though we can never really be sure who is winning... kind of like life?
+  if (ball.x < 0) {
     rightPaddle.score += 1;
-    leftPaddleWall.topHeight += 10;
-    leftPaddleWall.bottomHeight += -10;
+    leftPaddleWall.topHeight += paddleWallGrowthRate;
+    leftPaddleWall.bottomHeight += -paddleWallGrowthRate;
     rightPaddle.wonLastPoint = true;
     leftPaddle.wonLastPoint = false;
+    pointSound.currentTime = 0;
+    pointSound.play();
     return true;
   }
-    // Check for ball going off on right side of screen: if so, add one
-    //point to left paddle's score, make their opponents defense wall bigger,
-    //and set the boolean stating if they have won the last point to true, setting the opponent's to false
-    else if (ball.x > width) {
+  // same as above ^^^ but for opposite side.
+  else if (ball.x > width) {
     leftPaddle.score += 1;
-    rightPaddleWall.topHeight += 10;
-    rightPaddleWall.bottomHeight += -10;
+    rightPaddleWall.topHeight += paddleWallGrowthRate;
+    rightPaddleWall.bottomHeight += -paddleWallGrowthRate;
     rightPaddle.wonLastPoint = false;
     leftPaddle.wonLastPoint = true;
+    pointSound.currentTime = 0;
+    pointSound.play();
     return true;
-  }
-  else {
+  } else {
     return false;
   }
 }
 //drawPaddleDefenseWalls()
 //
 //draws the two defense walls for the paddles. via four rectangles.
-function drawPaddleDefenseWalls(){
+function drawPaddleDefenseWalls() {
   push();
   rectMode(CORNERS);
+  fill(color(152, 97, 60));
   //constrain the defense walls to within the scope of the edge of the screen, and half way up/down
-  leftPaddleWall.topHeight = constrain(leftPaddleWall.topHeight,0,height/2);
-  leftPaddleWall.bottomHeight = constrain(leftPaddleWall.bottomHeight, height/2, height);
-  rightPaddleWall.topHeight = constrain(rightPaddleWall.topHeight,0,height/2);
-  rightPaddleWall.bottomHeight = constrain(rightPaddleWall.bottomHeight, height/2, height);
+  leftPaddleWall.topHeight = constrain(leftPaddleWall.topHeight, 0, height / 2);
+  leftPaddleWall.bottomHeight = constrain(leftPaddleWall.bottomHeight, height / 2, height);
+  rightPaddleWall.topHeight = constrain(rightPaddleWall.topHeight, 0, height / 2);
+  rightPaddleWall.bottomHeight = constrain(rightPaddleWall.bottomHeight, height / 2, height);
   //draw the defense walls
-  rect(leftPaddleWall.topX,leftPaddleWall.topY,leftPaddleWall.topWidth,leftPaddleWall.topHeight);
-  rect(leftPaddleWall.bottomX,leftPaddleWall.bottomY,leftPaddleWall.bottomWidth,leftPaddleWall.bottomHeight);
-  rect(rightPaddleWall.topX,rightPaddleWall.topY,rightPaddleWall.topWidth,rightPaddleWall.topHeight);
-  rect(rightPaddleWall.bottomX, rightPaddleWall.bottomY,rightPaddleWall.bottomWidth,rightPaddleWall.bottomHeight);
+  rect(leftPaddleWall.topX, leftPaddleWall.topY, leftPaddleWall.topWidth, leftPaddleWall.topHeight);
+  rect(leftPaddleWall.bottomX, leftPaddleWall.bottomY, leftPaddleWall.bottomWidth, leftPaddleWall.bottomHeight);
+  rect(rightPaddleWall.topX, rightPaddleWall.topY, rightPaddleWall.topWidth, rightPaddleWall.topHeight);
+  rect(rightPaddleWall.bottomX, rightPaddleWall.bottomY, rightPaddleWall.bottomWidth, rightPaddleWall.bottomHeight);
   pop();
 }
 
@@ -288,24 +315,24 @@ function checkBallWallCollision() {
   if (ball.y < 0 || ball.y > height) {
     // It hit so reverse velocity
     ball.vy = -ball.vy;
-    // Play our bouncing sound effect by rewinding and then playing
-    // beepSFX.currentTime = 0;
-    // beepSFX.play();
+    // Play our wall collision sound
+    wallSound.currentTime = 0;
+    wallSound.play();
   }
 }
 
 //checkBallDefenseWallCollision()
 //
 //checks for collision between the defense wall of each specified paddle.
-function checkBallDefenseWallCollision(defenseWall, boundry){
+function checkBallDefenseWallCollision(defenseWall, boundry) {
   //Checks to see if the ball is within the verticle range, of the defense wall && at the edge of the screen.
-  if ( (ball.y < defenseWall.topHeight) && (ball.x === boundry) ||
-  (ball.y > defenseWall.bottomHeight) && (ball.x === boundry) ){
+  if ((ball.y < defenseWall.topHeight) && (ball.x === boundry) ||
+    (ball.y > defenseWall.bottomHeight) && (ball.x === boundry)) {
     //If so, treats the defense wall like the paddle, returning the ball.
+    //Also playing the terrible sound of your wall under attack
     ball.vx = -ball.vx;
-    // beepSFX.currentTime = 0;
-    // beepSFX.play();
-    console.log("BOUNCE");
+    defenseWallSound.currentTime = 0;
+    defenseWallSound.play();
   }
 }
 // checkBallPaddleCollision(paddle)
@@ -334,8 +361,8 @@ function checkBallPaddleCollision(paddle) {
       // Reverse its vx so it starts travelling in the opposite direction
       ball.vx = -ball.vx;
       // Play our bouncing sound effect by rewinding and then playing
-      // beepSFX.currentTime = 0;
-      // beepSFX.play();
+      paddleSound.currentTime = 0;
+      paddleSound.play();
     }
   }
 }
@@ -344,16 +371,16 @@ function checkBallPaddleCollision(paddle) {
 //
 // Draws the specified paddle
 function displayPaddle(paddle) {
-  // Draw the paddles
-  rect(paddle.x, paddle.y, paddle.w, paddle.h);
+  // Draw the paddles as an image of beautiful driftwood
+  image(paddleImage, paddle.x, paddle.y, paddle.w, paddle.h);
 }
 
 // displayBall()
 //
-// Draws the ball on screen as a square
+// Draws the ball on screen as a sinister brick
 function displayBall() {
   // Draw the ball
-  rect(ball.x, ball.y, ball.size, ball.size);
+  image(ballImage, ball.x, ball.y, ball.size, ball.size);
 }
 
 // resetBall()
@@ -362,25 +389,32 @@ function displayBall() {
 function resetBall() {
   // Initialise the ball's position and velocity
   ball.x = width / 2;
+  // set the ball to start off at a random point on the Y axis, to make things
+  // a bit more interesting
   ball.y = random(5, height);
-  if (rightPaddle.wonLastPoint === true){
-  ball.vx = ball.speed;
-  ball.vy = ball.speed;
-} else if (leftPaddle.wonLastPoint === true){
-  ball.vx = -ball.speed;
-  ball.vy = -ball.speed;
-}
+  if (rightPaddle.wonLastPoint === true) {
+    ball.vx = ball.speed;
+    ball.vy = ball.speed;
+  } else if (leftPaddle.wonLastPoint === true) {
+    ball.vx = -ball.speed;
+    ball.vy = -ball.speed;
+  }
 
 }
 
 // displayStartMessage()
 //
-// Shows a message about how to start the game
+// Shows a message about the controls, and how to start the game
+//(but conspicously, nothing about how to win.....)
 function displayStartMessage() {
   push();
   textAlign(CENTER, CENTER);
   textSize(32);
-  text("CLICK TO START", width / 2, height / 2);
+  text("Welcome To Co-Opong \n" +
+    "Right Paddle: Arrow Keys\n" +
+    "Left Paddle: 'S' 'W'\n" +
+    "(shift & 2 break down the walls)\n" +
+    "CLICK TO CHUCK A BRICK", width / 2, height / 2);
   pop();
 }
 
