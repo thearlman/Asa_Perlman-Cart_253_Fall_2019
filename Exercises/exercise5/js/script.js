@@ -24,9 +24,9 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   tiger = new Predator(width-100, 100, 5, color(200, 200, 0), 40, 38, 40, 37, 39, 17);
   bear = new Predator(100, 100, 5, color(0, 255, 0), 40, 87, 83, 65, 68, 16);
-  antelope = new Prey(100, 100, 10, color(255, 100, 10), 50);
-  zebra = new Prey(100, 100, 8, color(255, 255, 255), 60);
-  bee = new Prey(100, 100, 20, color(255, 255, 0), 10);
+  antelope = new Prey(100, 100, 2, color(255, 100, 10), 50);
+  zebra = new Prey(100, 100, 2, color(255, 255, 255), 60);
+  bee = new Prey(100, 100, 2, color(255, 255, 0), 10);
 }
 
 // draw()
@@ -35,6 +35,8 @@ function setup() {
 function draw() {
   // Clear the background to black
   background(0);
+
+  console.log(tiger.preyEaten);
 
   // Handle input for the tiger
   tiger.handleInput();
