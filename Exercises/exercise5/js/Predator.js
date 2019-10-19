@@ -10,7 +10,11 @@ class Predator {
   //
   // Sets the initial values for the Predator's properties
   // Either sets default values or uses the arguments provided
-  constructor(x, y, speed, fillColor, radius, upKey, downKey, leftKey, rightKey, sprintKey) {
+  constructor(name, img, x, y, speed, fillColor, radius, upKey, downKey, leftKey, rightKey, sprintKey) {
+    //name of billionare
+    this.name = name;
+    //image
+    this.img = img;
     // Position
     this.x = x;
     this.y = y;
@@ -32,6 +36,8 @@ class Predator {
     this.leftKey = leftKey;
     this.rightKey = rightKey;
     this.sprintKey = sprintKey;
+    //number of prey eaten
+    this.preyEaten = 0;
   }
 
   // handleInput
@@ -106,14 +112,15 @@ class Predator {
     // Calculate distance from this predator to the prey
     let d = dist(this.x, this.y, prey.x, prey.y);
     // Check if the distance is less than their two radii (an overlap)
-    if (d < this.radius + prey.radius) {
+    if (d < this.radius-50 + prey.radius) {
       // Increase predator health and constrain it to its possible range
       this.health += this.healthGainPerEat;
       this.health = constrain(this.health, 0, this.maxHealth);
       // Decrease prey health by the same amount
       prey.health -= this.healthGainPerEat;
       // Check if the prey died and reset it if so
-      if (prey.health < 0) {
+      if (prey.health < 1) {
+        this.preyEaten += 50;
         prey.reset();
       }
     }
@@ -125,10 +132,25 @@ class Predator {
   // with a radius the same size as its current health.
   display() {
     push();
-    noStroke();
-    fill(this.fillColor);
-    this.radius = this.health;
-    ellipse(this.x, this.y, this.radius * 2);
+    imageMode(CENTER);
+    image(this.img,this.x, this.y, this.radius, this.radius)
     pop();
   }
+
+  displayShip(img,x,y,shipWidth,shipHeight){
+    push();
+    imageMode(CENTER);
+    image(img,x,y,shipWidth,shipHeight);
+    pop();
+  }
+
+  checkScore(){
+    if (this.preyEaten > height + 250){
+      fill(0,255,0);
+      textAlign(CENTER,CENTER);
+      textSize(32);
+      text(this.name + "is the winner!", width/2, height/2);
+    }
+  }
+
 }

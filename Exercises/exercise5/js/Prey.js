@@ -10,7 +10,9 @@ class Prey {
   //
   // Sets the initial values for the Predator's properties
   // Either sets default values or uses the arguments provided
-  constructor(x, y, speed, fillColor, radius) {
+  constructor(img, x, y, speed, fillColor, radius) {
+    //image
+    this.img = img;
     // Position
     this.x = x;
     this.y = y;
@@ -74,10 +76,8 @@ class Prey {
   // with a radius the same size as its current health.
   display() {
     push();
-    noStroke();
-    fill(this.fillColor);
     this.radius = this.health;
-    ellipse(this.x, this.y, this.radius * 2);
+    image(this.img, this.x, this.y, this.radius, this.radius);
     pop();
   }
 
