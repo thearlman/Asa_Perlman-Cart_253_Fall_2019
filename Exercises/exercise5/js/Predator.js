@@ -1,8 +1,8 @@
 // Predator
 //
-// A class that represents a simple predator
+// A class that represents the (un)respective billionaires
 // controlled by the arrow keys. It can move around
-// the screen and consume Prey objects to maintain its health.
+// the screen and consume Prey objects to try and colonize space.
 
 class Predator {
 
@@ -115,15 +115,15 @@ class Predator {
     // Calculate distance from this predator to the prey
     let d = dist(this.x, this.y, prey.x, prey.y);
     // Check if the distance is less than their two radii (an overlap)
-    if (d < this.radius-50 + prey.radius) {
+    if (d < this.radius/2 + prey.radius/2) {
       // Increase predator health and constrain it to its possible range
       this.health += this.healthGainPerEat;
       this.health = constrain(this.health, 0, this.maxHealth);
       // Decrease prey health by the same amount
       prey.health -= this.healthGainPerEat;
       // Check if the prey died and reset it if so
-      if (prey.health < 1) {
-        this.rocketPosition += 100;
+      if (prey.health < 30) {
+        this.rocketPosition += 25;
         prey.reset();
       }
     }
