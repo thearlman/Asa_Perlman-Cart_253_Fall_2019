@@ -37,7 +37,7 @@ class Predator {
     this.rightKey = rightKey;
     this.sprintKey = sprintKey;
     //number of prey eaten
-    this.preyEaten = 0;
+    this.rocketPosition = height+137.5;
   }
 
   // handleInput
@@ -63,6 +63,9 @@ class Predator {
     }
     if (keyIsDown(this.sprintKey)) {
       this.speed = 10;
+      this.rocketPosition += -1;
+      //constrain rocket height to within boundaries of game
+      this.rocketPosition = constrain(this.rocketPosition, 0, height+250);
     } else {
       this.speed = 5;
     }
@@ -120,7 +123,7 @@ class Predator {
       prey.health -= this.healthGainPerEat;
       // Check if the prey died and reset it if so
       if (prey.health < 1) {
-        this.preyEaten += 50;
+        this.rocketPosition += 100;
         prey.reset();
       }
     }
@@ -145,11 +148,9 @@ class Predator {
   }
 
   checkScore(){
-    if (this.preyEaten > height + 250){
-      fill(0,255,0);
-      textAlign(CENTER,CENTER);
-      textSize(32);
-      text(this.name + "is the winner!", width/2, height/2);
+    if (this.rocketPosition > height + 250){
+    winnerName = this.name;
+    gameOver = true;
     }
   }
 
