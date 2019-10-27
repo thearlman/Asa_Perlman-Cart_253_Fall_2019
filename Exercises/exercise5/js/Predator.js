@@ -10,11 +10,13 @@ class Predator {
   //
   // Sets the initial values for the Predator's properties
   // Either sets default values or uses the arguments provided
-  constructor(name, img, x, y, speed, fillColor, radius, upKey, downKey, leftKey, rightKey, sprintKey) {
+  constructor(name, img, sound, x, y, speed, fillColor, radius, upKey, downKey, leftKey, rightKey, sprintKey) {
     //name of billionare
     this.name = name;
     //image
     this.img = img;
+
+    this.sound = sound;
     // Position
     this.x = x;
     this.y = y;
@@ -123,7 +125,8 @@ class Predator {
       prey.health -= this.healthGainPerEat;
       // Check if the prey died and reset it if so
       if (prey.health < 30) {
-        this.rocketPosition += 25;
+        this.sound.play();
+        this.rocketPosition += 500;
         prey.reset();
       }
     }
@@ -150,6 +153,7 @@ class Predator {
   checkScore(){
     if (this.rocketPosition > height + 250){
     winnerName = this.name;
+    winnerImg = this.img;
     gameOver = true;
     }
   }

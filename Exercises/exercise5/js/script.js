@@ -23,8 +23,12 @@ let start = true;
 let gameOver = false;
 //empty variable to store the winner's name
 let winnerName;
+let winnerImg;
+let winnerXPosition = -250;
 
-let pointSound;
+let muskLaugh;
+let bezosLaugh;
+
 
 function preload() {
   //preload images of billionarez
@@ -38,8 +42,11 @@ function preload() {
   coltanImg = loadImage("assets/images/coltan.png")
 
   backgroundImg = loadImage("assets/images/backgroundImg.jpg");
-  pointSound = loadSound("assets/sounds/laugh.wav");
-
+  //load the sound effects, and prevent them from looping
+  muskLaugh = loadSound("assets/sounds/muskLaugh.wav");
+  muskLaugh.playMode("untilDone");
+  bezosLaugh = loadSound("assets/sounds/bezosLaugh.wav");
+  bezosLaugh.playMode("untilDone");
 }
 
 
@@ -54,8 +61,8 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   //the predators
 
-  bezos = new Predator("Bezos", bezosHead, width - 100, 100, 5, color(200, 200, 0), 100, 38, 40, 37, 39, 191);
-  musk = new Predator("Musk", muskHead, 100, 100, 5, color(0, 255, 0), 100, 87, 83, 65, 68, 16);
+  bezos = new Predator("Bezos", bezosHead, bezosLaugh, width - 100, 100, 5, color(200, 200, 0), 100, 38, 40, 37, 39, 191);
+  musk = new Predator("Musk", muskHead, muskLaugh, 100, 100, 5, color(0, 255, 0), 100, 87, 83, 65, 68, 16);
   //the prey
   cash = new Prey(cashImg, 100, 100, 2, color(255, 100, 10), 50);
   gold = new Prey(goldImg, 100, 100, 2, color(255, 255, 255), 50);
@@ -110,8 +117,9 @@ function draw() {
     coltan.display();
   }
   if (gameOver === true) {
-    showGameOver(winnerName);
+    showGameOver(winnerName, winnerImg);
   }
+    console.log(winnerXPosition);
 }
 //welcomScreen()
 //
@@ -133,10 +141,12 @@ function welcomeScreen() {
   }
 }
 
-//gameOver()
+//gameOver([name of the winning billionaire],[image of the billionare],[image of the
+//billionarez rocket])
 //
 //Displays the winner of the game (though we all lose in the end) with an option to play again
-function showGameOver(name) {
+function showGameOver(name, img) {
+  background(backgroundImg);
   push();
   textAlign(CENTER, CENTER);
   textSize(32);
@@ -145,17 +155,21 @@ function showGameOver(name) {
     "Want to rewrite history?\n\n" +
     "Press SPACE to RACE again!!!", width / 2, height / 2);
   pop();
-
+  for (let x = 0; x < width + 250; x++) {
+    winnerXPosition =+ x;
+  }
+  image(img, winnerXPosition, height/ 2, 250, 250);
 }
 
-//Check to see if the "space" bar is pressed down
-function keyPressed() {
-  if (keyCode === 32) {
-    if (start === true || gameOver === true) {
-      start = false;
-      gameOver = false;
-      bezos.rocketPosition = 0;
-      musk.rocketPosition = 0;
+
+  //Check to see if the "space" bar is pressed down
+  function keyPressed() {
+    if (keyCode === 32) {
+      if (start === true || gameOver === true) {
+        start = false;
+        gameOver = false;
+        bezos.rocketPosition = 0;
+        musk.rocketPosition = 0;
+      }
     }
   }
-}
