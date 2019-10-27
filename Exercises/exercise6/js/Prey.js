@@ -68,7 +68,7 @@ class Prey { ///////FIXED
         this.y += height;
       }
       else if (this.y > height) {
-        this.y -= height;////////////FIXED
+        this.y -= height;//////////// FIXED
       }
     }
 
