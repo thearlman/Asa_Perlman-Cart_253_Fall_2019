@@ -10,7 +10,7 @@ class Prey {
   //
   // Sets the initial values for the Predator's properties
   // Either sets default values or uses the arguments provided
-  constructor(x, y, speed, fillColor, radius) {
+  constructor(x, y, speed, fillColor, startingHealth) {
     // Position
     this.x = x;
     this.y = y;
@@ -22,8 +22,8 @@ class Prey {
     this.tx = random(0, 1000); // To make x and y noise different
     this.ty = random(0, 1000); // we use random starting values
     // Health properties
-    this.maxHealth = radius;
-    this.health = this.maxHealth; // Must be AFTER defining this.maxHealth
+    this.startingHealth = startingHealth;
+    this.health = startingHealth;
     // Display properties
     this.fillColor = fillColor;
     this.radius = this.health;
@@ -68,6 +68,14 @@ class Prey {
     }
   }
 
+
+  updateHealth(){
+    this.health += .1;
+    if (this.health <= 0) {
+      this.reset();
+  }
+}
+
   // display
   //
   // Draw the prey as an ellipse on the canvas
@@ -90,8 +98,6 @@ class Prey {
     this.x = random(0, width);
     this.y = random(0, height);
     // Default health
-    this.health = this.maxHealth;
-    // Default radius
-    this.radius = this.health;
+    this.health = this.startingHealth;
   }
 }

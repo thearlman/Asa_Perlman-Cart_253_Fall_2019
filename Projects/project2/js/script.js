@@ -6,12 +6,25 @@
 // The predator loses health over time, so must keep eating to survive.
 
 // Our predator
-let tiger;
+let player;
+let playerCrosshairs;
 
 // The three prey
 let antelope;
 let zebra;
 let bee;
+
+let cockpit;
+let backgroundImg;
+
+function preload(){
+cockpit = loadImage('assets/images/cockpit.png');
+backgroundImg = loadImage('assets/images/backgroundImg.jpg');
+playerCrosshairs = loadImage('assets/images/crosshairs.png');
+
+}
+
+
 
 // setup()
 //
@@ -19,9 +32,9 @@ let bee;
 // Creates objects for the predator and three prey
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  tiger = new Predator(100, 100, 5, color(200, 200, 0), 40);
-  antelope = new Prey(100, 100, 10, color(255, 100, 10), 50);
-  zebra = new Prey(100, 100, 8, color(255, 255, 255), 60);
+  player = new Player(100, 100, 5, color(200, 200, 0), 50, playerCrosshairs);
+  antelope = new Prey(100, 100, 10, color(255, 100, 10), 10);
+  zebra = new Prey(100, 100, 8, color(255, 255, 255), 10);
   bee = new Prey(100, 100, 20, color(255, 255, 0), 10);
 }
 
@@ -30,25 +43,36 @@ function setup() {
 // Handles input, movement, eating, and displaying for the system's objects
 function draw() {
   // Clear the background to black
-  background(0);
+  background(backgroundImg);
 
-  // Handle input for the tiger
-  tiger.handleInput();
+  // Handle input for the player
+  player.handleInput();
 
   // Move all the "animals"
-  tiger.move();
+  player.move();
   antelope.move();
   zebra.move();
   bee.move();
 
-  // Handle the tiger eating any of the prey
-  tiger.handleEating(antelope);
-  tiger.handleEating(zebra);
-  tiger.handleEating(bee);
+  antelope.updateHealth();
+  zebra.updateHealth();
+  bee.updateHealth();
+
+
 
   // Display all the "animals"
-  tiger.display();
+  player.display();
   antelope.display();
   zebra.display();
   bee.display();
+  image(cockpit,0,0,width,height);
+}
+
+function keyPressed(){
+  if (keyCode === 32){
+    // Handle the player targeting any of the prey
+    player.handleTarget(antelope);
+    player.handleTarget(zebra);
+    player.handleTarget(bee);
+  }
 }

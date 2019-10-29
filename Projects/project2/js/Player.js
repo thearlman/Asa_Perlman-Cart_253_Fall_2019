@@ -4,28 +4,30 @@
 // controlled by the arrow keys. It can move around
 // the screen and consume Prey objects to maintain its health.
 
-class Predator {
+class Player {
 
   // constructor
   //
   // Sets the initial values for the Predator's properties
   // Either sets default values or uses the arguments provided
-  constructor(x, y, speed, fillColor, radius) {
+  constructor(x, y, speed, fillColor, size, img) {
     // Position
     this.x = x;
     this.y = y;
+    //image of player
+    this.img = img;
     // Velocity and speed
     this.vx = 0;
     this.vy = 0;
     this.speed = speed;
     // Health properties
-    this.maxHealth = radius;
+    this.maxHealth = size;
     this.health = this.maxHealth; // Must be AFTER defining this.maxHealth
     this.healthLossPerMove = 0.1;
-    this.healthGainPerEat = 1;
+    this.healthGainPerEat = 20;
     // Display properties
     this.fillColor = fillColor;
-    this.radius = this.health; // Radius is defined in terms of health
+    this.size = size;
     // Input properties
     this.upKey = UP_ARROW;
     this.downKey = DOWN_ARROW;
@@ -69,11 +71,18 @@ class Predator {
     // Update position
     this.x += this.vx;
     this.y += this.vy;
-    // Update health
-    this.health = this.health - this.healthLossPerMove;
-    this.health = constrain(this.health, 0, this.maxHealth);
     // Handle wrapping
     this.handleWrapping();
+  }
+
+  // Update health()
+  //
+  //
+  //updates the player's health on event
+  updateHealth(){
+    this.health = this.health - this.healthLossPerMove;
+    this.health = constrain(this.health, 0, this.maxHealth);
+
   }
 
   // handleWrapping
@@ -102,33 +111,27 @@ class Predator {
   // Takes a Prey object as an argument and checks if the predator
   // overlaps it. If so, reduces the prey's health and increases
   // the predator's. If the prey dies, it gets reset.
-  handleEating(prey) {
+  handleTarget(target) {
     // Calculate distance from this predator to the prey
-    let d = dist(this.x, this.y, prey.x, prey.y);
+    let d = dist(this.x, this.y, target.x, target.y);
     // Check if the distance is less than their two radii (an overlap)
-    if (d < this.radius + prey.radius) {
+    if (d < this.size + target.radius) {
       // Increase predator health and constrain it to its possible range
       this.health += this.healthGainPerEat;
       this.health = constrain(this.health, 0, this.maxHealth);
       // Decrease prey health by the same amount
-      prey.health -= this.healthGainPerEat;
+      target.health -= this.healthGainPerEat;
       // Check if the prey died and reset it if so
-      if (prey.health < 0) {
-        prey.reset();
       }
     }
-  }
 
   // display
   //
-  // Draw the predator as an ellipse on the canvas
-  // with a radius the same size as its current health.
+  // Draw the player's icon as crosshairs on the canvas
   display() {
     push();
-    noStroke();
-    fill(this.fillColor);
-    this.radius = this.health;
-    ellipse(this.x, this.y, this.radius * 2);
+    imageMode(CENTER);
+    image(this.img, this.x, this.y, this.size, this.size)
     pop();
   }
 }
