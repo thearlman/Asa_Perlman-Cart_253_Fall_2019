@@ -45,21 +45,17 @@ class Player {
     // Horizontal movement
     if (keyIsDown(this.leftKey)) {
       this.vx = -this.speed;
-    }
-    else if (keyIsDown(this.rightKey)) {
+    } else if (keyIsDown(this.rightKey)) {
       this.vx = this.speed;
-    }
-    else {
+    } else {
       this.vx = 0;
     }
     // Vertical movement
     if (keyIsDown(this.upKey)) {
       this.vy = -this.speed;
-    }
-    else if (keyIsDown(this.downKey)) {
+    } else if (keyIsDown(this.downKey)) {
       this.vy = this.speed;
-    }
-    else {
+    } else {
       this.vy = 0;
     }
   }
@@ -73,31 +69,11 @@ class Player {
     // Update position
     this.x += this.vx;
     this.y += this.vy;
-    //increase health slowly
+    //increase shield health slowly, constraining it within max and min
+    this.health += .01;
+    this.health = constrain(this.health, 0, this.maxHealth);
     // Handle wrapping
     this.handleWrapping();
-  }
-
-  // Update health()
-  //
-  //
-  //updates the player's health only on event
-  updateHealth(){
-    this.health = this.health - this.healthLossPerHit;
-    this.health = constrain(this.health, 0, this.maxHealth);
-    console.log(this.health);
-  }
-
-  //Displays the health of the player
-  //cheacks for gameOver
-  displayHealth(){
-    push();
-    rectMode(CORNERS)
-    fill(0,255,0,100);
-    strokeWeight(7);
-    stroke(0,255,0,50);
-    rect(width/2, height, width/2+25, height-this.health*30);
-    pop()
   }
 
   // handleWrapping
@@ -108,18 +84,40 @@ class Player {
     // Off the left or right
     if (this.x < 0) {
       this.x += width;
-    }
-    else if (this.x > width) {
+    } else if (this.x > width) {
       this.x -= width;
     }
     // Off the top or bottom (using 75% value to account for obstructed view by cockpit)
     if (this.y < 0) {
-      this.y += height*75/100;
-    }
-    else if (this.y > height*75/100) {
+      this.y += height * 75 / 100;
+    } else if (this.y > height * 75 / 100) {
       this.y = 0;
     }
   }
+
+
+  // Update health()
+  //
+  //
+  //updates the player's health only on event
+  updateHealth() {
+    this.health = this.health - this.healthLossPerHit;
+    this.health = constrain(this.health, 0, this.maxHealth);
+    console.log(this.health);
+  }
+
+  //Displays the health of the player
+  //cheacks for gameOver
+  displayHealth() {
+    push();
+    rectMode(CORNERS)
+    fill(0, 255, 0, 100);
+    strokeWeight(7);
+    stroke(0, 255, 0, 50);
+    rect(width / 2, height, width / 2 + 25, height - this.health * 30);
+    pop()
+  }
+
 
   // handleTarget
   //
@@ -132,8 +130,10 @@ class Player {
     if (d < target.size) {
       // Decrease the enmy health
       target.health = 0;
-      }
+      //add one to the kill counter
+      killCount++;
     }
+  }
 
   // display
   //

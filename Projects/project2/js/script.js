@@ -9,6 +9,12 @@
 // Variables for the player, and the players image (crosshairs)
 let player;
 let playerCrosshairs;
+//counters to trigger new enemy spawn
+///based on enemies killed
+let killCount = 0;
+///based on time played
+let spawnTimer;
+let counter = 0;
 
 // Array to hold the enemy objects
 let enemies = [];
@@ -47,24 +53,27 @@ function setup() {
   //create canvas at width and height of window
   createCanvas(windowWidth, windowHeight);
   //define the vertical area of screen we want to mask as 75%
-  cockpitMask = width * 75 / 100;
+  cockpitVerticalMask = height * 75 / 100;
   //create the player
-  player = new Player(100, 100, 5, color(200, 200, 0), 50, playerCrosshairs);
+  player = new Player(100, 100, 10, color(200, 200, 0), 50, playerCrosshairs);
   //create the Amazon planet
   //(img, x, y, vy, size, growSpeed)
   targetPlanet = new PlanetAmazon(planetAmazonImg, width / 2, 0, .05, 10, .1);
-  console.log(player.health);
-
   //create first enemies
   for (let i = 0; i < 1; i++) {
     enemies[i] = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
   }
+  //Set interval between new enemy spawns
+  setInterval(Enemy.spawnNewEnemy, 15000);
 }
+
+
 
 // draw()
 //
 // Handles input, movement, health, and displaying for the system's objects
 function draw() {
+  console.log(killCount);
   // Display the background as a starry night
   background(backgroundImg);
   // Handle input for the player
@@ -76,14 +85,15 @@ function draw() {
   // Handle movement, health and displaying of enemies
   for (let i = 0; i < enemies.length; i++) {
     enemies[i].move();
+    enemies[i].display();
     enemies[i].updateHealth();
     enemies[i].collisionDetect();
   }
-  let enemiesReversed = enemies.reverse();
-
-  for (let i = 0; i < enemiesReversed.length; i++){
-    enemiesReversed[i].display();
-  }
+  // let enemiesReversed = enemies.reverse();
+  //
+  // for (let i = 0; i < enemiesReversed.length; i++){
+  //   enemiesReversed[i].display();
+  // }
 
   // Display the player's crosshairs
   player.display();
@@ -116,4 +126,8 @@ function mousePressed() {
   for (let i = 0; i < enemies.length; i++) {
     player.handleTarget(enemies[i]);
   }
+}
+
+function timer(){
+
 }
