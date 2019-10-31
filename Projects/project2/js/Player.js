@@ -1,14 +1,15 @@
-// Predator
+// Player
 //
-// A class that represents a simple predator
-// controlled by the arrow keys. It can move around
-// the screen and consume Prey objects to maintain its health.
+// A class that represents the games player as a set of crosshairs
+// The player is controlled using the Arrow Keys
+// When the spacebar is pressed, [see script.js:player.handleTarget()]
+// if the enemy objects have been targeted correctly, they will lose health
 
 class Player {
 
   // constructor
   //
-  // Sets the initial values for the Predator's properties
+  // Sets the initial values for the Player's properties
   // Either sets default values or uses the arguments provided
   constructor(x, y, speed, fillColor, size, img) {
     // Position
@@ -37,7 +38,7 @@ class Player {
 
   // handleInput
   //
-  // Checks if an arrow key is pressed and sets the predator's
+  // Checks if an arrow key is pressed and sets the player's
   // velocity appropriately.
   handleInput() {
     // Horizontal movement
@@ -65,7 +66,7 @@ class Player {
   // move
   //
   // Updates the position according to velocity
-  // Lowers health (as a cost of living)
+  //
   // Handles wrapping
   move() {
     // Update position
@@ -87,7 +88,7 @@ class Player {
 
   // handleWrapping
   //
-  // Checks if the predator has gone off the canvas and
+  // Checks if the player has gone off the canvas and
   // wraps it to the other side if so
   handleWrapping() {
     // Off the left or right
@@ -97,25 +98,24 @@ class Player {
     else if (this.x > width) {
       this.x -= width;
     }
-    // Off the top or bottom
+    // Off the top or bottom (using 75% value to account for obstructed view by cockpit)
     if (this.y < 0) {
-      this.y += height;
+      this.y += height*75/100;
     }
-    else if (this.y > height) {
-      this.y -= height;
+    else if (this.y > height*75/100) {
+      this.y = 0;
     }
   }
 
-  // handleEating
+  // handleTarget
   //
-  // Takes a Prey object as an argument and checks if the predator
-  // overlaps it. If so, reduces the prey's health and increases
-  // the predator's. If the prey dies, it gets reset.
+  // Takes an Enemy object as an argument and checks if the player's crosshairs
+  // overlap it. If so, reduces the enemy's health.
   handleTarget(target) {
     // Calculate distance from this predator to the prey
     let d = dist(this.x, this.y, target.x, target.y);
     // Check if the distance is less than their two radii (an overlap)
-    if (d < this.size + target.radius) {
+    if (d < target.radius) {
       // Increase predator health and constrain it to its possible range
       this.health += this.healthGainPerEat;
       this.health = constrain(this.health, 0, this.maxHealth);

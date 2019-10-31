@@ -1,14 +1,15 @@
 // Prey
 //
-// A class that represents a simple prey that moves
-// on screen based on a noise() function. It can move around
-// the screen and be consumed by Predator objects.
+// A class that represents the enemy (woah that sounded kind of problematic)
+// It can move around on screen based on a noise() function, and gets bigger
+// to simulate it coming towards you. It can be targeted, and destroyed by the
+//  player.
 
-class Prey {
+class Enemy {
 
   // constructor
   //
-  // Sets the initial values for the Predator's properties
+  // Sets the initial values for the enemy's properties
   // Either sets default values or uses the arguments provided
   constructor(x, y, speed, fillColor, startingHealth) {
     // Position
@@ -19,19 +20,19 @@ class Prey {
     this.vy = 0;
     this.speed = speed;
     // Time properties for noise() function
-    this.tx = random(0, 1000); // To make x and y noise different
-    this.ty = random(0, 1000); // we use random starting values
+    this.tx = random(0, 100); // To make x and y noise different
+    this.ty = random(0, 100); // we use random starting values
     // Health properties
     this.startingHealth = startingHealth;
     this.health = startingHealth;
     // Display properties
     this.fillColor = fillColor;
-    this.radius = this.health;
+    this.size = this.health;
   }
 
   // move
   //
-  // Sets velocity based on the noise() function and the Prey's speed
+  // Sets velocity based on the noise() function and the enemy's speed
   // Moves based on the resulting velocity and handles wrapping
   move() {
     // Set velocity via noise()
@@ -49,23 +50,36 @@ class Prey {
 
   // handleWrapping
   //
-  // Checks if the prey has gone off the canvas and
+  // Checks if the enemy has gone off the canvas and
   // wraps it to the other side if so
   handleWrapping() {
-    // Off the left or right
+    //Off the left or right
     if (this.x < 0) {
       this.x += width;
     }
     else if (this.x > width) {
       this.x -= width;
     }
-    // Off the top or bottom
+    // Off the top or bottom (wrapps at 75%)
     if (this.y < 0) {
-      this.y += height;
+      this.y += height*75/100;
     }
-    else if (this.y > height) {
-      this.y -= height;
+    else if (this.y > height*75/100) {
+      this.y = 0;
     }
+    //~~~~~~~~~~~try and do this later: have enemies stay within screen~~~~~~~~~
+      // if (this.x <= 0 || this.x >= width){
+      //   this.speed = -this.speed;
+      //   this.vx = -this.vx
+      // }
+      //
+      // if (this.y <= 0 || this.y >= width*75/100){
+      //   this.speed = -this.speed;
+      //   this.vy = -this.vy
+      // }
+    // this.x = constrain(this.x, 0, width);
+    // this.y = constrain(this.y, 0, height*75/100);
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   }
 
 
@@ -78,14 +92,14 @@ class Prey {
 
   // display
   //
-  // Draw the prey as an ellipse on the canvas
-  // with a radius the same size as its current health.
+  // Draw the enemy as an ellipse on the canvas
+  // with a size the same as its current health.
   display() {
     push();
     noStroke();
     fill(this.fillColor);
-    this.radius = this.health;
-    ellipse(this.x, this.y, this.radius * 2);
+    this.size = this.health;
+    ellipse(this.x, this.y, this.size * 2);
     pop();
   }
 
