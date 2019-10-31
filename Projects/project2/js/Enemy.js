@@ -51,11 +51,11 @@ class Enemy {
   //
   //Checks to see is enemy cas collided with player
   collisionDetect(){
-    console.log(this.size);
     if (this.size > 200){
 
-      if(this.x > width*25/100 && this.x < width*75/100){
+      if(this.x > width*15/100 && this.x < width*85/100){
         console.log("crashed");
+        player.updateHealth();
         this.reset();
       }
       else{
@@ -105,8 +105,8 @@ class Enemy {
   //increases enemy's health (and size) everyframe,
   //resets enemy in health reaches zero
   updateHealth(){
-    this.health += .2;
-    if (this.health <= 0) {
+    this.health += this.speed/10;
+    if (this.health < 1) {
       let newEnemy = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
       enemies.push(newEnemy);
       this.reset();

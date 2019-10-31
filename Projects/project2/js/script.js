@@ -30,12 +30,12 @@ let cockpitMask;
 //
 //
 // Preloads the various images and sounds for the game
-function preload(){
-cockpit = loadImage('assets/images/cockpit.png');
-planetAmazonImg = loadImage('assets/images/planetAmazon.png')
-backgroundImg = loadImage('assets/images/backgroundImg.jpg');
-playerCrosshairs = loadImage('assets/images/crosshairs.png');
-enemyImg = loadImage('assets/images/amazonDrone.png')
+function preload() {
+  cockpit = loadImage('assets/images/cockpit.png');
+  planetAmazonImg = loadImage('assets/images/planetAmazon.png')
+  backgroundImg = loadImage('assets/images/backgroundImg.jpg');
+  playerCrosshairs = loadImage('assets/images/crosshairs.png');
+  enemyImg = loadImage('assets/images/amazonDrone.png')
 
 }
 
@@ -47,15 +47,16 @@ function setup() {
   //create canvas at width and height of window
   createCanvas(windowWidth, windowHeight);
   //define the vertical area of screen we want to mask as 75%
-  cockpitMask = width*75/100;
+  cockpitMask = width * 75 / 100;
   //create the player
   player = new Player(100, 100, 5, color(200, 200, 0), 50, playerCrosshairs);
   //create the Amazon planet
-                                      //(img, x, y, vy, size, growSpeed)
-  targetPlanet = new PlanetAmazon(planetAmazonImg, width/2, 0, .05, 10, .1);
+  //(img, x, y, vy, size, growSpeed)
+  targetPlanet = new PlanetAmazon(planetAmazonImg, width / 2, 0, .05, 10, .1);
+  console.log(player.health);
 
   //create first enemies
-  for (let i = 0; i < 1; i++ ){
+  for (let i = 0; i < 1; i++) {
     enemies[i] = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
   }
 }
@@ -73,26 +74,33 @@ function draw() {
   //display the amazon planet
   targetPlanet.display();
   // Handle movement, health and displaying of enemies
-  for (let i = 0; i < enemies.length; i++){
+  for (let i = 0; i < enemies.length; i++) {
     enemies[i].move();
     enemies[i].updateHealth();
-    enemies[i].display();
     enemies[i].collisionDetect();
   }
+  let enemiesReversed = enemies.reverse();
+
+  for (let i = 0; i < enemiesReversed.length; i++){
+    enemiesReversed[i].display();
+  }
+
   // Display the player's crosshairs
   player.display();
-  // Display the cockpit image in front of everythign else (so it looks like you're inside)
-  image(cockpit,0,0,width,height);
+  // Display the cockpit image in front of everything else (so it looks like you're inside)
+  image(cockpit, 0, 0, width, height);
+  player.displayHealth();
 }
+
 
 //keyPressed()
 //
 //
 // Checks for keyboard events
-function keyPressed(){
+function keyPressed() {
   //if the spacebar is pressed, check to see if any of the enemies have been accurately targeted
-  if (keyCode === 32){
-    for (let i = 0; i < enemies.length; i++){
+  if (keyCode === 32) {
+    for (let i = 0; i < enemies.length; i++) {
       player.handleTarget(enemies[i]);
     }
   }
@@ -102,10 +110,10 @@ function keyPressed(){
 //
 //
 //Checks for mouse clicks. Used here as rudimentary "mobile friendly" option
-function mousePressed(){
+function mousePressed() {
   player.x = mouseX;
   player.y = mouseY;
-  for (let i = 0; i < enemies.length; i++){
+  for (let i = 0; i < enemies.length; i++) {
     player.handleTarget(enemies[i]);
   }
 }

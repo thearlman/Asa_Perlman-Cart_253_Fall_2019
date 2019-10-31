@@ -22,10 +22,10 @@ class Player {
     this.vy = 0;
     this.speed = speed;
     // Health properties
-    this.maxHealth = size;
+    this.maxHealth = 10;
     this.health = this.maxHealth; // Must be AFTER defining this.maxHealth
-    this.healthLossPerMove = 0.1;
-    this.healthGainPerEat = 20;
+    this.healthLossPerHit = 5;
+    this.healthGain = .5;
     // Display properties
     this.fillColor = fillColor;
     this.size = size;
@@ -73,6 +73,7 @@ class Player {
     // Update position
     this.x += this.vx;
     this.y += this.vy;
+    //increase health slowly
     // Handle wrapping
     this.handleWrapping();
   }
@@ -80,11 +81,23 @@ class Player {
   // Update health()
   //
   //
-  //updates the player's health on event
+  //updates the player's health only on event
   updateHealth(){
-    this.health = this.health - this.healthLossPerMove;
+    this.health = this.health - this.healthLossPerHit;
     this.health = constrain(this.health, 0, this.maxHealth);
+    console.log(this.health);
+  }
 
+  //Displays the health of the player
+  //cheacks for gameOver
+  displayHealth(){
+    push();
+    rectMode(CORNERS)
+    fill(0,255,0,100);
+    strokeWeight(7);
+    stroke(0,255,0,50);
+    rect(width/2, height, width/2+25, height-this.health*30);
+    pop()
   }
 
   // handleWrapping
@@ -117,12 +130,8 @@ class Player {
     let d = dist(this.x, this.y, target.x, target.y);
     // Check if the distance is less than their two radii (an overlap)
     if (d < target.size) {
-
-      // Increase predator health and constrain it to its possible range
-      this.health += this.healthGainPerEat;
-      this.health = constrain(this.health, 0, this.maxHealth);
-      // Decrease prey health by the same amount
-      target.health -= this.healthGainPerEat;
+      // Decrease the enmy health
+      target.health = 0;
       }
     }
 
