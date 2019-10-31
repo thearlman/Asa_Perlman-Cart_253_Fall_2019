@@ -50,15 +50,14 @@ class Enemy {
   //collisionDetect()
   //
   //Checks to see is enemy cas collided with player
-  collisionDetect(){
-    if (this.size > 200){
+  collisionDetect() {
+    if (this.size > 200) {
 
-      if(this.x > width*15/100 && this.x < width*85/100){
+      if (this.x > width * 10 / 100 && this.x < width * 90 / 100) {
         console.log("crashed");
         player.updateHealth();
         this.reset();
-      }
-      else{
+      } else {
         console.log("escaped");
         this.reset();
       }
@@ -74,27 +73,25 @@ class Enemy {
     //Off the left or right
     if (this.x < 0) {
       this.x += width;
-    }
-    else if (this.x > width) {
+    } else if (this.x > width) {
       this.x -= width;
     }
     // Off the top or bottom (wrapps at 75%)
     if (this.y < 0) {
-      this.y += height*75/100;
-    }
-    else if (this.y > height*75/100) {
+      this.y += cockpitVerticalMask;
+    } else if (this.y > cockpitVerticalMask) {
       this.y = 0;
     }
     //~~~~~~~~~~~try and do this later: have enemies stay within screen~~~~~~~~~
-      // if (this.x <= 0 || this.x >= width){
-      //   this.speed = -this.speed;
-      //   this.vx = -this.vx
-      // }
-      //
-      // if (this.y <= 0 || this.y >= width*75/100){
-      //   this.speed = -this.speed;
-      //   this.vy = -this.vy
-      // }
+    // if (this.x <= 0 || this.x >= width){
+    //   this.speed = -this.speed;
+    //   this.vx = -this.vx
+    // }
+    //
+    // if (this.y <= 0 || this.y >= width*75/100){
+    //   this.speed = -this.speed;
+    //   this.vy = -this.vy
+    // }
     // this.x = constrain(this.x, 0, width);
     // this.y = constrain(this.y, 0, height*75/100);
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,15 +100,23 @@ class Enemy {
   // updateHealth()
   //
   //increases enemy's health (and size) everyframe,
-  //resets enemy in health reaches zero
-  updateHealth(){
-    this.health += this.speed/10;
-    if (this.health < 1) {
-      let newEnemy = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
-      enemies.push(newEnemy);
+  //resets enemy when health reaches zero, additionally spawning a one more enemy every 5 kills
+  updateHealth() {
+    this.health += this.speed / 10;
+    if (this.health < 1 && killCount === 5) {
+      this.spawnNewEnemy();
       this.reset();
+      killCount = 0;
+    }
   }
-}
+//spawnNewEnemy()
+//
+//
+//Spawns a new enemy
+  spawnNewEnemy(){
+    let newEnemy = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
+    enemies.push(newEnemy);
+  }
 
   // display
   //  box-sizing: border-box;
@@ -121,7 +126,7 @@ class Enemy {
     push();
     imageMode(CENTER)
     this.size = this.health;
-    image(this.img, this.x, this.y, this.size * 2, this.size *2);
+    image(this.img, this.x, this.y, this.size * 2, this.size * 2);
     pop();
   }
 
