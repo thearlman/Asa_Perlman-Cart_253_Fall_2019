@@ -10,15 +10,18 @@
 let player;
 let playerCrosshairs;
 //counters to trigger new enemy spawn
-///based on enemies killed
+   //1 based on enemies killed
 let killCount = 0;
-///based on time played
+  //2 based on time played
 let spawnTimer;
-let counter = 0;
 
-// Array to hold the enemy objects
+// Arrays to hold the enemy objects
 let enemies = [];
+  //variable to hold enemy image
 let enemyImg;
+
+let phazer = [];
+
 
 //Variables to hold the various static game graphics
 let cockpit;
@@ -73,7 +76,7 @@ function setup() {
 //
 // Handles input, movement, health, and displaying for the system's objects
 function draw() {
-  console.log(killCount);
+  console.log(phazer.length);
   // Display the background as a starry night
   background(backgroundImg);
   // Handle input for the player
@@ -87,19 +90,39 @@ function draw() {
     enemies[i].move();
     enemies[i].display();
     enemies[i].updateHealth();
-    enemies[i].collisionDetect();
+    enemies[i].detectCollision();
   }
+  //~~~~~~~`Fix this later: make enemies displa in right order~~~~~~~~~~~~~
   // let enemiesReversed = enemies.reverse();
   //
   // for (let i = 0; i < enemiesReversed.length; i++){
   //   enemiesReversed[i].display();
   // }
-
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Display the player's crosshairs
+
+  //Run through the phazer array and check if any have been fired
+  //if so, fire it
+  for (let i = 0; i< phazer.length; i++){
+    phazer[i].display();
+    //if the phazer in question has reaced a diameter of zero, or collided with
+    //an enemy, remove it from the array
+      if(phazer[i].diameter === 0 || ){
+        phazer.splice(i,1);
+      }
+  }
+
+
+
   player.display();
   // Display the cockpit image in front of everything else (so it looks like you're inside)
   image(cockpit, 0, 0, width, height);
   player.displayHealth();
+}
+
+
+function startScreen(){
+
 }
 
 
@@ -110,6 +133,8 @@ function draw() {
 function keyPressed() {
   //if the spacebar is pressed, check to see if any of the enemies have been accurately targeted
   if (keyCode === 32) {
+    newPhazer = new Phazers();
+    phazer.push(newPhazer);
     for (let i = 0; i < enemies.length; i++) {
       player.handleTarget(enemies[i]);
     }
@@ -126,8 +151,4 @@ function mousePressed() {
   for (let i = 0; i < enemies.length; i++) {
     player.handleTarget(enemies[i]);
   }
-}
-
-function timer(){
-
 }

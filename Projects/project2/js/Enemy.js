@@ -49,13 +49,15 @@ class Enemy {
   }
   //collisionDetect()
   //
-  //Checks to see is enemy cas collided with player
-  collisionDetect() {
+  //Checks to see is enemy cas collided with player, resets enemy,
+  //adds one to the kill counter
+  detectCollision() {
     if (this.size > 200) {
 
       if (this.x > width * 10 / 100 && this.x < width * 90 / 100) {
         console.log("crashed");
         player.updateHealth();
+        killCount++;
         this.reset();
       } else {
         console.log("escaped");
@@ -82,6 +84,7 @@ class Enemy {
     } else if (this.y > cockpitVerticalMask) {
       this.y = 0;
     }
+    
     //~~~~~~~~~~~try and do this later: have enemies stay within screen~~~~~~~~~
     // if (this.x <= 0 || this.x >= width){
     //   this.speed = -this.speed;
