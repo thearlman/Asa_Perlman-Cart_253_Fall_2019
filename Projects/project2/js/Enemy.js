@@ -82,7 +82,10 @@ class Enemy {
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   }
 
-
+  // updateHealth()
+  //
+  //increases enemy's health (and size) everyframe,
+  //resets enemy in health reaches zero
   updateHealth(){
     this.health += .1;
     if (this.health <= 0) {
@@ -91,7 +94,7 @@ class Enemy {
 }
 
   // display
-  //
+  //  box-sizing: border-box;
   // Draw the enemy as an ellipse on the canvas
   // with a size the same as its current health.
   display() {
@@ -113,5 +116,7 @@ class Enemy {
     this.y = random(0, height);
     // Default health
     this.health = this.startingHealth;
+    let newEnemy = new Enemy(random(0, width), random(0, cockpitMask), 5, color(255, 100, 10), 1);
+    enemies.push(newEnemy);
   }
 }

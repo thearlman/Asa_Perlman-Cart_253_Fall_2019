@@ -34,6 +34,7 @@ class Player {
     this.downKey = DOWN_ARROW;
     this.leftKey = LEFT_ARROW;
     this.rightKey = RIGHT_ARROW;
+
   }
 
   // handleInput
@@ -115,13 +116,13 @@ class Player {
     // Calculate distance from this predator to the prey
     let d = dist(this.x, this.y, target.x, target.y);
     // Check if the distance is less than their two radii (an overlap)
-    if (d < target.radius) {
+    if (d < target.size) {
+
       // Increase predator health and constrain it to its possible range
       this.health += this.healthGainPerEat;
       this.health = constrain(this.health, 0, this.maxHealth);
       // Decrease prey health by the same amount
       target.health -= this.healthGainPerEat;
-      // Check if the prey died and reset it if so
       }
     }
 

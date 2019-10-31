@@ -14,9 +14,16 @@ let playerCrosshairs;
 let enemies = [];
 let antelope;
 
-//Variables to hold the various game graphics
+//Variables to hold the various static game graphics
 let cockpit;
 let backgroundImg;
+
+//Variables for the planet Amazon, and it's image
+let targetPlanet;
+let planetAmazonImg;
+
+//variable to store the part of the screen obstructed by cockpit
+let cockpitMask;
 
 //preload()
 //
@@ -25,24 +32,30 @@ let backgroundImg;
 // Preloads the various images and sounds for the game
 function preload(){
 cockpit = loadImage('assets/images/cockpit.png');
+planetAmazonImg = loadImage('assets/images/planetAmazon.png')
 backgroundImg = loadImage('assets/images/backgroundImg.jpg');
 playerCrosshairs = loadImage('assets/images/crosshairs.png');
 
 }
-
-
 
 // setup()
 //
 // Sets up a canvas
 // Creates player and enemy objects
 function setup() {
+  //create canvas at width and height of window
   createCanvas(windowWidth, windowHeight);
-
+  //define the vertical area of screen we want to mask as 75%
+  cockpitMask = width*75/100;
+  //create the player
   player = new Player(100, 100, 5, color(200, 200, 0), 50, playerCrosshairs);
+  //create the Amazon planet
+                                      //(img, x, y, vy, size, growSpeed)
+  targetPlanet = new PlanetAmazon(planetAmazonImg, width/2, height/3, .01, 10, .01);
 
+  //create first enemies
   for (let i = 0; i < 1; i++ ){
-    enemies[i] = new Enemy(100, 100, 5, color(255, 100, 10), 1);
+    enemies[i] = new Enemy(random(0, width), random(0, cockpitMask), 5, color(255, 100, 10), 1);
   }
 }
 
@@ -52,11 +65,13 @@ function setup() {
 function draw() {
   // Display the background as a starry night
   background(backgroundImg);
-
+  console.log(targetPlanet.size);
   // Handle input for the player
   player.handleInput();
   // Handle movment of the player
   player.move();
+  //display the amazon planet
+  targetPlanet.display();
   // Handle movement, health and displaying of enemies
   for (let i = 0; i < enemies.length; i++){
     enemies[i].move();
@@ -79,5 +94,17 @@ function keyPressed(){
     for (let i = 0; i < enemies.length; i++){
       player.handleTarget(enemies[i]);
     }
+  }
+}
+
+//mousePressed()
+//
+//
+//Checks for mouse clicks. Used here as rudimentary "mobile friendly" option
+function mousePressed(){
+  player.x = mouseX;
+  player.y = mouseY;
+  for (let i = 0; i < enemies.length; i++){
+    player.handleTarget(enemies[i]);
   }
 }
