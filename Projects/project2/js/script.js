@@ -12,7 +12,7 @@ let playerCrosshairs;
 
 // Array to hold the enemy objects
 let enemies = [];
-let antelope;
+let enemyImg;
 
 //Variables to hold the various static game graphics
 let cockpit;
@@ -35,6 +35,7 @@ cockpit = loadImage('assets/images/cockpit.png');
 planetAmazonImg = loadImage('assets/images/planetAmazon.png')
 backgroundImg = loadImage('assets/images/backgroundImg.jpg');
 playerCrosshairs = loadImage('assets/images/crosshairs.png');
+enemyImg = loadImage('assets/images/amazonDrone.png')
 
 }
 
@@ -51,11 +52,11 @@ function setup() {
   player = new Player(100, 100, 5, color(200, 200, 0), 50, playerCrosshairs);
   //create the Amazon planet
                                       //(img, x, y, vy, size, growSpeed)
-  targetPlanet = new PlanetAmazon(planetAmazonImg, width/2, height/3, .01, 10, .01);
+  targetPlanet = new PlanetAmazon(planetAmazonImg, width/2, 0, .05, 10, .1);
 
   //create first enemies
   for (let i = 0; i < 1; i++ ){
-    enemies[i] = new Enemy(random(0, width), random(0, cockpitMask), 5, color(255, 100, 10), 1);
+    enemies[i] = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
   }
 }
 
@@ -65,7 +66,6 @@ function setup() {
 function draw() {
   // Display the background as a starry night
   background(backgroundImg);
-  console.log(targetPlanet.size);
   // Handle input for the player
   player.handleInput();
   // Handle movment of the player
@@ -77,6 +77,7 @@ function draw() {
     enemies[i].move();
     enemies[i].updateHealth();
     enemies[i].display();
+    enemies[i].collisionDetect();
   }
   // Display the player's crosshairs
   player.display();

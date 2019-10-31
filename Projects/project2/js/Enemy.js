@@ -11,7 +11,7 @@ class Enemy {
   //
   // Sets the initial values for the enemy's properties
   // Either sets default values or uses the arguments provided
-  constructor(x, y, speed, fillColor, startingHealth) {
+  constructor(img, x, y, speed, startingHealth) {
     // Position
     this.x = x;
     this.y = y;
@@ -26,7 +26,7 @@ class Enemy {
     this.startingHealth = startingHealth;
     this.health = startingHealth;
     // Display properties
-    this.fillColor = fillColor;
+    this.img = img;
     this.size = this.health;
   }
 
@@ -47,6 +47,24 @@ class Enemy {
     // Handle wrapping
     this.handleWrapping();
   }
+  //collisionDetect()
+  //
+  //Checks to see is enemy cas collided with player
+  collisionDetect(){
+    console.log(this.size);
+    if (this.size > 200){
+
+      if(this.x > width*25/100 && this.x < width*75/100){
+        console.log("crashed");
+        this.reset();
+      }
+      else{
+        console.log("escaped");
+        this.reset();
+      }
+    }
+  }
+
 
   // handleWrapping
   //
@@ -87,8 +105,10 @@ class Enemy {
   //increases enemy's health (and size) everyframe,
   //resets enemy in health reaches zero
   updateHealth(){
-    this.health += .1;
+    this.health += .2;
     if (this.health <= 0) {
+      let newEnemy = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
+      enemies.push(newEnemy);
       this.reset();
   }
 }
@@ -99,10 +119,9 @@ class Enemy {
   // with a size the same as its current health.
   display() {
     push();
-    noStroke();
-    fill(this.fillColor);
+    imageMode(CENTER)
     this.size = this.health;
-    ellipse(this.x, this.y, this.size * 2);
+    image(this.img, this.x, this.y, this.size * 2, this.size *2);
     pop();
   }
 
@@ -116,7 +135,5 @@ class Enemy {
     this.y = random(0, height);
     // Default health
     this.health = this.startingHealth;
-    let newEnemy = new Enemy(random(0, width), random(0, cockpitMask), 5, color(255, 100, 10), 1);
-    enemies.push(newEnemy);
   }
 }
