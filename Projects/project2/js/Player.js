@@ -109,6 +109,7 @@ class Player {
   //Displays the health of the player
   //cheacks for gameOver
   displayHealth() {
+    console.log(this.health);
     push();
     rectMode(CORNERS)
     fill(210, 255, 255, 150);

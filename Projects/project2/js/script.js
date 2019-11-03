@@ -52,7 +52,8 @@ function preload() {
   backgroundImg = loadImage('assets/images/backgroundImg.jpg');
   playerCrosshairs = loadImage('assets/images/crosshairs.png');
   enemyImg = loadImage('assets/images/amazonDrone.png');
-  startScreenPart1Img = loadImage('assets/images/borderForGame.jpg');
+  borderPt1 = loadImage('assets/images/borderPt1.jpg');
+  borderPt2 = loadImage('assets/images/borderPt2.jpg');
 }
 
 // setup()
@@ -68,16 +69,17 @@ function setup() {
   //define the vertical area of screen we want to mask as 75%
   cockpitVerticalMask = height * 75 / 100;
   //initiate the two welcome screen Classes stored in WelcomeScreens.js
-  welcomeScreen = new WelcomeScreen(startScreenPart1Img, width / 2+12, height-height*15/100, width*10/100, height*8/100);
+  phase1Screen = new WelcomeScreen1(borderPt1, width / 2+12, height-height*15/100, width*10/100, height*8/100);
+  phase2Screen = new WelcomeScreen2(borderPt2, width / 2+12, height-height*15/100, width*10/100, height*8/100);
   //create the player
   player = new Player(100, 100, 10, color(200, 200, 0), 50, playerCrosshairs);
   //create the Amazon planet
   //(img, x, y, vy, size, growSpeed)
-  targetPlanet = new PlanetAmazon(planetAmazonImg, width / 2, 0, .15, 10, .3);
-  //create first enemies
-  for (let i = 0; i < 1; i++) {
-    enemies[i] = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
-  }
+  targetPlanet = new PlanetAmazon(planetAmazonImg, width / 2, 0, height*.002/100, 10, height*.005/100);
+  //create first enemy
+  // for (let i = 0; i < 1; i++) {
+  //   enemies[i] = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
+  // }
   //Set interval between new enemy spawns
   let spawnTimer = setInterval(spawnNewEnemy, 10000);
 }
@@ -89,10 +91,12 @@ function setup() {
 function draw() {
 //when the program is initiated, show the first welcome screen
   if(! gameOver && phase1 === true){
-    welcomeScreen.display();
-  }  else if (!gameOver && phase1 === false) {
+    phase1Screen.display();
+  }  else if (!gameOver && phase2 === true) {
+    phase2Screen.display();
+  } else if (!gameOver && phase2 === false){
 
-    let showInstructions = setTimeout(welcomeScreen.displayInstructions, 2000);
+    //let showInstructions = setTimeout(welcomeScreen.displayInstructions, 2000);
 
     //not sure if this is doing anything, but should be activating the
     //spawn timer
@@ -124,10 +128,10 @@ function draw() {
       for(let e = enemies.length-1; e >= 0; e--){
         let result = phazer[p].hit(enemies[e]);
         //if this happened, remove the enemy and phazer in question, spawn new enemy
-        if (result){
+        if (result && phazer[p].size < enemies[e].size/2){
           console.log("HIT");
           enemies.splice(e, 1);
-          phazer.splice(p, 1);
+          //phazer.splice(p, 1);
           spawnNewEnemy();
           break;
         }
@@ -135,7 +139,7 @@ function draw() {
     }
 
     //display the phazers, and delete them from the array if at zero (ran out
-    //of steam) before they hit an enemy again, we go backwards. see above.
+    //of steam) again, we go backwards. see above.
     for (let i = phazer.length-1; i >= 0; i--) {
       phazer[i].display();
       if (phazer[i].size < 0) {
@@ -149,15 +153,23 @@ function draw() {
     image(cockpit, 0, 0, width, height);
     //display the player's health bar
     player.displayHealth();
+
+
   }
+//~~~~~~~~~~~~~~~~~~~~~~~end of !gameOver~~~~~~~~~~~~~~~~~`
+
 }
+
+//~~~~~~~~~~~~~~~~~~~end of draw()~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 
 //spawnNewEnemy()
 //
 //
 //Spawns a new enemy
 function spawnNewEnemy() {
-  let newEnemy = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
+  let newEnemy = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), width*.25/100, 1);
   enemies.push(newEnemy);
   console.log("NEW");
 }
@@ -181,16 +193,20 @@ function keyPressed() {
 //mousePressed()
 //
 //
-//Checks for mouse clicks. Used here as rudimentary "mobile friendly" option
+//Checks for mouse clicks.
 function mousePressed() {
+  //Used here as rudimentary "mobile friendly" option for firing phazers
   player.x = mouseX;
   player.y = mouseY;
   for (let i = 0; i < enemies.length; i++) {
     player.handleTarget(enemies[i]);
   }
+  //used here to check if the buttons in the various welome/ game over screen shave been pressed
+  if (phase1Screen.d < phase1Screen.buttonWidth && phase1Screen.d < phase1Screen.buttonHeight) {
+    phase1 = false;
+    phase2 = true;
+  }
+  if (phase2Screen.d < phase2Screen.buttonWidth && phase2Screen.d < phase2Screen.buttonHeight) {
+    phase2 = false;
+  }
 }
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//ASL FOR HELP WITH COMPARING ARRAYS
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
