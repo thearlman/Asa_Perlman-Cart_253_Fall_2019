@@ -23,6 +23,10 @@ let enemyImg;
 //array to hold the phazer objects
 let phazer = [];
 
+let laserBlast;
+let firstHit;
+let secondHit;
+let gameOverCrash;
 
 //Variables to hold the various static game graphics (background, screens etc)
 let cockpit;
@@ -54,6 +58,11 @@ function preload() {
   enemyImg = loadImage('assets/images/amazonDrone.png');
   borderPt1 = loadImage('assets/images/borderPt1.jpg');
   borderPt2 = loadImage('assets/images/borderPt2.jpg');
+
+  laserBlast = loadSound('assets/sounds/laserBlast.wav');
+  firstHit = loadSound('assets/sounds/firstHit.wav');
+  secondHit = loadSound('assets/sounds/secondHit.wav');
+  gameOverCrash = loadSound('assets/sounds/gameOverCrash.wav')
 }
 
 // setup()
@@ -127,12 +136,21 @@ function draw() {
     for (let p = phazer.length-1; p >= 0; p--){
       for(let e = enemies.length-1; e >= 0; e--){
         let result = phazer[p].hit(enemies[e]);
-        //if this happened, remove the enemy and phazer in question, spawn new enemy
+        //if this happened, play the crash sound, and add 1 to the enemy's hit count,
+        //and change the enemy's image to the damaged version
         if (result && phazer[p].size < enemies[e].size/2){
+          enemies[e].hitCount ++;
+          phazer.splice(p, 1);
+          firstHit.play();
           console.log("HIT");
-          enemies.splice(e, 1);
-          //phazer.splice(p, 1);
-          spawnNewEnemy();
+          //if the enemy's hitcount reaches 2, play the explosion sound and
+          //remove the enemy from the array
+          if (enemies[e].hitCount >= 2){
+            secondHit.play();
+            enemies.splice(e, 1);
+            phazer.splice(p, 1);
+            spawnNewEnemy();
+          }
           break;
         }
       }
@@ -154,9 +172,18 @@ function draw() {
     //display the player's health bar
     player.displayHealth();
 
+    if (player.health <= 0){
+      gameOver = true;
+    }
 
   }
 //~~~~~~~~~~~~~~~~~~~~~~~end of !gameOver~~~~~~~~~~~~~~~~~`
+  if (gameOver && !phase1 && !phase2){
+    gameOverCrash.setLoop(false);
+    gameOverCrash.playMode('untilDone');
+    gameOverCrash.play()
+  }
+
 
 }
 
@@ -184,9 +211,7 @@ function keyPressed() {
   if (keyCode === 32) {
     newPhazer = new Phazers();
     phazer.push(newPhazer);
-    // for (let i = 0; i < enemies.length; i++) {
-    //   player.handleTarget(enemies[i]);
-    // }
+    laserBlast.play();
   }
 }
 

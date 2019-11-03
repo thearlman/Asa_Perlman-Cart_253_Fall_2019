@@ -25,6 +25,7 @@ class Enemy {
     // Health properties
     this.startingHealth = startingHealth;
     this.health = startingHealth;
+    this.hitCount = 0;
     // Display properties
     this.img = img;
     this.size = this.health;
