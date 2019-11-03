@@ -111,11 +111,11 @@ class Player {
   displayHealth() {
     push();
     rectMode(CORNERS)
-    fill(0, 255, 0, 100);
+    fill(210, 255, 255, 150);
     strokeWeight(7);
-    stroke(0, 255, 0, 50);
-    rect(width / 2, height, width / 2 + 25, height - this.health * 30);
-    pop()
+    stroke(210, 255, 255, 150);
+    rect(width / 2, height, width / 2 + 25, height*120/100 - this.health * 30);
+    pop();
   }
 
 

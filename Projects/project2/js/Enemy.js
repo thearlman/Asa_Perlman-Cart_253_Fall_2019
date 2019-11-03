@@ -53,7 +53,6 @@ class Enemy {
   //adds one to the kill counter
   detectCollision() {
     if (this.size > 200) {
-
       if (this.x > width * 10 / 100 && this.x < width * 90 / 100) {
         console.log("crashed");
         player.updateHealth();
@@ -61,6 +60,7 @@ class Enemy {
         this.reset();
       } else {
         console.log("escaped");
+        spawnNewEnemy();
         this.reset();
       }
     }
@@ -84,7 +84,7 @@ class Enemy {
     } else if (this.y > cockpitVerticalMask) {
       this.y = 0;
     }
-    
+
     //~~~~~~~~~~~try and do this later: have enemies stay within screen~~~~~~~~~
     // if (this.x <= 0 || this.x >= width){
     //   this.speed = -this.speed;
@@ -107,19 +107,10 @@ class Enemy {
   updateHealth() {
     this.health += this.speed / 10;
     if (this.health < 1 && killCount === 5) {
-      this.spawnNewEnemy();
       this.reset();
-      killCount = 0;
     }
   }
-//spawnNewEnemy()
-//
-//
-//Spawns a new enemy
-  spawnNewEnemy(){
-    let newEnemy = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
-    enemies.push(newEnemy);
-  }
+
 
   // display
   //  box-sizing: border-box;

@@ -10,22 +10,24 @@
 let player;
 let playerCrosshairs;
 //counters to trigger new enemy spawn
-   //1 based on enemies killed
+//1. based on enemies killed
 let killCount = 0;
-  //2 based on time played
+//2. based on time played
 let spawnTimer;
 
 // Arrays to hold the enemy objects
 let enemies = [];
-  //variable to hold enemy image
+//variable to hold enemy image
 let enemyImg;
 
+//array to hold the phazer objects
 let phazer = [];
 
 
-//Variables to hold the various static game graphics
+//Variables to hold the various static game graphics (background, screens etc)
 let cockpit;
 let backgroundImg;
+let startScreenPart1Img;
 
 //Variables for the planet Amazon, and it's image
 let targetPlanet;
@@ -34,6 +36,11 @@ let planetAmazonImg;
 //variable to store the part of the screen obstructed by cockpit
 let cockpitMask;
 
+//Booleans to control the status of the game (started/ game over)
+let gameOver = false;
+let phase1 = true;
+let phase2 = false;
+
 //preload()
 //
 //
@@ -41,88 +48,118 @@ let cockpitMask;
 // Preloads the various images and sounds for the game
 function preload() {
   cockpit = loadImage('assets/images/cockpit.png');
-  planetAmazonImg = loadImage('assets/images/planetAmazon.png')
+  planetAmazonImg = loadImage('assets/images/planetAmazon.png');
   backgroundImg = loadImage('assets/images/backgroundImg.jpg');
   playerCrosshairs = loadImage('assets/images/crosshairs.png');
-  enemyImg = loadImage('assets/images/amazonDrone.png')
-
+  enemyImg = loadImage('assets/images/amazonDrone.png');
+  startScreenPart1Img = loadImage('assets/images/borderForGame.jpg');
 }
 
 // setup()
 //
 // Sets up a canvas
-// Creates player and enemy objects
+// Creates player and enemy objects, planet object, color mode, + some other wonders
 function setup() {
   //create canvas at width and height of window
   createCanvas(windowWidth, windowHeight);
+  //Setting the Color mode of the program to HSB (hugh, sturation, brightness)
+  //setting to 360, means the first value (the hugh) should be visualized as a color wheel (360 degrees)
+  colorMode(HSB, 360);
   //define the vertical area of screen we want to mask as 75%
   cockpitVerticalMask = height * 75 / 100;
+  //initiate the two welcome screen Classes stored in WelcomeScreens.js
+  welcomeScreen = new WelcomeScreen(startScreenPart1Img, width / 2+12, height-height*15/100, width*10/100, height*8/100);
   //create the player
   player = new Player(100, 100, 10, color(200, 200, 0), 50, playerCrosshairs);
   //create the Amazon planet
   //(img, x, y, vy, size, growSpeed)
-  targetPlanet = new PlanetAmazon(planetAmazonImg, width / 2, 0, .05, 10, .1);
+  targetPlanet = new PlanetAmazon(planetAmazonImg, width / 2, 0, .15, 10, .3);
   //create first enemies
   for (let i = 0; i < 1; i++) {
     enemies[i] = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
   }
   //Set interval between new enemy spawns
-  setInterval(Enemy.spawnNewEnemy, 15000);
+  let spawnTimer = setInterval(spawnNewEnemy, 10000);
 }
-
-
 
 // draw()
 //
+//
 // Handles input, movement, health, and displaying for the system's objects
 function draw() {
-  console.log(phazer.length);
-  // Display the background as a starry night
-  background(backgroundImg);
-  // Handle input for the player
-  player.handleInput();
-  // Handle movment of the player
-  player.move();
-  //display the amazon planet
-  targetPlanet.display();
-  // Handle movement, health and displaying of enemies
-  for (let i = 0; i < enemies.length; i++) {
-    enemies[i].move();
-    enemies[i].display();
-    enemies[i].updateHealth();
-    enemies[i].detectCollision();
-  }
-  //~~~~~~~`Fix this later: make enemies displa in right order~~~~~~~~~~~~~
-  // let enemiesReversed = enemies.reverse();
-  //
-  // for (let i = 0; i < enemiesReversed.length; i++){
-  //   enemiesReversed[i].display();
-  // }
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Display the player's crosshairs
+//when the program is initiated, show the first welcome screen
+  if(! gameOver && phase1 === true){
+    welcomeScreen.display();
+  }  else if (!gameOver && phase1 === false) {
 
-  //Run through the phazer array and check if any have been fired
-  //if so, fire it
-  for (let i = 0; i< phazer.length; i++){
-    phazer[i].display();
-    //if the phazer in question has reaced a diameter of zero, or collided with
-    //an enemy, remove it from the array
-      if(phazer[i].diameter === 0 || ){
-        phazer.splice(i,1);
+    let showInstructions = setTimeout(welcomeScreen.displayInstructions, 2000);
+
+    //not sure if this is doing anything, but should be activating the
+    //spawn timer
+    //vvvvvvv
+    spawnTimer;
+
+    // Display the background as a starry night
+    background(backgroundImg);
+    // Handle input for the player
+    player.handleInput();
+    // Handle movment of the player
+    player.move();
+    //display the amazon planet
+    targetPlanet.display();
+
+    // Handle movement, health, collision detection and displaying of enemies
+    //we iterate through the array backwards, so that the oldest enemy is displayed on top
+    for (let e = enemies.length-1; e > 0; e--) {
+      enemies[e].move();
+      enemies[e].display();
+      enemies[e].updateHealth();
+      enemies[e].detectCollision();
+    }
+
+    //iterate through all of the phazers and all of the enemies and if they
+    //intersect. Also iterating backwards so that if one is removed, the array
+    // will re-index properly
+    for (let p = phazer.length-1; p >= 0; p--){
+      for(let e = enemies.length-1; e >= 0; e--){
+        let result = phazer[p].hit(enemies[e]);
+        //if this happened, remove the enemy and phazer in question, spawn new enemy
+        if (result){
+          console.log("HIT");
+          enemies.splice(e, 1);
+          phazer.splice(p, 1);
+          spawnNewEnemy();
+          break;
+        }
       }
+    }
+
+    //display the phazers, and delete them from the array if at zero (ran out
+    //of steam) before they hit an enemy again, we go backwards. see above.
+    for (let i = phazer.length-1; i >= 0; i--) {
+      phazer[i].display();
+      if (phazer[i].size < 0) {
+        phazer.splice(i, 1);
+      }
+    }
+
+    // Display the player's crosshairs
+    player.display();
+    // Display the cockpit image in front of everything else (so it looks like you're inside)
+    image(cockpit, 0, 0, width, height);
+    //display the player's health bar
+    player.displayHealth();
   }
-
-
-
-  player.display();
-  // Display the cockpit image in front of everything else (so it looks like you're inside)
-  image(cockpit, 0, 0, width, height);
-  player.displayHealth();
 }
 
-
-function startScreen(){
-
+//spawnNewEnemy()
+//
+//
+//Spawns a new enemy
+function spawnNewEnemy() {
+  let newEnemy = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
+  enemies.push(newEnemy);
+  console.log("NEW");
 }
 
 
@@ -131,13 +168,13 @@ function startScreen(){
 //
 // Checks for keyboard events
 function keyPressed() {
-  //if the spacebar is pressed, check to see if any of the enemies have been accurately targeted
+  //if the spacebar is pressed, put a new phazer object out into the world
   if (keyCode === 32) {
     newPhazer = new Phazers();
     phazer.push(newPhazer);
-    for (let i = 0; i < enemies.length; i++) {
-      player.handleTarget(enemies[i]);
-    }
+    // for (let i = 0; i < enemies.length; i++) {
+    //   player.handleTarget(enemies[i]);
+    // }
   }
 }
 
@@ -152,3 +189,8 @@ function mousePressed() {
     player.handleTarget(enemies[i]);
   }
 }
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//ASL FOR HELP WITH COMPARING ARRAYS
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
