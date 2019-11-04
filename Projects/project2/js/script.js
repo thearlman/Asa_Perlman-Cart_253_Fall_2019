@@ -17,8 +17,9 @@ let spawnTimer;
 
 // Arrays to hold the enemy objects
 let enemies = [];
-//variable to hold enemy image
+//variables to hold enemy images
 let enemyImg;
+let enemyDamagedImg;
 
 //array to hold the phazer objects
 let phazer = [];
@@ -56,6 +57,7 @@ function preload() {
   backgroundImg = loadImage('assets/images/backgroundImg.jpg');
   playerCrosshairs = loadImage('assets/images/crosshairs.png');
   enemyImg = loadImage('assets/images/amazonDrone.png');
+  enemyDamagedImg = loadImage('assets/images/amazonDroneBroken.png')
   borderPt1 = loadImage('assets/images/borderPt1.jpg');
   borderPt2 = loadImage('assets/images/borderPt2.jpg');
 
@@ -140,6 +142,7 @@ function draw() {
         //and change the enemy's image to the damaged version
         if (result && phazer[p].size < enemies[e].size/2){
           enemies[e].hitCount ++;
+          enemies[e].img = enemyDamagedImg;
           phazer.splice(p, 1);
           firstHit.play();
           console.log("HIT");
