@@ -24,6 +24,9 @@ let enemyDamagedImg;
 //array to hold the phazer objects
 let phazer = [];
 
+//sound effect varibles
+let introAmbience;
+let siren;
 let laserBlast;
 let firstHit;
 let secondHit;
@@ -61,6 +64,8 @@ function preload() {
   borderPt1 = loadImage('assets/images/borderPt1.jpg');
   borderPt2 = loadImage('assets/images/borderPt2.jpg');
 
+  introAmbience = loadSound('assets/sounds/introAmbience.mp3');
+  siren = loadSound('assets/sounds/siren.mp3');
   laserBlast = loadSound('assets/sounds/laserBlast.wav');
   firstHit = loadSound('assets/sounds/firstHit.wav');
   secondHit = loadSound('assets/sounds/secondHit.wav');
@@ -86,13 +91,13 @@ function setup() {
   player = new Player(100, 100, 10, color(200, 200, 0), 50, playerCrosshairs);
   //create the Amazon planet
   //(img, x, y, vy, size, growSpeed)
-  targetPlanet = new PlanetAmazon(planetAmazonImg, width / 2, 0, height*.002/100, 10, height*.005/100);
+  targetPlanet = new PlanetAmazon(planetAmazonImg, width / 2, 0, height*.025/100, 10, height*.05/100);
   //create first enemy
   // for (let i = 0; i < 1; i++) {
   //   enemies[i] = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
   // }
   //Set interval between new enemy spawns
-  let spawnTimer = setInterval(spawnNewEnemy, 10000);
+
 }
 
 // draw()
@@ -107,13 +112,9 @@ function draw() {
     phase2Screen.display();
   } else if (!gameOver && phase2 === false){
 
-    //let showInstructions = setTimeout(welcomeScreen.displayInstructions, 2000);
-
-    //not sure if this is doing anything, but should be activating the
-    //spawn timer
-    //vvvvvvv
-    spawnTimer;
-
+    //play the ambient cockpit sound on a loop
+    introAmbience.playMode('untilDone');
+    introAmbience.play()
     // Display the background as a starry night
     background(backgroundImg);
     // Handle input for the player
@@ -151,9 +152,7 @@ function draw() {
           if (enemies[e].hitCount >= 2){
             secondHit.play();
             enemies.splice(e, 1);
-            phazer.splice(p, 1);
-            spawnNewEnemy();
-          }
+            phazer.splice(p, 1);          }
           break;
         }
       }
@@ -211,7 +210,7 @@ function spawnNewEnemy() {
 // Checks for keyboard events
 function keyPressed() {
   //if the spacebar is pressed, put a new phazer object out into the world
-  if (keyCode === 32) {
+  if (keyCode === 32 && !phase1 && !phase2  && !gameOver) {
     newPhazer = new Phazers();
     phazer.push(newPhazer);
     laserBlast.play();
@@ -234,7 +233,9 @@ function mousePressed() {
     phase1 = false;
     phase2 = true;
   }
-  if (phase2Screen.d < phase2Screen.buttonWidth && phase2Screen.d < phase2Screen.buttonHeight) {
+  if (phase2Screen.d < phase2Screen.buttonWidth && phase2Screen.d < phase2Screen.buttonHeight && phase2 === true) {
+    let spawnTimer = setInterval(spawnNewEnemy, 5000);
     phase2 = false;
+
   }
 }

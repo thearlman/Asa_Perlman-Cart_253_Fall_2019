@@ -57,7 +57,6 @@ class Enemy {
       if (this.x > width * 10 / 100 && this.x < width * 90 / 100) {
         console.log("crashed");
         player.updateHealth();
-        killCount++;
         this.reset();
       } else {
         console.log("escaped");
@@ -107,9 +106,6 @@ class Enemy {
   //resets enemy when health reaches zero, additionally spawning a one more enemy every 5 kills
   updateHealth() {
     this.health += this.speed / 10;
-    if (this.health < 1 && killCount === 5) {
-      this.reset();
-    }
   }
 
 

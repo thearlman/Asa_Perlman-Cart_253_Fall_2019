@@ -20,7 +20,7 @@ class Phazers {
   }
   hit(enemy) {
     let d = dist(this.x, this.y, enemy.x, enemy.y)
-    if (d < this.size + enemy.size) {
+    if (d < this.size/2 + enemy.size/2) {
       return true;
     } else {
       return false;
