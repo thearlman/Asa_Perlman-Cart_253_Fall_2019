@@ -5,7 +5,6 @@
 //
 //
 //
-
 // Variables for the player, and the players image (crosshairs)
 let player;
 let playerCrosshairs;
@@ -17,6 +16,7 @@ let spawnTimer;
 
 // Arrays to hold the enemy objects
 let enemies = [];
+
 //variables to hold enemy images
 let enemyImg;
 let enemyDamagedImg;
@@ -84,7 +84,7 @@ function setup() {
   colorMode(HSB, 360);
   //define the vertical area of screen we want to mask as 75%
   cockpitVerticalMask = height * 75 / 100;
-  //initiate the two welcome screen Classes stored in WelcomeScreens.js
+  //initiate the two welcome screen Classes stored in TransitionScreens.js
   phase1Screen = new WelcomeScreen1(borderPt1, width / 2+12, height-height*15/100, width*10/100, height*8/100);
   phase2Screen = new WelcomeScreen2(borderPt2, width / 2+12, height-height*15/100, width*10/100, height*8/100);
   //create the player
@@ -139,8 +139,8 @@ function draw() {
     for (let p = phazer.length-1; p >= 0; p--){
       for(let e = enemies.length-1; e >= 0; e--){
         let result = phazer[p].hit(enemies[e]);
-        //if this happened, play the crash sound, and add 1 to the enemy's hit count,
-        //and change the enemy's image to the damaged version
+        //if this happened, and the phazer's size is half the size of the eney's (to help with the 3D effect)
+        //play the crash sound, and add 1 to the enemy's hit count, and change the enemy's image to the damaged version
         if (result && phazer[p].size < enemies[e].size/2){
           enemies[e].hitCount ++;
           enemies[e].img = enemyDamagedImg;
@@ -238,4 +238,8 @@ function mousePressed() {
     phase2 = false;
 
   }
+}
+
+function mouseMoved(){
+  getAudioContext().resume()
 }
