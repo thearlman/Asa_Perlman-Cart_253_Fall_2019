@@ -18,6 +18,7 @@ class Phazers {
     pop();
     this.size = this.size -1;
   }
+
   hit(enemy) {
     let d = dist(this.x, this.y, enemy.x, enemy.y)
     if (d < this.size/2 + enemy.size/2) {

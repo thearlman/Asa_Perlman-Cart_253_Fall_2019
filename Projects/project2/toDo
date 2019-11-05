@@ -1,0 +1,8 @@
+-Put in timer that counts down to when you have reached planet amazon
+-Make game over screen graphics (maybe with bezos inside of another spaceship having caught up to you?)
+-Write down list of things you need help with:
+
+  -Why is the game lagging so much?
+  -Why do the phazers miss sometimes?
+  -Try webgl createCanvas(windoWidth, windowHeight, WEBGL);
+              allFunctionswithXandY(x, y, z);

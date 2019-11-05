@@ -22,10 +22,15 @@ class Player {
     this.vy = 0;
     this.speed = speed;
     // Health properties
-    this.maxHealth = 10;
+    this.maxHealth = 1.5 * height / 100;
     this.health = this.maxHealth; // Must be AFTER defining this.maxHealth
-    this.healthLossPerHit = 5;
-    this.healthGain = .5;
+    this.healthLossPerHit = 30 * this.maxHealth / 100;
+
+    //Phazer charge properties
+    this.maxCharge = 1.5 * height / 100;
+    this.charge = this.maxCharge;
+    this.chargeEmpty = false;
+
     // Display properties
     this.fillColor = fillColor;
     this.size = size;
@@ -111,14 +116,55 @@ class Player {
   displayHealth() {
     console.log(this.health);
     push();
-    rectMode(CORNERS)
+    textAlign(CENTER, CENTER);
+    textSize(width * 1 / 100);
+    fill(210, 255, 255);
+    text("SHIELD", width / 2 - 37.5, height * 120 / 100 - this.health * 30 - 10);
+    rectMode(CORNERS);
     fill(210, 255, 255, 150);
     strokeWeight(7);
     stroke(210, 255, 255, 150);
-    rect(width / 2, height, width / 2 + 25, height*120/100 - this.health * 30);
+    rect(width / 2 - 25, height, width / 2 - 50, height * 120 / 100 - this.health * 30);
     pop();
   }
 
+  //displayCharge()
+  //
+  //
+  //Displays's and updates player's phazer charge level, as wellas monitoring
+  //if the player has run out of charge, requiring them to wait until full again
+  displayCharge() {
+    push();
+    if (this.chargeEmpty === true) {
+      this.charge += .5 * this.maxCharge / 100;
+      this.charge = constrain(this.charge, 0, this.maxCharge);
+    }
+    if (this.charge === this.maxCharge) {
+      this.chargeEmpty = false;
+    }
+    textAlign(CENTER, CENTER);
+    textSize(width * 1 / 100);
+    fill(100, 255, 255);
+    text("CHARGE", width / 2 + 37.5, height * 120 / 100 - this.charge * 30 - 10);
+    rectMode(CORNERS);
+    fill(100, 255, 255, 150);
+    strokeWeight(7);
+    stroke(100, 255, 255, 150);
+    rect(width / 2 + 25, height, width / 2 + 50, height * 120 / 100 - this.charge * 30);
+    pop();
+  }
+
+  //updatCharge()
+  //
+  //
+  //is executed whenever a phazer is fired
+  updateCharge() {
+    this.charge += -25 * this.maxCharge / 100;
+    if (this.charge <= 0) {
+      this.chargeEmpty = true;
+    }
+
+  }
 
   // handleTarget
   //

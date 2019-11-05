@@ -8,10 +8,8 @@
 // Variables for the player, and the players image (crosshairs)
 let player;
 let playerCrosshairs;
-//counters to trigger new enemy spawn
-//1. based on enemies killed
-let killCount = 0;
-//2. based on time played
+
+//counter to trigger new enemy spawn
 let spawnTimer;
 
 // Arrays to hold the enemy objects
@@ -30,19 +28,21 @@ let siren;
 let laserBlast;
 let firstHit;
 let secondHit;
-let gameOverCrash;
 
 //Variables to hold the various static game graphics (background, screens etc)
 let cockpit;
 let backgroundImg;
-let startScreenPart1Img;
+let borderPt1;
+let borderPt2;
+let gameOverImg;
+
 
 //Variables for the planet Amazon, and it's image
 let targetPlanet;
 let planetAmazonImg;
 
 //variable to store the part of the screen obstructed by cockpit
-let cockpitMask;
+let cockpitVerticalMask;
 
 //Booleans to control the status of the game (started/ game over)
 let gameOver = false;
@@ -83,7 +83,7 @@ function setup() {
   //setting to 360, means the first value (the hugh) should be visualized as a color wheel (360 degrees)
   colorMode(HSB, 360);
   //define the vertical area of screen we want to mask as 75%
-  cockpitVerticalMask = height * 75 / 100;
+  cockpitVerticalMask = height * 50 / 100;
   //initiate the two welcome screen Classes stored in TransitionScreens.js
   phase1Screen = new WelcomeScreen1(borderPt1, width / 2+12, height-height*15/100, width*10/100, height*8/100);
   phase2Screen = new WelcomeScreen2(borderPt2, width / 2+12, height-height*15/100, width*10/100, height*8/100);
@@ -91,7 +91,7 @@ function setup() {
   player = new Player(100, 100, 10, color(200, 200, 0), 50, playerCrosshairs);
   //create the Amazon planet
   //(img, x, y, vy, size, growSpeed)
-  targetPlanet = new PlanetAmazon(planetAmazonImg, width / 2, 0, height*.025/100, 10, height*.05/100);
+  targetPlanet = new PlanetAmazon(planetAmazonImg, width / 2, 0, height*.03/100, 10, height*.05/100);
   //create first enemy
   // for (let i = 0; i < 1; i++) {
   //   enemies[i] = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
@@ -173,24 +173,24 @@ function draw() {
     image(cockpit, 0, 0, width, height);
     //display the player's health bar
     player.displayHealth();
+    //display the player's phazer charge level
+    player.displayCharge();
 
     if (player.health <= 0){
       gameOver = true;
     }
 
   }
-//~~~~~~~~~~~~~~~~~~~~~~~end of !gameOver~~~~~~~~~~~~~~~~~`
+//~~~~~~~~~~~~~~~~~~~~~~~end of !gameOver~~~~~~~~~~~~~~~~~
   if (gameOver && !phase1 && !phase2){
     gameOverCrash.setLoop(false);
     gameOverCrash.playMode('untilDone');
     gameOverCrash.play()
   }
 
-
 }
 
 //~~~~~~~~~~~~~~~~~~~end of draw()~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 
 //spawnNewEnemy()
@@ -198,7 +198,7 @@ function draw() {
 //
 //Spawns a new enemy
 function spawnNewEnemy() {
-  let newEnemy = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), width*.25/100, 1);
+  let newEnemy = new Enemy(enemyImg, random(0, width), random(0, cockpitVerticalMask), width*.25/100, 1);
   enemies.push(newEnemy);
   console.log("NEW");
 }
@@ -210,8 +210,9 @@ function spawnNewEnemy() {
 // Checks for keyboard events
 function keyPressed() {
   //if the spacebar is pressed, put a new phazer object out into the world
-  if (keyCode === 32 && !phase1 && !phase2  && !gameOver) {
+  if (keyCode === 32 && !phase1 && !phase2  && !gameOver && !player.chargeEmpty) {
     newPhazer = new Phazers();
+    player.updateCharge();
     phazer.push(newPhazer);
     laserBlast.play();
   }
