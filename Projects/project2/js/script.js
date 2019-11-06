@@ -28,6 +28,12 @@ let siren;
 let laserBlast;
 let firstHit;
 let secondHit;
+let lowCharge;
+let laserCharging;
+
+let phase1Screen;
+let phase2Screen;
+let gameOverScreen;
 
 //Variables to hold the various static game graphics (background, screens etc)
 let cockpit;
@@ -35,7 +41,7 @@ let backgroundImg;
 let borderPt1;
 let borderPt2;
 let gameOverImg;
-
+let winningImage;
 
 //Variables for the planet Amazon, and it's image
 let targetPlanet;
@@ -45,9 +51,17 @@ let planetAmazonImg;
 let cockpitVerticalMask;
 
 //Booleans to control the status of the game (started/ game over)
-let gameOver = false;
 let phase1 = true;
 let phase2 = false;
+let gameOver = false;
+let gameWon = false
+
+
+//counter to determine arrival time to planet
+let arrivalTime;
+//variables to set the amount of time
+let secondsToArrival = 10;
+let secondsRemaining = secondsToArrival;
 
 //preload()
 //
@@ -63,12 +77,16 @@ function preload() {
   enemyDamagedImg = loadImage('assets/images/amazonDroneBroken.png')
   borderPt1 = loadImage('assets/images/borderPt1.jpg');
   borderPt2 = loadImage('assets/images/borderPt2.jpg');
+  gameOverImg = loadImage('assets/images/gameOverImg.jpg');
+  winningImage = loadImage('assets/images/planetAmazonScreen.jpg')
 
   introAmbience = loadSound('assets/sounds/introAmbience.mp3');
   siren = loadSound('assets/sounds/siren.mp3');
   laserBlast = loadSound('assets/sounds/laserBlast.wav');
   firstHit = loadSound('assets/sounds/firstHit.wav');
   secondHit = loadSound('assets/sounds/secondHit.wav');
+  lowCharge = loadSound('assets/sounds/lowCharge.mp3')
+  laserCharging = loadSound('assets/sounds/laserCharging.mp3')
   gameOverCrash = loadSound('assets/sounds/gameOverCrash.wav')
 }
 
@@ -82,21 +100,19 @@ function setup() {
   //Setting the Color mode of the program to HSB (hugh, sturation, brightness)
   //setting to 360, means the first value (the hugh) should be visualized as a color wheel (360 degrees)
   colorMode(HSB, 360);
-  //define the vertical area of screen we want to mask as 75%
+  //define the vertical area of screen we want to mask as 50%
   cockpitVerticalMask = height * 50 / 100;
-  //initiate the two welcome screen Classes stored in TransitionScreens.js
+  //create the two welcome screens, and one game over screen (Classes stored in TransitionScreens.js)
   phase1Screen = new WelcomeScreen1(borderPt1, width / 2+12, height-height*15/100, width*10/100, height*8/100);
   phase2Screen = new WelcomeScreen2(borderPt2, width / 2+12, height-height*15/100, width*10/100, height*8/100);
+  gameOverScreen = new GameOverScreen(gameOverImg, width/2+12, height-height*15/100, width*10/100, height*8/100);
+  winningScreen = new WinningScreen(winningImage, width/2+12, height-height*15/100, width*10/100, height*8/100);
+
   //create the player
   player = new Player(100, 100, 10, color(200, 200, 0), 50, playerCrosshairs);
+
   //create the Amazon planet
-  //(img, x, y, vy, size, growSpeed)
-  targetPlanet = new PlanetAmazon(planetAmazonImg, width / 2, 0, height*.03/100, 10, height*.05/100);
-  //create first enemy
-  // for (let i = 0; i < 1; i++) {
-  //   enemies[i] = new Enemy(enemyImg, random(0, width), random(0, cockpitMask), 5, 1);
-  // }
-  //Set interval between new enemy spawns
+  targetPlanet = new PlanetAmazon(planetAmazonImg, width / 2, 0, height*.03/100, 10, height*.05/100, 120);
 
 }
 
@@ -106,11 +122,11 @@ function setup() {
 // Handles input, movement, health, and displaying for the system's objects
 function draw() {
 //when the program is initiated, show the first welcome screen
-  if(! gameOver && phase1 === true){
+  if(! gameOver && phase1){
     phase1Screen.display();
-  }  else if (!gameOver && phase2 === true) {
+  }  else if (!gameOver && phase2 && !phase1) {
     phase2Screen.display();
-  } else if (!gameOver && phase2 === false){
+  } else if (!gameOver && !phase2){
 
     //play the ambient cockpit sound on a loop
     introAmbience.playMode('untilDone');
@@ -126,7 +142,7 @@ function draw() {
 
     // Handle movement, health, collision detection and displaying of enemies
     //we iterate through the array backwards, so that the oldest enemy is displayed on top
-    for (let e = enemies.length-1; e > 0; e--) {
+    for (let e = enemies.length-1; e >= 0; e--) {
       enemies[e].move();
       enemies[e].display();
       enemies[e].updateHealth();
@@ -146,9 +162,9 @@ function draw() {
           enemies[e].img = enemyDamagedImg;
           phazer.splice(p, 1);
           firstHit.play();
-          console.log("HIT");
+        //  console.log("HIT");
           //if the enemy's hitcount reaches 2, play the explosion sound and
-          //remove the enemy from the array
+          //remove the enemy and the phazer from their respective arrays
           if (enemies[e].hitCount >= 2){
             secondHit.play();
             enemies.splice(e, 1);
@@ -160,10 +176,10 @@ function draw() {
 
     //display the phazers, and delete them from the array if at zero (ran out
     //of steam) again, we go backwards. see above.
-    for (let i = phazer.length-1; i >= 0; i--) {
-      phazer[i].display();
-      if (phazer[i].size < 0) {
-        phazer.splice(i, 1);
+    for (let p = phazer.length-1; p >= 0; p--) {
+      phazer[p].display();
+      if (phazer[p].size < 0) {
+        phazer.splice(p, 1);
       }
     }
 
@@ -179,18 +195,43 @@ function draw() {
     if (player.health <= 0){
       gameOver = true;
     }
-
+    if (secondsRemaining <= 0){
+      gameWon = true;
+      gameOver = true;
+    }
   }
 //~~~~~~~~~~~~~~~~~~~~~~~end of !gameOver~~~~~~~~~~~~~~~~~
-  if (gameOver && !phase1 && !phase2){
-    gameOverCrash.setLoop(false);
-    gameOverCrash.playMode('untilDone');
-    gameOverCrash.play()
+
+  // If the game is over, play a sad crashing sound, and display the game Over Screen
+  //reset all pertenent variables and timers
+  if (gameOver && !phase1 && !phase2 && !gameWon){
+    gameOverScreen.display();
+    clearInterval(spawnTimer);
+    clearInterval(arrivalTime);
+    //iterate through the enemies and remove them
+    for (let e = 0; e < enemies.length; e++){
+      enemies.splice(e, 1);
+    }
+    //reset planetAmazon's size
+    targetPlanet.reset();
+  }
+  // If the game is over, play a sad crashing sound, and display the game Over Screen.
+  //reset all pertenent variables and timers
+  if (gameOver && !phase1 && !phase2 && gameWon){
+    winningScreen.display();
+    clearInterval(spawnTimer);
+    clearInterval(arrivalTime);
+    //iterate through the enemies and remove them
+    for (let e = 0; e < enemies.length; e++){
+      enemies.splice(e, 1);
+    }
+    //reset planetAmazon's size
+    targetPlanet.reset();
   }
 
 }
 
-//~~~~~~~~~~~~~~~~~~~end of draw()~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~end of draw()~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 
 //spawnNewEnemy()
@@ -200,7 +241,6 @@ function draw() {
 function spawnNewEnemy() {
   let newEnemy = new Enemy(enemyImg, random(0, width), random(0, cockpitVerticalMask), width*.25/100, 1);
   enemies.push(newEnemy);
-  console.log("NEW");
 }
 
 
@@ -209,12 +249,18 @@ function spawnNewEnemy() {
 //
 // Checks for keyboard events
 function keyPressed() {
-  //if the spacebar is pressed, put a new phazer object out into the world
+  //if the spacebar is pressed, put a new phazer object out into the world, and play the
+  //laser blasting sound
   if (keyCode === 32 && !phase1 && !phase2  && !gameOver && !player.chargeEmpty) {
     newPhazer = new Phazers();
     player.updateCharge();
     phazer.push(newPhazer);
     laserBlast.play();
+  }
+  //if the player tries to fire the phaser while charge is empty, play the empty battery sound
+  else if (keyCode === 32 && !phase1 && !phase2  && !gameOver && player.chargeEmpty) {
+    lowCharge.playMode('untilDone');
+    lowCharge.play();
   }
 }
 
@@ -222,25 +268,58 @@ function keyPressed() {
 //
 //
 //Checks for mouse clicks.
-function mousePressed() {
-  //Used here as rudimentary "mobile friendly" option for firing phazers
-  player.x = mouseX;
-  player.y = mouseY;
-  for (let i = 0; i < enemies.length; i++) {
-    player.handleTarget(enemies[i]);
-  }
-  //used here to check if the buttons in the various welome/ game over screen shave been pressed
+function mousePressed(){
+  //used here to check if the buttons in the various welcome/ game over screens have been pressed.
+  //Requires that the booleans line up(phase 1 is finished phase two is finished, etc.)
+    //for first welcome screen: the border
   if (phase1Screen.d < phase1Screen.buttonWidth && phase1Screen.d < phase1Screen.buttonHeight) {
     phase1 = false;
     phase2 = true;
   }
+    //for second welocme screen: the escape
   if (phase2Screen.d < phase2Screen.buttonWidth && phase2Screen.d < phase2Screen.buttonHeight && phase2 === true) {
-    let spawnTimer = setInterval(spawnNewEnemy, 5000);
-    phase2 = false;
-
+     spawnTimer = setInterval(spawnNewEnemy, 5000);
+     arrivalTime = setInterval(timeToPlanet, 1000);
+     phase2 = false;
   }
+  //for gameOver screen
+  if (gameOverScreen.d < gameOverScreen.buttonWidth && gameOverScreen.d < gameOverScreen.buttonHeight && gameOver && !gameWon){
+    //reset players health and charge
+    player.health = player.maxHealth;
+    player.charge = player.maxCharge;
+    secondsRemaining = secondsToArrival;
+    phase2 = true;
+    gameOver = false;
+  }
+
+  //for gameWon screen
+  if (winningScreen.d < winningScreen.buttonWidth && winningScreen.d < winningScreen.buttonHeight && gameOver && gameWon){
+    //reset players health and charge
+    player.health = player.maxHealth;
+    player.charge = player.maxCharge;
+    secondsRemaining = secondsToArrival;
+    phase2 = true;
+    gameOver = false;
+    gameWon = false;
+  }
+
+
 }
 
+
+//timeToPlanet()
+//
+//
+//function which reduces the number of seconds until the player has reached the planet and won
+//triggered by the setInterval function.
+function timeToPlanet(){
+secondsRemaining -= 1;
+console.log(secondsRemaining);
+}
+
+
+// I found this in a forum, it said it would get the audio to start more reliably on  first load....
+//I think it works?
 function mouseMoved(){
   getAudioContext().resume()
 }

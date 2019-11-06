@@ -3,12 +3,14 @@
 // A class which defines Planet Amazon, the destination for the game.
 // Takes an image, X and Y coordinates, a Y velocity, a size, and a growSpeed
 class PlanetAmazon {
-  constructor(img, x, y, vy, size, growSpeed) {
+  constructor(img, x, startY, vy, startSize, growSpeed) {
     this.img = img;
     this.x = x;
-    this.y = y;
+    this.startY = startY;
+    this.y = this.startY;
     this.vy = vy;
-    this.size = size;
+    this.startSize = startSize;
+    this.size = this.startSize;
     this.growSpeed = growSpeed;
   }
 
@@ -24,4 +26,8 @@ class PlanetAmazon {
     pop()
   }
 
+  reset(){
+    this.y = this.startY;
+    this.size = this.startSize;
+  }
 }

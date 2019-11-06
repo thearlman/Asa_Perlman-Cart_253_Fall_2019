@@ -68,7 +68,6 @@ class Player {
   // move
   //
   // Updates the position according to velocity
-  //
   // Handles wrapping
   move() {
     // Update position
@@ -108,13 +107,13 @@ class Player {
   updateHealth() {
     this.health = this.health - this.healthLossPerHit;
     this.health = constrain(this.health, 0, this.maxHealth);
-    console.log(this.health);
+    //console.log(this.health);
   }
 
-  //Displays the health of the player
+  //Displays the health of the player, along with the seconds remining before reaching planet
   //cheacks for gameOver
   displayHealth() {
-    console.log(this.health);
+    //console.log(this.health);
     push();
     textAlign(CENTER, CENTER);
     textSize(width * 1 / 100);
@@ -125,6 +124,13 @@ class Player {
     strokeWeight(7);
     stroke(210, 255, 255, 150);
     rect(width / 2 - 25, height, width / 2 - 50, height * 120 / 100 - this.health * 30);
+    noStroke();
+    fill(0, 255, 255, 150);
+    rectMode(CENTER);
+    rect(width/2, height - 32.5*height/100, 18*width/100, 6*height/100);
+    textSize(width*2 / 100)
+    fill(0, 0, 0, 150);
+    text("t-"+secondsRemaining+" to landing", width/2, height - 32.5*height/100);
     pop();
   }
 
@@ -138,10 +144,14 @@ class Player {
     if (this.chargeEmpty === true) {
       this.charge += .5 * this.maxCharge / 100;
       this.charge = constrain(this.charge, 0, this.maxCharge);
+      laserCharging.playMode('untilDone');
+      laserCharging.play();
     }
     if (this.charge === this.maxCharge) {
       this.chargeEmpty = false;
+      laserCharging.stop();
     }
+
     textAlign(CENTER, CENTER);
     textSize(width * 1 / 100);
     fill(100, 255, 255);
