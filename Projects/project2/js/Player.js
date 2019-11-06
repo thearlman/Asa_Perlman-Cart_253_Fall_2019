@@ -3,7 +3,7 @@
 // A class that represents the games player as a set of crosshairs
 // The player is controlled using the Arrow Keys
 // When the spacebar is pressed, [see script.js:player.handleTarget()]
-// if the enemy objects have been targeted correctly, they will lose health
+// if the enemy objects have been targeted correctly, they will take damage
 
 class Player {
 
@@ -24,7 +24,7 @@ class Player {
     // Health properties
     this.maxHealth = 1.5 * height / 100;
     this.health = this.maxHealth; // Must be AFTER defining this.maxHealth
-    this.healthLossPerHit = 30 * this.maxHealth / 100;
+    this.healthLossPerHit = 10 * this.maxHealth / 100;
 
     //Phazer charge properties
     this.maxCharge = 1.5 * height / 100;
@@ -107,13 +107,12 @@ class Player {
   updateHealth() {
     this.health = this.health - this.healthLossPerHit;
     this.health = constrain(this.health, 0, this.maxHealth);
-    //console.log(this.health);
   }
 
-  //Displays the health of the player, along with the seconds remining before reaching planet
-  //cheacks for gameOver
+  // displayHealth()
+  //
+  //Displays the health of the player, along with the seconds remining before reaching planet Amazon
   displayHealth() {
-    //console.log(this.health);
     push();
     textAlign(CENTER, CENTER);
     textSize(width * 1 / 100);
@@ -127,18 +126,19 @@ class Player {
     noStroke();
     fill(0, 255, 255, 150);
     rectMode(CENTER);
-    rect(width/2, height - 32.5*height/100, 18*width/100, 6*height/100);
-    textSize(width*2 / 100)
+    rect(width / 2, height - 32.5 * height / 100, 18 * width / 100, 6 * height / 100);
+    textSize(width * 2 / 100)
     fill(0, 0, 0, 150);
-    text("t-"+secondsRemaining+" to landing", width/2, height - 32.5*height/100);
+    text("t-" + secondsRemaining + " to landing", width / 2, height - 32.5 * height / 100);
     pop();
   }
 
   //displayCharge()
   //
   //
-  //Displays's and updates player's phazer charge level, as wellas monitoring
+  //Displays's and updates player's phazer charge level, as well as monitoring
   //if the player has run out of charge, requiring them to wait until full again
+  //controls the corresponding sound effect
   displayCharge() {
     push();
     if (this.chargeEmpty === true) {
@@ -151,7 +151,6 @@ class Player {
       this.chargeEmpty = false;
       laserCharging.stop();
     }
-
     textAlign(CENTER, CENTER);
     textSize(width * 1 / 100);
     fill(100, 255, 255);
@@ -164,33 +163,19 @@ class Player {
     pop();
   }
 
-  //updatCharge()
+
+  //updateCharge()
   //
   //
   //is executed whenever a phazer is fired
+  //returns a boolean telling the keyPressed() function id draw if the phazer charge is empty
   updateCharge() {
-    this.charge += -25 * this.maxCharge / 100;
-    if (this.charge <= 25 * this.maxCharge / 100) {
+    this.charge += -5 * this.maxCharge / 100;
+    if (this.charge <= 50 * this.maxCharge / 100) {
       this.chargeEmpty = true;
     }
-
   }
 
-  // handleTarget
-  //
-  // Takes an Enemy object as an argument and checks if the player's crosshairs
-  // overlap it. If so, reduces the enemy's health.
-  handleTarget(target) {
-    // Calculate distance from this predator to the prey
-    let d = dist(this.x, this.y, target.x, target.y);
-    // Check if the distance is less than their two radii (an overlap)
-    if (d < target.size) {
-      // Decrease the enmy health
-      target.health = 0;
-      //add one to the kill counter
-      killCount++;
-    }
-  }
 
   // display
   //

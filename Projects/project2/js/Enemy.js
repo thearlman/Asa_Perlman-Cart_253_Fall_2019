@@ -1,6 +1,6 @@
 // Prey
 //
-// A class that represents the enemy (woah that sounded kind of problematic)
+// A class that represents an enemy (woah that sounded kind of problematic)
 // It can move around on screen based on a noise() function, and gets bigger
 // to simulate it coming towards you. It can be targeted, and destroyed by the
 //  player.
@@ -50,8 +50,7 @@ class Enemy {
   }
   //collisionDetect()
   //
-  //Checks to see is enemy cas collided with player, resets enemy,
-  //adds one to the kill counter
+  //Checks to see is enemy cas collided with player, resets enemy****
   detectCollision() {
     if (this.size > 200) {
       if (this.x > width * 10 / 100 && this.x < width * 90 / 100) {
@@ -62,6 +61,8 @@ class Enemy {
       } else {
         console.log("escaped");
         spawnNewEnemy();
+        //***I think this is where the mystery larger enemies were coming from, but it's
+        //too late to check before submission deadline. :-( Scared of breaking things
         this.reset();
       }
     }
@@ -103,17 +104,17 @@ class Enemy {
 
   // updateHealth()
   //
-  //increases enemy's health (and size) everyframe,
-  //resets enemy when health reaches zero, additionally spawning a one more enemy every 5 kills
+  //increases enemy's size every frame,
   updateHealth() {
     this.health += this.speed / 10;
   }
 
 
-  // display
-  //  box-sizing: border-box;
-  // Draw the enemy as an ellipse on the canvas
-  // with a size the same as its current health.
+  // display()
+  //
+  // Draw the enemy as a sinister amazon delivery space drone on the canvas
+  // with a size that increases based on the very poorly named variable "health"
+  //which I should have renamed something more representative
   display() {
     push();
     imageMode(CENTER)
@@ -124,8 +125,7 @@ class Enemy {
 
   // reset
   //
-  // Set the position to a random location and reset health
-  // and radius back to default
+  // Set the position to a random location and reset health (size)
   reset() {
     // Random position
     this.x = random(0, width);

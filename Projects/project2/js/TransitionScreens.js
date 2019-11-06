@@ -1,3 +1,7 @@
+//This file contains classes of all of the transitional screen sused in the game
+//In retrospect, I shoudl have just made one super class, with many children. Oh well, next time
+
+
 //WelocmeScreen1()
 //displays the first welcome screen: a sinister-looking border seperating the publicly
 //owned earth (now in ruins) and the private relams of space
@@ -16,8 +20,8 @@ class WelcomeScreen1 {
 
   //display()
   //
-  //displays  the background image and the button to start the game
-  //and checks to see if the button is pressed
+  //displays  the background image and the button to advance to the next screen.
+  //and checks to see if the button is being hovered ove,r changing the fill brightness
   display() {
     introAmbience.playMode('untilDone');
     introAmbience.play();
@@ -47,8 +51,7 @@ class WelcomeScreen1 {
 }
 
 //WelocmeScreen1()
-//displays the first welcome screen: a sinister-looking border seperating the publicly
-//owned earth (now in ruins) and the private relams of space
+//displays the second welcome screen: a getaway.
 class WelcomeScreen2 {
   constructor(bgImg, buttonX, buttonY, buttonWidth, buttonHeight) {
     this.bgImg = bgImg;
@@ -64,7 +67,7 @@ class WelcomeScreen2 {
   //display()
   //
   //displays  the background image and the button to start the game
-  //and checks to see if the button is pressed
+  //checks to see if the button is being hovered over, changing the fill brightness
   display() {
     introAmbience.playMode('untilDone');
     introAmbience.play()
@@ -95,6 +98,9 @@ class WelcomeScreen2 {
 
 }
 
+
+//gameOverScreen
+//Pretty self explanitory
 class GameOverScreen {
   constructor(bgImg, buttonX, buttonY, buttonWidth, buttonHeight) {
     this.bgImg = bgImg;
@@ -109,8 +115,8 @@ class GameOverScreen {
 
   //display()
   //
-  //displays the background image and the button to start the game
-  //and checks to see if the button is pressed
+  //displays the background image and the button to reset the game
+  //checks to see if the button is being hovered over, changing the fill brightness
   display() {
     background(this.bgImg);
     push()
@@ -136,6 +142,11 @@ class GameOverScreen {
   }
 }
 
+
+//winningScreen
+//
+//the celebration? you are confronted with the reality that what you've been
+//chasing is not what you thought it was.....
 class WinningScreen {
   constructor(bgImg, buttonX, buttonY, buttonWidth, buttonHeight) {
     this.bgImg = bgImg;
@@ -150,8 +161,8 @@ class WinningScreen {
 
   //display()
   //
-  //displays the background image and the button to start the game
-  //and checks to see if the button is pressed
+  //displays the background image and the button to reset the game
+  //checks to see if the button is being hovered over, changing the fill brightness
   display() {
     background(this.bgImg);
     push()
