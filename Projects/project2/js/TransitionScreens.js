@@ -68,8 +68,8 @@ class WelcomeScreen2 {
   display() {
     introAmbience.playMode('untilDone');
     introAmbience.play()
-    //siren.playMode('untilDone');
-    //siren.play();
+    siren.playMode('untilDone');
+    siren.play();
     background(this.bgImg);
     push()
     rectMode(CENTER);
@@ -164,7 +164,7 @@ class WinningScreen {
     noStroke();
     fill(255);
     textSize(width * 1 / 100);
-    text(this.buttonStart, width / 2 + 12, height - height * 15 / 100)
+    text(this.buttonStart, width / 2, height - height * 15 / 100);
     //Checks to see if the mouse is hovering over the button, and changes
     //text fill color accordingly.
     this.d = dist(this.buttonX, this.buttonY, mouseX, mouseY);

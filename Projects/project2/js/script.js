@@ -1,8 +1,19 @@
 // Trash Orgin: Journey to the Planet Amazon
-// by Asa Perlman. Template by: Pippin Barr
-//(special; thanks to Daniel Shiffmans tuts)
-// ~~~~~~~~~~~Description to follow~~~~~~~~~~~~
+// by Asa Perlman. Template  by: Pippin Barr
+// (special; thanks to Daniel Shiffman's youtube tuts)
 //
+// Images created by Asa Perlman and Gabriel Dupras
+// All sound effects used under Creative Commons license
+// Winning song: Fly Me To The Moon (8-bit Cover) by Jump Ship:
+// https://jumpshipmusic.bandcamp.com/track/fly-me-to-the-moon-8-bit-cover
+//
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//
+// Having escaped the -earth on fire- you are confronted by the Amaberg Gates.
+// You must fight to escape Bezos' evil space regieme... But is there anything out there
+// left to find??
+//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 //
 // Variables for the player, and the players image (crosshairs)
@@ -24,12 +35,15 @@ let phazer = [];
 
 //sound effect varibles
 let introAmbience;
+let gameSong;
 let siren;
 let laserBlast;
 let firstHit;
 let secondHit;
 let lowCharge;
 let laserCharging;
+let crash;
+let loserBells;
 
 let phase1Screen;
 let phase2Screen;
@@ -60,7 +74,7 @@ let gameWon = false
 //counter to determine arrival time to planet
 let arrivalTime;
 //variables to set the amount of time
-let secondsToArrival = 10;
+let secondsToArrival = 120;
 let secondsRemaining = secondsToArrival;
 
 //preload()
@@ -74,20 +88,22 @@ function preload() {
   backgroundImg = loadImage('assets/images/backgroundImg.jpg');
   playerCrosshairs = loadImage('assets/images/crosshairs.png');
   enemyImg = loadImage('assets/images/amazonDrone.png');
-  enemyDamagedImg = loadImage('assets/images/amazonDroneBroken.png')
+  enemyDamagedImg = loadImage('assets/images/amazonDroneBroken.png');
   borderPt1 = loadImage('assets/images/borderPt1.jpg');
   borderPt2 = loadImage('assets/images/borderPt2.jpg');
   gameOverImg = loadImage('assets/images/gameOverImg.jpg');
-  winningImage = loadImage('assets/images/planetAmazonScreen.jpg')
+  winningImage = loadImage('assets/images/planetAmazonScreen.jpg');
 
   introAmbience = loadSound('assets/sounds/introAmbience.mp3');
+  gameSong = loadSound('assets/sounds/gameSong.mp3')
   siren = loadSound('assets/sounds/siren.mp3');
   laserBlast = loadSound('assets/sounds/laserBlast.wav');
   firstHit = loadSound('assets/sounds/firstHit.wav');
   secondHit = loadSound('assets/sounds/secondHit.wav');
-  lowCharge = loadSound('assets/sounds/lowCharge.mp3')
-  laserCharging = loadSound('assets/sounds/laserCharging.mp3')
-  gameOverCrash = loadSound('assets/sounds/gameOverCrash.wav')
+  lowCharge = loadSound('assets/sounds/lowCharge.mp3');
+  laserCharging = loadSound('assets/sounds/laserCharging.mp3');
+  crash = loadSound('assets/sounds/crash.wav');
+  loserBells = loadSound('assets/sounds/loserBells.mp3')
 }
 
 // setup()
@@ -106,7 +122,7 @@ function setup() {
   phase1Screen = new WelcomeScreen1(borderPt1, width / 2+12, height-height*15/100, width*10/100, height*8/100);
   phase2Screen = new WelcomeScreen2(borderPt2, width / 2+12, height-height*15/100, width*10/100, height*8/100);
   gameOverScreen = new GameOverScreen(gameOverImg, width/2+12, height-height*15/100, width*10/100, height*8/100);
-  winningScreen = new WinningScreen(winningImage, width/2+12, height-height*15/100, width*10/100, height*8/100);
+  winningScreen = new WinningScreen(winningImage, width/2, height-height*15/100, width*10/100, height*8/100);
 
   //create the player
   player = new Player(100, 100, 10, color(200, 200, 0), 50, playerCrosshairs);
@@ -129,8 +145,10 @@ function draw() {
   } else if (!gameOver && !phase2){
 
     //play the ambient cockpit sound on a loop
+    //stop the siren sound
+    siren.stop();
     introAmbience.playMode('untilDone');
-    introAmbience.play()
+    introAmbience.play();
     // Display the background as a starry night
     background(backgroundImg);
     // Handle input for the player
@@ -202,9 +220,11 @@ function draw() {
   }
 //~~~~~~~~~~~~~~~~~~~~~~~end of !gameOver~~~~~~~~~~~~~~~~~
 
-  // If the game is over, play a sad crashing sound, and display the game Over Screen
+  // If the game is over, and the player has lost, play sad bell sounds, and display the game Over Screen
   //reset all pertenent variables and timers
   if (gameOver && !phase1 && !phase2 && !gameWon){
+    loserBells.playMode('untilDone');
+    loserBells.play();
     gameOverScreen.display();
     clearInterval(spawnTimer);
     clearInterval(arrivalTime);
@@ -215,10 +235,13 @@ function draw() {
     //reset planetAmazon's size
     targetPlanet.reset();
   }
-  // If the game is over, play a sad crashing sound, and display the game Over Screen.
+  // If the game is over, and the player has won, play a happy 8 bit version of fly me to the moon,
+  //and display the game won Screen.
   //reset all pertenent variables and timers
   if (gameOver && !phase1 && !phase2 && gameWon){
     winningScreen.display();
+    gameSong.playMode('untilDone');
+    gameSong.play();
     clearInterval(spawnTimer);
     clearInterval(arrivalTime);
     //iterate through the enemies and remove them
@@ -277,7 +300,7 @@ function mousePressed(){
     phase2 = true;
   }
     //for second welocme screen: the escape
-  if (phase2Screen.d < phase2Screen.buttonWidth && phase2Screen.d < phase2Screen.buttonHeight && phase2 === true) {
+  if (phase2Screen.d < phase2Screen.buttonWidth && phase2Screen.d < phase2Screen.buttonHeight && phase2 && !gameWon && !gameOver) {
      spawnTimer = setInterval(spawnNewEnemy, 5000);
      arrivalTime = setInterval(timeToPlanet, 1000);
      phase2 = false;
@@ -288,6 +311,7 @@ function mousePressed(){
     player.health = player.maxHealth;
     player.charge = player.maxCharge;
     secondsRemaining = secondsToArrival;
+    loserBells.stop();
     phase2 = true;
     gameOver = false;
   }
@@ -298,6 +322,7 @@ function mousePressed(){
     player.health = player.maxHealth;
     player.charge = player.maxCharge;
     secondsRemaining = secondsToArrival;
+    gameSong.stop();
     phase2 = true;
     gameOver = false;
     gameWon = false;

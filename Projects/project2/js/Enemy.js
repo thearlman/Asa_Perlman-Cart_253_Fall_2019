@@ -55,7 +55,8 @@ class Enemy {
   detectCollision() {
     if (this.size > 200) {
       if (this.x > width * 10 / 100 && this.x < width * 90 / 100) {
-        console.log("crashed");
+        crash.playMode('untilDone');
+        crash.play();
         player.updateHealth();
         this.reset();
       } else {

@@ -170,7 +170,7 @@ class Player {
   //is executed whenever a phazer is fired
   updateCharge() {
     this.charge += -25 * this.maxCharge / 100;
-    if (this.charge <= 0) {
+    if (this.charge <= 25 * this.maxCharge / 100) {
       this.chargeEmpty = true;
     }
 
