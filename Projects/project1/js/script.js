@@ -166,7 +166,8 @@ function setupPlayer() {
 // displays current level,
 // When the game is over, shows the gameOver screen.
 function draw() {
-  console.log(preyMaxSpeed);
+  //dynamically resize canvas to the width and height of the browser window
+  createCanvas(windowWidth, windowHeight);
   //light and breezy ocean blue background
   background(200, 255, 100);
   //display the welcome screen first time around.
