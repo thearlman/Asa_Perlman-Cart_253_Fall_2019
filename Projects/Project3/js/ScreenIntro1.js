@@ -57,7 +57,7 @@ class ScreenIntro1 {
   // Is called when the mouse is pressed, & checks to see if the mouse and button are overlapping.
   //
   mousePressed() {
-    if (this.d < this.buttonWidth && this.d < this.buttonHeight) {
+    if (this.d < this.buttonWidth && this.d < this.buttonHeight && gameState === "intro1") {
       gameState = "intro2";
       console.log(gameState);
     }
