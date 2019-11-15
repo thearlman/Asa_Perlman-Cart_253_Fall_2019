@@ -29,7 +29,11 @@ let ambience;
 let crash;
 
 //~~~~~~~~TIMING VARIABLES~~~~~~~~~~//
-
+//**Variable  assigned to the setInterval function (controlling game timer)
+let gameTimer;
+//**variables to set the amount of time
+let secondsToArrival = 120;
+//**variable for the spawn timer
 let spawnTimer;
 
 
@@ -109,6 +113,32 @@ function draw() {
 
 //enemyTimer()
 //
+//resets the spawn timer interval on call with argument provided
+function enemyTimer(interval){
+  clearInterval(spawnTimer);
+  spawnTimer = setInterval(spawnNewEnemy, interval);
+}
+
+//~~~~~~~~~TIMED FUNCTIONS~~~~~~~~~~~~//
+
+
+//gameTimer
+//
+//
+function resetGameTimer(){
+  clearInterval(gameTimer);
+  gameTimer = setInterval(timeToArival, 1000);
+}
+
+//timeToPlanet()
+//
+//function which reduces the number of seconds until the player has reached the planet and won.
+//this function is triggered by the setInterval() function.
+function timeToArival() {
+  secondsToArrival -= 1;
+}
+
+//enemyTimer()
 //
 //resets the spawn timer interval on call with argument provided
 function enemyTimer(interval){
@@ -117,7 +147,6 @@ function enemyTimer(interval){
 }
 
 //spawnNewEnemy()
-//
 //
 //Spawns a new enemy, by creating a new enemy object, and pushing it to the enemies[] array
 function spawnNewEnemy() {

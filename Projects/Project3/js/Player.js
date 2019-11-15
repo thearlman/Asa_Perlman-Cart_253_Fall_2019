@@ -23,8 +23,8 @@ class Player {
     this.vy = 0;
     this.speed = speed;
     // Health properties
-    this.maxHealth = 30 * height / 100;
-    this.health = this.maxHealth; // Must be AFTER defining this.maxHealth
+    this.maxShieldHealth = 30 * height / 100;
+    this.shieldHealth = this.maxShieldHealth; // Must be AFTER defining this.maxHealth
     this.healthLossPerHit = 10 * this.maxHealth / 100;
 
     //Phazer charge properties
@@ -75,8 +75,8 @@ class Player {
     this.x += this.vx;
     this.y += this.vy;
     //increase shield health slowly, constraining it within max and min
-    this.health += .01;
-    this.health = constrain(this.health, 0, this.maxHealth);
+    this.shieldHealth += .01;
+    this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);
     // Handle wrapping
     this.handleWrapping();
   }
@@ -129,15 +129,17 @@ class Player {
   //
   //updates the player's health only on event
   updateHealth() {
-    this.health = this.health - this.healthLossPerHit;
-    this.health = constrain(this.health, 0, this.maxHealth);
+    this.shieldHealth = this.shieldHealth - this.healthLossPerHit;
+    this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);
   }
 
   // displayHealth()
   //
-  //Displays the health of the player, along with the seconds remining before reaching planet Amazon
+  //Displays the shield health of the player
+  //Displays the seconds remining before reaching planet Amazon
   displayHealth() {
     push();
+
     textAlign(CENTER, CENTER);
     textSize(width * 1 / 100);
     fill(210, 255, 255);
@@ -147,13 +149,14 @@ class Player {
     strokeWeight(7);
     stroke(210, 255, 255, 150);
     rect(width / 2 - 25, height, width / 2 - 50, height - this.health);
+
     noStroke();
     fill(0, 255, 255, 150);
     rectMode(CENTER);
     rect(width / 2, height - 32.5 * height / 100, 18 * width / 100, 6 * height / 100);
     textSize(width * 2 / 100)
     fill(0, 0, 0, 150);
-    text("t-" + secondsRemaining + " to landing", width / 2, height - 32.5 * height / 100);
+    text("t-" + secondsToArrival + " to landing", width / 2, height - 32.5 * height / 100);
     pop();
   }
 
@@ -168,12 +171,12 @@ class Player {
     if (this.chargeEmpty === true) {
       this.charge += .5 * this.maxCharge / 100;
       this.charge = constrain(this.charge, 0, this.maxCharge);
-      laserCharging.playMode('untilDone');
-      laserCharging.play();
+    //  laserCharging.playMode('untilDone');
+      //laserCharging.play();
     }
     if (this.charge === this.maxCharge) {
       this.chargeEmpty = false;
-      laserCharging.stop();
+      //laserCharging.stop();
     }
     textAlign(CENTER, CENTER);
     textSize(width * 1 / 100);
@@ -209,7 +212,8 @@ class Player {
     imageMode(CENTER);
     image(this.crosshairs, this.x, this.y, this.size, this.size);
     image(this.cockpit, width/2, height/2, width, height);
-
     pop();
+    this.displayHealth();
+    this.displayCharge();
   }
 }

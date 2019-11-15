@@ -61,6 +61,7 @@ class ScreenIntro2 {
       //start the timer for spawning new enemies, setting it to an
       //initial interval (in milliseconds)
       enemyTimer(5000);
+      resetGameTimer();
       console.log(gameState);
 }
 
