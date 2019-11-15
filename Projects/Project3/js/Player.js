@@ -1,9 +1,9 @@
 // Player
 //
-// A class that represents the games player as a set of crosshairs, with a ship in the foreground
-// The player is controlled using the Arrow Keys
-// When the spacebar is pressed, [see script.js:player.handleTarget()]
-// if the enemy objects have been targeted correctly, they will take damage
+//This class handles the displaying of the players visual components (crosshairs,
+//ship, health and phaser charge status)
+//It also checks for collisions between the player and the enemy objects, calling
+//a game over when the player's shield health is critically low.
 
 class Player {
 
@@ -22,13 +22,14 @@ class Player {
     this.vx = 0;
     this.vy = 0;
     this.speed = speed;
-    // Health properties
-    this.maxShieldHealth = 30 * height / 100;
-    this.shieldHealth = this.maxShieldHealth; // Must be AFTER defining this.maxHealth
-    this.healthLossPerHit = 10 * this.maxHealth / 100;
+
+    // Shield Health properties
+    this.maxShieldHealth = 25 * height / 100;
+    this.shieldHealth = this.maxShieldHealth;
+    this.healthLossPerHit = 25 * this.maxShieldHealth / 100;
 
     //Phazer charge properties
-    this.maxCharge = 1.5 * height / 100;
+    this.maxCharge = 25 * height / 100;
     this.charge = this.maxCharge;
     this.chargeEmpty = false;
 
@@ -48,6 +49,7 @@ class Player {
   // Checks if an arrow key is pressed and sets the player's
   // velocity appropriately.
   handleInput() {
+    console.log(this.maxShieldHealth);
     // Horizontal movement
     if (keyIsDown(this.leftKey)) {
       this.vx = -this.speed;
@@ -75,8 +77,8 @@ class Player {
     this.x += this.vx;
     this.y += this.vy;
     //increase shield health slowly, constraining it within max and min
-    this.shieldHealth += .01;
-    this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);
+    //this.shieldHealth += .1*this.maxShieldHealth/100;
+    //this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);
     // Handle wrapping
     this.handleWrapping();
   }
@@ -114,10 +116,15 @@ class Player {
           crash.playMode('untilDone');
           crash.play();
           this.updateHealth();
+          //if shields have reached 0, chgange gameState to lose
+          if(this.shieldHealth <= 0){
+            gameState = "lose";
+          }
           enemies.splice(e, 1);
           console.log("crash");
         } else {
           console.log("escaped");
+          enemies.splice(e, 1);
           spawnNewEnemy();
         }
       }
@@ -139,16 +146,15 @@ class Player {
   //Displays the seconds remining before reaching planet Amazon
   displayHealth() {
     push();
-
     textAlign(CENTER, CENTER);
     textSize(width * 1 / 100);
     fill(210, 255, 255);
-    text("SHIELD", width / 2 - 37.5, height * 120 / 100 - this.health * 30 - 10);
+    text("SHIELD", width / 2 - 37.5, height - this.shieldHealth - 10);
     rectMode(CORNERS);
     fill(210, 255, 255, 150);
     strokeWeight(7);
     stroke(210, 255, 255, 150);
-    rect(width / 2 - 25, height, width / 2 - 50, height - this.health);
+    rect(width / 2 - 25, height, width / 2 - 50, height - this.shieldHealth);
 
     noStroke();
     fill(0, 255, 255, 150);
@@ -171,22 +177,22 @@ class Player {
     if (this.chargeEmpty === true) {
       this.charge += .5 * this.maxCharge / 100;
       this.charge = constrain(this.charge, 0, this.maxCharge);
-    //  laserCharging.playMode('untilDone');
-      //laserCharging.play();
+      laserCharging.playMode('untilDone');
+      laserCharging.play();
     }
     if (this.charge === this.maxCharge) {
       this.chargeEmpty = false;
-      //laserCharging.stop();
+      laserCharging.stop();
     }
     textAlign(CENTER, CENTER);
     textSize(width * 1 / 100);
     fill(100, 255, 255);
-    text("CHARGE", width / 2 + 37.5, height * 120 / 100 - this.charge * 30 - 10);
+    text("CHARGE", width / 2 + 37.5, height - this.charge - 10);
     rectMode(CORNERS);
     fill(100, 255, 255, 150);
     strokeWeight(7);
     stroke(100, 255, 255, 150);
-    rect(width / 2 + 25, height, width / 2 + 50, height * 120 / 100 - this.charge * 30);
+    rect(width / 2 + 25, height, width / 2 + 50, height - this.charge);
     pop();
   }
 

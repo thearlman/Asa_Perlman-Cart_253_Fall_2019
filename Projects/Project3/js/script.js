@@ -27,6 +27,7 @@ let cockpit;
 //~~~~~~~~Sound variables~~~~~~~~~~~//
 let ambience;
 let crash;
+let laserCharging;
 
 //~~~~~~~~TIMING VARIABLES~~~~~~~~~~//
 //**Variable  assigned to the setInterval function (controlling game timer)
@@ -55,6 +56,7 @@ function preload() {
 
   //sounds
   ambience = loadSound('assets/sounds/ambience.mp3');
+  laserCharging = loadSound('assets/sounds/laserCharging.mp3');
   crash = loadSound('assets/sounds/crash.wav');
 
 }
