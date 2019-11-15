@@ -23,7 +23,7 @@ class Player {
     this.vy = 0;
     this.speed = speed;
     // Health properties
-    this.maxHealth = 1.5 * height / 100;
+    this.maxHealth = 30 * height / 100;
     this.health = this.maxHealth; // Must be AFTER defining this.maxHealth
     this.healthLossPerHit = 10 * this.maxHealth / 100;
 
@@ -100,6 +100,29 @@ class Player {
     }
   }
 
+  //detectCollision()
+  //
+  //Checks to see if an enemy cas collided with player,
+  detectCollision() {
+    //cycle through all enemies
+    for (let e = 0; e < enemies.length; e++){
+      //if size is greater than 25% of viewport
+      if (enemies[e].size > 25*height/100) {
+        //and enemy is within the masking range of cockpit window
+        if (enemies[e].x > width * 10 / 100 && enemies[e].x < width * 90 / 100) {
+          //play crashing sound, and remove enemy from array
+          crash.playMode('untilDone');
+          crash.play();
+          this.updateHealth();
+          enemies.splice(e, 1);
+          console.log("crash");
+        } else {
+          console.log("escaped");
+          spawnNewEnemy();
+        }
+      }
+    }
+  }
 
   // Update health()
   //
@@ -123,7 +146,7 @@ class Player {
     fill(210, 255, 255, 150);
     strokeWeight(7);
     stroke(210, 255, 255, 150);
-    rect(width / 2 - 25, height, width / 2 - 50, height * 120 / 100 - this.health * 30);
+    rect(width / 2 - 25, height, width / 2 - 50, height - this.health);
     noStroke();
     fill(0, 255, 255, 150);
     rectMode(CENTER);

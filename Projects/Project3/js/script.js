@@ -26,6 +26,7 @@ let cockpit;
 
 //~~~~~~~~Sound variables~~~~~~~~~~~//
 let ambience;
+let crash;
 
 //~~~~~~~~TIMING VARIABLES~~~~~~~~~~//
 
@@ -50,6 +51,7 @@ function preload() {
 
   //sounds
   ambience = loadSound('assets/sounds/ambience.mp3');
+  crash = loadSound('assets/sounds/crash.wav');
 
 }
 
@@ -91,12 +93,14 @@ function draw() {
     introScreen2.display();
   } else if (gameState === "playing") {
     background(backgroundImage);
-
+    //display the enemies
     handleEnemies();
     // Handle input for the player
     player.handleInput();
     // Handle movment of the player
     player.move();
+    //detects if player has collided with enemy
+    player.detectCollision();
     //displays the players crosshairs, and the ship
     player.display();
   }
@@ -132,7 +136,6 @@ function handleEnemies(){
   for (let e = 0; e < enemies.length; e++) {
     enemies[e].move();
     enemies[e].display();
-    enemies[e].detectCollision();
   }
 
 }

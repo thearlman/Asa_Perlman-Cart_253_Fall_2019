@@ -53,27 +53,6 @@ class Enemy {
   }
 
 
-  //collisionDetect()
-  //
-  //Checks to see is enemy cas collided with player, resets enemy****
-  detectCollision() {
-    if (this.size > 200) {
-      if (this.x > width * 10 / 100 && this.x < width * 90 / 100) {
-        crash.playMode('untilDone');
-        crash.play();
-        player.updateHealth();
-        this.reset();
-      } else {
-        console.log("escaped");
-        spawnNewEnemy();
-        //***I think this is where the mystery larger enemies were coming from, but it's
-        //too late to check before submission deadline. :-( Scared of breaking things
-        this.reset();
-      }
-    }
-  }
-
-
   // handleWrapping
   //
   // Checks if the enemy has gone off the canvas and
