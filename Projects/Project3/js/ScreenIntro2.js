@@ -60,9 +60,8 @@ class ScreenIntro2 {
       gameState = "playing";
       //start the timer for spawning new enemies, setting it to an
       //initial interval (in milliseconds)
-      enemyTimer(5000);
+      enemyTimer(spawnInterval);
       resetGameTimer();
-      console.log(gameState);
 }
 
   }

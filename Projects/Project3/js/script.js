@@ -32,10 +32,14 @@ let laserCharging;
 //~~~~~~~~TIMING VARIABLES~~~~~~~~~~//
 //**Variable  assigned to the setInterval function (controlling game timer)
 let gameTimer;
-//**variables to set the amount of time
+//**variables to set the amount of time until planet has been reached
 let secondsToArrival = 120;
+//**variable for seconds passed, to control frequency of enemy spawn
+let secondsPassed = 0;
 //**variable for the spawn timer
 let spawnTimer;
+//number of milliseconds between enemy Spawns
+let spawnInterval = 5000;
 
 
 //preload()
@@ -82,7 +86,7 @@ function setup() {
     height - height * 15 / 100,
     width * 10 / 100, height * 8 / 100)
   //create the player
-  player = new Player(crosshairs, cockpit, 100, 100, 10, color(200, 200, 0), 50);
+  player = new Player(crosshairs, cockpit, width/2, height/2, 10, color(200, 200, 0), 50);
 
 }
 
@@ -100,7 +104,7 @@ function draw() {
   } else if (gameState === "playing") {
     background(backgroundImage);
     //display the enemies
-    handleEnemies();
+    displayEnemies();
     // Handle input for the player
     player.handleInput();
     // Handle movment of the player
@@ -109,24 +113,31 @@ function draw() {
     player.detectCollision();
     //displays the players crosshairs, and the ship
     player.display();
+  } else if (gameState === "lose"){
+
   }
 }
 
-
-//enemyTimer()
+//displayEnemies()
 //
-//resets the spawn timer interval on call with argument provided
-function enemyTimer(interval){
-  clearInterval(spawnTimer);
-  spawnTimer = setInterval(spawnNewEnemy, interval);
+//
+// Handle movement, health, collision detection and displaying of enemies
+function displayEnemies(){
+  //we iterate through the array ,
+  for (let e = 0; e < enemies.length; e++) {
+    enemies[e].move();
+    enemies[e].display();
+  }
+
 }
+
+
 
 //~~~~~~~~~TIMED FUNCTIONS~~~~~~~~~~~~//
 
-
 //gameTimer
 //
-//
+//resets game timer
 function resetGameTimer(){
   clearInterval(gameTimer);
   gameTimer = setInterval(timeToArival, 1000);
@@ -134,10 +145,17 @@ function resetGameTimer(){
 
 //timeToPlanet()
 //
-//function which reduces the number of seconds until the player has reached the planet and won.
-//this function is triggered by the setInterval() function.
+//reduces the number of seconds until the player has reached the planet and won.
+// also keeps track of time passed, increasing number of enemies as the game progresses
 function timeToArival() {
   secondsToArrival -= 1;
+  secondsPassed ++
+  if (secondsPassed === 30){
+    spawnInterval -= 1000;
+    enemyTimer(spawnInterval);
+    secondsPassed = 0;
+
+  }
 }
 
 //enemyTimer()
@@ -157,19 +175,6 @@ function spawnNewEnemy() {
   enemies.unshift(newEnemy);
 }
 
-
-//handleEnemies()
-//
-//
-// Handle movement, health, collision detection and displaying of enemies
-function handleEnemies(){
-  //we iterate through the array ,
-  for (let e = 0; e < enemies.length; e++) {
-    enemies[e].move();
-    enemies[e].display();
-  }
-
-}
 
 
 // mousePressed()

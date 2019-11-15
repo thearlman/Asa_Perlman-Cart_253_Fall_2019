@@ -49,7 +49,6 @@ class Player {
   // Checks if an arrow key is pressed and sets the player's
   // velocity appropriately.
   handleInput() {
-    console.log(this.maxShieldHealth);
     // Horizontal movement
     if (keyIsDown(this.leftKey)) {
       this.vx = -this.speed;
@@ -121,9 +120,7 @@ class Player {
             gameState = "lose";
           }
           enemies.splice(e, 1);
-          console.log("crash");
         } else {
-          console.log("escaped");
           enemies.splice(e, 1);
           spawnNewEnemy();
         }
