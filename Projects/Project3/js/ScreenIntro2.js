@@ -58,6 +58,8 @@ class ScreenIntro2 {
   mousePressed(){
     if (this.d < this.buttonWidth && this.d < this.buttonHeight && gameState === "intro2") {
       gameState = "playing";
+      //start the interval timer for spawning new enemies
+      enemyTimer(4000);
       console.log(gameState);
 }
 
