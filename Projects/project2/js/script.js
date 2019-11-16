@@ -173,9 +173,9 @@ function draw() {
     //iterate through all of the phazers and all of the enemies to see if they
     //intersect. Also iterating backwards so that if one is removed, the array
     // will re-index properly
-    for (let p = phazer.length - 1; p >= 0; p--) {
+    for (let p = phazers.length - 1; p >= 0; p--) {
       for (let e = enemies.length - 1; e >= 0; e--) {
-        let result = phazer[p].hit(enemies[e]);
+        let result = phazers[p].hit(enemies[e]);
         //if this happened, and the phazer's size is half the size of the eney's (to help with the 3D effect)
         //play the crash sound, and add 1 to the enemy's hit count, and change the enemy's image to the damaged version
         if (result && phazer[p].size < enemies[e].size / 2) {

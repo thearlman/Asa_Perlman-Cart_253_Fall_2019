@@ -6,15 +6,15 @@ let gameState = "intro1";
 
 
 //~~~~~~Variables for the game's actors~~~~~~//
+
 //*the player*
 let player;
+//*the phazer objects*
+let phazers = [];
 //*the enemies (to be stored in this array)**
 let enemies = [];
 //*&their respective images
 let enemyImage = [];
-
-
-
 
 //~~~~~~~Image variables~~~~~~~~~~~//
 
@@ -25,11 +25,17 @@ let crosshairs;
 let cockpit;
 
 //~~~~~~~~Sound variables~~~~~~~~~~~//
+
 let ambience;
+let laserBlast;
+let lowCharge;
+let firstHit;
+let secondHit;
 let crash;
 let laserCharging;
 
 //~~~~~~~~TIMING VARIABLES~~~~~~~~~~//
+
 //**Variable  assigned to the setInterval function (controlling game timer)
 let gameTimer;
 //**variables to set the amount of time until planet has been reached
@@ -61,6 +67,10 @@ function preload() {
   //sounds
   ambience = loadSound('assets/sounds/ambience.mp3');
   laserCharging = loadSound('assets/sounds/laserCharging.mp3');
+  laserBlast = loadSound('assets/sounds/laserBlast.wav');
+  firstHit = loadSound('assets/sounds/firstHit.wav');
+  secondHit = loadSound('assets/sounds/secondHit.wav');
+  lowCharge = loadSound('assets/sounds/lowCharge.mp3');
   crash = loadSound('assets/sounds/crash.wav');
 
 }
@@ -105,10 +115,12 @@ function draw() {
     background(backgroundImage);
     //display the enemies
     displayEnemies();
-    // Handle input for the player
+    // Handle directional input for the player (shooting is in mousPressed)
     player.handleInput();
     // Handle movment of the player
     player.move();
+    // display the phazers, and check for collion with enemies
+    handlePhazers();
     //detects if player has collided with enemy
     player.detectCollision();
     //displays the players crosshairs, and the ship
@@ -117,6 +129,8 @@ function draw() {
 
   }
 }
+
+
 
 //displayEnemies()
 //
@@ -127,6 +141,45 @@ function displayEnemies(){
   for (let e = 0; e < enemies.length; e++) {
     enemies[e].move();
     enemies[e].display();
+  }
+}
+
+//handePhazers()
+//
+//
+//displays phazer objects and checks for collisions with enemies
+function handlePhazers(){
+  //display the phazers, and delete them from the array if at zero (ran out
+  //of steam) Iterating backwards so that if one is removed, the array
+  // will re-index properly
+  for (let p = phazers.length - 1; p >= 0; p--) {
+    phazers[p].display();
+    if (phazers[p].size < 0) {
+      phazers.splice(p, 1);
+    }
+  }
+//iterate through all of the phazers and all of the enemies to see if they
+//intersect. Again, we go backwards. see above.
+  for (let p = phazers.length - 1; p >= 0; p--) {
+    for (let e = enemies.length - 1; e >= 0; e--) {
+      let result = phazers[p].hit(enemies[e]);
+      //if the above happened, && the phazer's size is half the size of the eney's (to help with the 3D effect)
+      //play the crash sound, and add 1 to the enemy's hit count, and change the enemy's image to the damaged version
+      if (result && phazers[p].size < enemies[e].size / 2) {
+        enemies[e].hitCount++;
+        phazers.splice(p, 1);
+        firstHit.play();
+        //if the enemy's hitcount reaches 2, play the explosion sound and
+        //remove the enemy and the phazer from their respective arrays
+        if (enemies[e].hitCount >= 2) {
+          secondHit.play();
+          enemies.splice(e, 1);
+          phazers.splice(p, 1);
+        }
+        //break out of the for loop so that we can look through it again post re indexing
+        break;
+      }
+    }
   }
 
 }
@@ -170,12 +223,21 @@ function enemyTimer(interval){
 //
 //Spawns a new enemy, by creating a new enemy object, and pushing it to the enemies[] array
 function spawnNewEnemy() {
-  let newEnemy = new Enemy(enemyImage[0], random(0, width), random(0, cockpitVerticalMask), width * .25 / 100, 1);
+  let newEnemy = new Enemy(random(0, width), random(0, cockpitVerticalMask), width * .25 / 100, 1);
   //put the new enemy at the beginning of the array(unshift), so it will be displayed behind oldest enemies
   enemies.unshift(newEnemy);
 }
 
-
+//keyPressed()
+//
+//
+// Checks for keyboard events calls appropriate functions
+function keyPressed() {
+  //if the spacebar is pressed (while the game is in play) call the players phazerire function
+  if (keyCode === 32 && gameState === "playing") {
+    player.firePhazer();
+  }
+}
 
 // mousePressed()
 //
@@ -184,13 +246,4 @@ function spawnNewEnemy() {
 function mousePressed() {
   introScreen1.mousePressed();
   introScreen2.mousePressed();
-}
-
-
-// keyPressed()
-//
-//
-// Detects key presses, calls appropriate functions
-function keypressed() {
-
 }

@@ -206,6 +206,24 @@ class Player {
     }
   }
 
+  //firePhazer()
+  //
+  //puts a new phazer object out into the world (in the appropriate array of course)
+  //and play thelaser blasting sound. update the amount of charge left in current laser "clip"
+  firePhazer(){
+    if (this.chargeEmpty === false){
+      let newPhazer = new Phazers();
+      player.updateCharge();
+      phazers.push(newPhazer);
+      laserBlast.play();
+    }
+
+    //if the player tries to fire the phaser while charge is empty, play the empty battery sound
+    else{
+    lowCharge.playMode('untilDone');
+    lowCharge.play();
+    }
+  }
 
   // display
   //

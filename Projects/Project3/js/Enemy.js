@@ -11,7 +11,7 @@ class Enemy {
   //
   // Sets the initial values for the enemy's properties
   // Either sets default values or uses the arguments provided
-  constructor(img, x, y, speed, startingSize) {
+  constructor(x, y, speed, startingSize) {
     // Position
     this.x = x;
     this.y = y;
@@ -28,7 +28,8 @@ class Enemy {
     //healthProperties
     this.hitCount = 0;
     // Display properties
-    this.img = img;
+      //**The enemies image is stored in an array, and iterates through based
+      //on its hitCount
   }
 
   // move
@@ -36,6 +37,7 @@ class Enemy {
   // Sets velocity based on the noise() function and the enemy's speed
   // Moves based on the resulting velocity and handles wrapping
   // Grows in size, or "moves" closer to the player
+  // Checks how many times it has been hit, and changes its image accordingly
   move() {
     // Set velocity via noise()
     this.vx = map(noise(this.tx), 0, 1, -this.speed, this.speed);
@@ -94,7 +96,7 @@ class Enemy {
   display() {
     push();
     imageMode(CENTER)
-    image(this.img, this.x, this.y, this.size * 2, this.size * 2);
+    image(enemyImage[this.hitCount], this.x, this.y, this.size * 2, this.size * 2);
     pop();
   }
 
