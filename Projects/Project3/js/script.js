@@ -52,7 +52,7 @@ let gameOverBells;
 //~~~~~~~~TIMING VARIABLES~~~~~~~~~~//
 
 //**Variable  assigned to the setInterval function (controlling game timer)
-let gameTimer;
+let gameClock;
 //**variables to set the amount of time until planet has been reached
 let gameTime = 30;
 let secondsToArrival = gameTime;
@@ -260,8 +260,8 @@ function handlePhazers() {
 //
 //resets game timer
 function resetGameTimer() {
-  clearInterval(gameTimer);
-  gameTimer = setInterval(timeToArival, 1000);
+  clearInterval(gameClock);
+  gameClock = setInterval(gameTimer, 1000);
 }
 
 //==============//
@@ -271,7 +271,7 @@ function resetGameTimer() {
 //reduces the number of seconds until the player has reached the planet and won.
 //checks for ^^this^^ to be true and changes gameState accordingly
 // also keeps track of time passed, increasing frequency enemies are spawned as the game progresses
-function timeToArival() {
+function gameTimer() {
   secondsToArrival -= 1;
   secondsPassed++
   if (secondsToArrival === 0) {
