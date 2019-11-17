@@ -71,13 +71,14 @@ class Player {
   //
   // Updates the position according to velocity
   // Handles wrapping
+  // Increases sield health.. cause the shield is powered by.... movement?
   move() {
     // Update position
     this.x += this.vx;
     this.y += this.vy;
     //increase shield health slowly, constraining it within max and min
-    //this.shieldHealth += .1*this.maxShieldHealth/100;
-    //this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);
+    this.shieldHealth += .05*this.maxShieldHealth/100;
+    this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);
     // Handle wrapping
     this.handleWrapping();
   }
@@ -114,12 +115,8 @@ class Player {
           //play crashing sound, and remove enemy from array
           crash.playMode('untilDone');
           crash.play();
-          this.updateHealth();
-          //if shields have reached 0, chgange gameState to lose
-          if(this.shieldHealth <= 0){
-            gameState = "lose";
-          }
           enemies.splice(e, 1);
+          this.updateHealth();
         } else {
           enemies.splice(e, 1);
           spawnNewEnemy();
@@ -135,6 +132,11 @@ class Player {
   updateHealth() {
     this.shieldHealth = this.shieldHealth - this.healthLossPerHit;
     this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);
+    //if shields have reached 0, chgange gameState to gameOver
+    if(this.shieldHealth === 0){
+      gameState = "gameOver";
+      resetGame();
+    }
   }
 
   // displayHealth()

@@ -1,32 +1,20 @@
-//Intro1()
-//
-//
-// A class that class to display the first intro screen
-// It displays text, and image, plays sounds, and can detect
-// when its button has been pressed.
-
-class ScreenIntro1 {
-
+class ScreenGameWon {
   constructor(bgImg, buttonX, buttonY, buttonWidth, buttonHeight) {
     this.bgImg = bgImg;
     this.buttonX = buttonX;
     this.buttonY = buttonY;
     this.buttonWidth = buttonWidth;
     this.buttonHeight = buttonHeight;
-    this.buttonStart = "Fuck That:\nTo The Moon!";
-    this.buttonHover = "LET'S GO!!!!";
+    this.buttonStart = "Circle Around & \n Hit 'em Again!";
     this.buttonBrightness;
     this.d;
   }
 
   //display()
   //
-  //displays  the background image and the button to advance to the next screen.
-  //and checks to see if the button is being hovered ove,r changing the fill brightness
+  //displays the background image and the button to reset the game
+  //checks to see if the button is being hovered over, changing the fill brightness
   display() {
-    // play the ambient sound effect
-    ambience.playMode('untilDone');
-    ambience.play();
     background(this.bgImg);
     push()
     rectMode(CENTER);
@@ -38,12 +26,11 @@ class ScreenIntro1 {
     noStroke();
     fill(255);
     textSize(width * 1 / 100);
-    text(this.buttonStart, width / 2 + 12, height - height * 15 / 100)
+    text(this.buttonStart, width / 2, height - height * 15 / 100);
     //Checks to see if the mouse is hovering over the button, and changes
-    //fill color accordingly.
+    //text fill color accordingly.
     this.d = dist(this.buttonX, this.buttonY, mouseX, mouseY);
     if (this.d < this.buttonWidth && this.d < this.buttonHeight) {
-      //text(this.buttonHover, width / 2 + 12, height - height * 15 / 100);
       this.buttonBrightness = 255;
     } else {
       this.buttonBrightness = 200;
@@ -55,9 +42,9 @@ class ScreenIntro1 {
   //
   //
   // Is called when the mouse is pressed, & checks to see if the mouse and button are overlapping.
-  //
   mousePressed() {
-    if (this.d < this.buttonWidth && this.d < this.buttonHeight && gameState === "intro1") {
+    if (this.d < this.buttonWidth && this.d < this.buttonHeight && gameState === "gameOver") {
+      //loop back around to the getaway screen
       gameState = "intro2";
     }
   }
