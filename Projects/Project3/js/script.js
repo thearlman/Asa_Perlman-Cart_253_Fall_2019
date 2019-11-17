@@ -46,13 +46,15 @@ let firstHit;
 let secondHit;
 let crash;
 let laserCharging;
+let gameWonSong;
+let gameOverBells;
 
 //~~~~~~~~TIMING VARIABLES~~~~~~~~~~//
 
 //**Variable  assigned to the setInterval function (controlling game timer)
 let gameTimer;
 //**variables to set the amount of time until planet has been reached
-let gameTime = 120
+let gameTime = 30;
 let secondsToArrival = gameTime;
 //**variable for seconds passed, to control frequency of enemy spawn
 let secondsPassed = 0;
@@ -83,6 +85,7 @@ function preload() {
 
   //sounds
   ambience = loadSound('assets/sounds/ambience.mp3');
+  ambience.playMode('untilDone');
 
   siren = loadSound('assets/sounds/siren.mp3');
   siren.setVolume(.1);
@@ -103,12 +106,17 @@ function preload() {
   secondHit.setVolume(.4);
 
   crash = loadSound('assets/sounds/crash.wav');
+
+  gameWonSong = loadSound('assets/sounds/gameWonSong.mp3');
+
+  let gameOverBells = loadSound('assets/sounds/gameOverBells.mp3');
 }
 
 
 
 //==============//
 // setup()
+//=============//
 // Sets up a canvas
 // Creates player and enemy objects, planet object, sets color mode
 function setup() {
@@ -126,7 +134,7 @@ function setup() {
   //create game over screen
   gameOverScreen = new ScreenGameOver(gameOverBgImg, width / 2 + 12,
     height - height * 15 / 100, width * 10 / 100, height * 8 / 100);
-  gameWonScreen = new ScreenGameWon(gameOverBgImg, width / 2 + 12,
+  gameWonScreen = new ScreenGameWon(gameWonBgImg, width / 2 + 20,
     height - height * 15 / 100, width * 10 / 100, height * 8 / 100);
   //create the player
   player = new Player(crosshairs, cockpit, width / 2, height / 2, 1.5 * height / 100,
@@ -139,6 +147,7 @@ function setup() {
 
 //==============//
 // draw()
+//=============//
 //
 function draw() {
   //~~~ intro 1 ~~~//
@@ -149,7 +158,6 @@ function draw() {
     introScreen2.display();
     //~~~ playing ~~~//
   } else if (gameState === "playing") {
-    ambience.playMode('untilDone');
     ambience.play();
     //display th ebackground image
     background(backgroundImage);
@@ -193,6 +201,7 @@ function draw() {
 
 //==============//
 //displayEnemies()
+//=============//
 //
 //
 // Handle movement, health, collision detection and displaying of enemies
@@ -206,6 +215,7 @@ function displayEnemies() {
 
 //==============//
 //handePhazers()
+//=============//
 //
 //displays phazer objects and checks for collisions with enemies
 function handlePhazers() {
@@ -246,6 +256,7 @@ function handlePhazers() {
 
 //==============//
 //gameTimer
+//=============//
 //
 //resets game timer
 function resetGameTimer() {
@@ -255,6 +266,7 @@ function resetGameTimer() {
 
 //==============//
 //timeToPlanet()
+//=============//
 //
 //reduces the number of seconds until the player has reached the planet and won.
 //checks for ^^this^^ to be true and changes gameState accordingly
@@ -275,6 +287,7 @@ function timeToArival() {
 
 //==============//
 //enemyTimer()
+//=============//
 //
 //resets the spawn timer interval on call with argument provided
 function enemyTimer(interval) {
@@ -284,6 +297,7 @@ function enemyTimer(interval) {
 
 //==============//
 //spawnNewEnemy()
+//=============//
 //
 //Spawns a new enemy, by creating a new enemy object, and pushing it to the enemies[] array
 function spawnNewEnemy() {
@@ -294,6 +308,7 @@ function spawnNewEnemy() {
 
 //==============//
 //keyPressed()
+//=============//
 //
 // Checks for keyboard events calls appropriate functions
 function keyPressed() {
@@ -305,17 +320,20 @@ function keyPressed() {
 
 //==============//
 // mousePressed()
+//=============//
 //
 // Detects mouse press events, and calls appropriate functions
 function mousePressed() {
   introScreen1.mousePressed();
   introScreen2.mousePressed();
+  gameWonScreen.mousePressed();
   gameOverScreen.mousePressed();
 }
 
 
 //==============//
 //resetGame()
+//=============//
 //
 //switched off spawn timer, resets spawn interval
 //resets player's shield health

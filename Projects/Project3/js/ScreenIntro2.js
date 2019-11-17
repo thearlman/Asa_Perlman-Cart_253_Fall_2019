@@ -13,9 +13,9 @@ class ScreenIntro2 {
     this.buttonY = buttonY;
     this.buttonWidth = buttonWidth;
     this.buttonHeight = buttonHeight;
-    this.buttonStart = "Fuck That:\nTo The Moon!";
-    this.buttonHover = "LET'S GO!!!!";
-    this.buttonBrightness;
+    this.buttonText;
+    this.buttonStatic = "What should we do?!";
+    this.buttonHover = "LET'S GO!!!";
     this.d;
   }
 
@@ -27,6 +27,7 @@ class ScreenIntro2 {
     // play the ambient sound effect
     ambience.playMode('untilDone');
     ambience.play();
+    //play the siren sound effect
     siren.playMode('untilDone');
     siren.play();
     background(this.bgImg);
@@ -40,14 +41,15 @@ class ScreenIntro2 {
     noStroke();
     fill(255);
     textSize(width * 1 / 100);
-    text(this.buttonStart, width / 2 + 12, height - height * 15 / 100)
+    text(this.buttonText, this.buttonX, this.buttonY);
     //Checks to see if the mouse is hovering over the button, and changes
-    //fill color accordingly.
+    //text and fill color accordingly.
     this.d = dist(this.buttonX, this.buttonY, mouseX, mouseY);
     if (this.d < this.buttonWidth && this.d < this.buttonHeight) {
-      //text(this.buttonHover, width / 2 + 12, height - height * 15 / 100);
+      this.buttonText = this.buttonHover;
       this.buttonBrightness = 255;
     } else {
+      this.buttonText = this.buttonStatic;
       this.buttonBrightness = 200;
     }
     pop()
@@ -59,12 +61,17 @@ class ScreenIntro2 {
   // Is called when the mouse is pressed, & checks to see if the mouse and button are overlapping.
   mousePressed(){
     if (this.d < this.buttonWidth && this.d < this.buttonHeight && gameState === "intro2") {
-      gameState = "playing";
+      //fade out and stop the siren
+      siren.fade(0, 7);
+      siren.stop(7);
       //start the timer for spawning new enemies, setting it to an
       //initial interval (in milliseconds)
       enemyTimer(newSpawnInterval);
       //start the planet countdown timeSignature
       resetGameTimer();
+      //set game state
+      gameState = "playing";
+
 }
 
   }

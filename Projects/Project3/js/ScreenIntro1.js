@@ -13,8 +13,9 @@ class ScreenIntro1 {
     this.buttonY = buttonY;
     this.buttonWidth = buttonWidth;
     this.buttonHeight = buttonHeight;
-    this.buttonStart = "Fuck That:\nTo The Moon!";
-    this.buttonHover = "LET'S GO!!!!";
+    this.buttonText;
+    this.buttonStatic = "Do you want to\nComply? ";
+    this.buttonHover = "Fuck That:\nTo The Moon!";
     this.buttonBrightness;
     this.d;
   }
@@ -38,14 +39,16 @@ class ScreenIntro1 {
     noStroke();
     fill(255);
     textSize(width * 1 / 100);
-    text(this.buttonStart, width / 2 + 12, height - height * 15 / 100)
+    text(this.buttonText, this.buttonX, this.buttonY);
     //Checks to see if the mouse is hovering over the button, and changes
     //fill color accordingly.
     this.d = dist(this.buttonX, this.buttonY, mouseX, mouseY);
     if (this.d < this.buttonWidth && this.d < this.buttonHeight) {
       //text(this.buttonHover, width / 2 + 12, height - height * 15 / 100);
+      this.buttonText = this.buttonHover;
       this.buttonBrightness = 255;
     } else {
+      this.buttonText = this.buttonStatic;
       this.buttonBrightness = 200;
     }
     pop()
