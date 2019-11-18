@@ -1,8 +1,12 @@
-//~~~~~~gameState control variable; or "state machine?"~~~~~~~//
+//~~~~~~gameState control variables; or "state machines?"~~~~~~~//
 // Is set to the appropriate string based on the
 // current state of the game. Should be set to one of the following:
 // intro1, intro2, playing, gameWon, gameOver
 let gameState = "intro1";
+  //**controls the current state of the boss battle stage, which
+  //  occur on top of the playing function will be set to either 1, 2, or 3
+  // depending on hwo much time has passed in the game. Controlled in gameTimer()
+let bossStage = 0;
 
 //~~~~Variables for the transition screens~~~~//
 
@@ -20,8 +24,6 @@ let player;
 let phazers = [];
 //*the enemies (to be stored in this array)**
 let enemies = [];
-//* +their respective images*
-let enemyImage = [];
 //*The planet object*
 let planetAmazon;
 
@@ -34,8 +36,9 @@ let gameWonBgImg;
 let backgroundImage;
 let crosshairs;
 let cockpit;
-let planetAmazonImg;
-
+let planetAmazonImg
+let enemyImage = [];
+let bossImage = [];
 //~~~~~~~~Sound variables~~~~~~~~~~~//
 
 let ambience;
@@ -66,8 +69,9 @@ let newSpawnInterval = spawnInterval;
 
 
 
-//==============//
-//preload()
+//================================//
+//           preload()
+//================================//
 //
 // Preloads the various images and sounds for the game
 function preload() {
@@ -82,6 +86,7 @@ function preload() {
   cockpit = loadImage('assets/images/cockpit.png');
   enemyImage[0] = loadImage('assets/images/drone0Damage.png');
   enemyImage[1] = loadImage('assets/images/drone1Damage.png');
+  bossImage[0] = loadImage('assets/images/boss0damage.png');
 
   //sounds
   ambience = loadSound('assets/sounds/ambience.mp3');
@@ -109,14 +114,14 @@ function preload() {
 
   gameWonSong = loadSound('assets/sounds/gameWonSong.mp3');
 
-  let gameOverBells = loadSound('assets/sounds/gameOverBells.mp3');
+  gameOverBells = loadSound('assets/sounds/gameOverBells.mp3');
 }
 
 
 
-//==============//
-// setup()
-//=============//
+//================================//
+//          setup()
+//================================//
 // Sets up a canvas
 // Creates player and enemy objects, planet object, sets color mode
 function setup() {
@@ -134,32 +139,37 @@ function setup() {
   //create game over screen
   gameOverScreen = new ScreenGameOver(gameOverBgImg, width / 2 + 12,
     height - height * 15 / 100, width * 10 / 100, height * 8 / 100);
-  gameWonScreen = new ScreenGameWon(gameWonBgImg, width / 2 + 20,
+  gameWonScreen = new ScreenGameWon(gameWonBgImg, width / 2,
     height - height * 15 / 100, width * 10 / 100, height * 8 / 100);
   //create the player
-  player = new Player(crosshairs, cockpit, width / 2, height / 2, 1.5 * height / 100,
-    color(200, 200, 0), 50);
+  player = new Player(crosshairs, cockpit, width / 2, height / 2,
+    1.5 * height / 100,color(200, 200, 0), 50);
+
+  boss = new Boss (random(0, width), random(0, cockpitVerticalMask), width * .25 / 100, 1);
   //create the target planet object
   planetAmazon = new PlanetAmazon(planetAmazonImg, width / 2, 0,
     height * .03 / 100, 10, height * .05 / 100, 120);
 }
 
 
-//==============//
-// draw()
-//=============//
+//================================//
+//          draw()
+//================================//
 //
 function draw() {
+
   //~~~ intro 1 ~~~//
   if (gameState === "intro1") {
     introScreen1.display();
+
     //~~~ intro 2 ~~~//
   } else if (gameState === "intro2") {
     introScreen2.display();
+
     //~~~ playing ~~~//
   } else if (gameState === "playing") {
     ambience.play();
-    //display th ebackground image
+    //display the background image
     background(backgroundImage);
     //display the destination planet
     planetAmazon.display();
@@ -173,17 +183,22 @@ function draw() {
     handlePhazers();
     //detects if player has collided with enemy
     player.detectCollision();
+    //displays boss (if applicable)
+    displayBoss();
     //displays the players crosshairs, and the ship
     player.display();
+
+
     //~~~ game Over ~~~//
   } else if (gameState === "gameOver") {
+    //display the game over screen
     gameOverScreen.display();
     //remove any stray enemies
     for (let e = 0; e < enemies.length; e++) {
       enemies.splice(e, 1);
-      console.log(enemies.length);
     }
   }
+
   //~~~ game won ~~~//
   else if (gameState === "gameWon") {
     gameWonScreen.display()
@@ -196,12 +211,9 @@ function draw() {
 }
 
 
-
-
-
-//==============//
-//displayEnemies()
-//=============//
+//================================//
+//       displayEnemies()
+//================================//
 //
 //
 // Handle movement, health, collision detection and displaying of enemies
@@ -213,9 +225,28 @@ function displayEnemies() {
   }
 }
 
-//==============//
-//handePhazers()
-//=============//
+//================================//
+//       displayBoss()
+//================================//
+//
+//
+// checks for current boss state and displays accordingly
+function displayBoss(){
+  if (bossStage === 2){
+    clearInterval(gameClock);
+    console.log('bossStage1');
+    boss.move();
+    boss.display();
+  } else if (bossStage === 4){
+    console.log("bossStage2");
+  } else if (bossStage === 6){
+    console.log('boss stage 3');
+  }
+}
+
+//================================//
+//        handePhazers()
+//================================//
 //
 //displays phazer objects and checks for collisions with enemies
 function handlePhazers() {
@@ -254,9 +285,9 @@ function handlePhazers() {
 }
 
 
-//==============//
-//gameTimer
-//=============//
+//================================//
+//        resetGameTimer()
+//================================//
 //
 //resets game timer
 function resetGameTimer() {
@@ -264,40 +295,57 @@ function resetGameTimer() {
   gameClock = setInterval(gameTimer, 1000);
 }
 
-//==============//
-//timeToPlanet()
-//=============//
+//================================//
+//        gameTimer()
+//================================//
 //
 //reduces the number of seconds until the player has reached the planet and won.
 //checks for ^^this^^ to be true and changes gameState accordingly
 // also keeps track of time passed, increasing frequency enemies are spawned as the game progresses
+//triggers boos battles periodically.
 function gameTimer() {
   secondsToArrival -= 1;
   secondsPassed++
-  if (secondsToArrival === 0) {
+
+  if (secondsPassed > 33*gameTime / 100) {
+    newSpawnInterval -= 1000;
+    console.log('new time');
+    enemyTimer(newSpawnInterval);
+    bossStage++;
+    secondsPassed = 0;
+  } else if (secondsToArrival === 0) {
     gameState = "gameWon";
     resetGame();
-  } else if (secondsPassed === 30) {
-    newSpawnInterval -= 1000;
-    enemyTimer(newSpawnInterval);
-    secondsPassed = 0;
-
   }
 }
 
-//==============//
-//enemyTimer()
-//=============//
+
+//================================//
+//        playerShieldRecover()
+//================================//
 //
-//resets the spawn timer interval on call with argument provided
+//resets the spawn timer interval (which calls spawnNewEnemy())
+//on call with argument (number of milliseconds) provided
+//set player's shield color to healthy again
+function playerShieldRecover(){
+  player.shieldColor = player.shieldHealthyColor;
+}
+
+
+//================================//
+//        enemyTimer()
+//================================//
+//
+//resets the spawn timer interval (which calls spawnNewEnemy())
+//on call with argument (number of milliseconds) provided
 function enemyTimer(interval) {
   clearInterval(spawnTimer);
   spawnTimer = setInterval(spawnNewEnemy, interval);
 }
 
-//==============//
-//spawnNewEnemy()
-//=============//
+//================================//
+//       spawnNewEnemy()
+//================================//
 //
 //Spawns a new enemy, by creating a new enemy object, and pushing it to the enemies[] array
 function spawnNewEnemy() {
@@ -306,9 +354,9 @@ function spawnNewEnemy() {
   enemies.unshift(newEnemy);
 }
 
-//==============//
-//keyPressed()
-//=============//
+//================================//
+//        keyPressed()
+//================================//
 //
 // Checks for keyboard events calls appropriate functions
 function keyPressed() {
@@ -318,9 +366,9 @@ function keyPressed() {
   }
 }
 
-//==============//
-// mousePressed()
-//=============//
+//================================//
+//        mousePressed()
+//================================//
 //
 // Detects mouse press events, and calls appropriate functions
 function mousePressed() {
@@ -331,21 +379,21 @@ function mousePressed() {
 }
 
 
-//==============//
-//resetGame()
-//=============//
+//================================//
+//          resetGame()
+//================================//
 //
 //switched off spawn timer, resets spawn interval
 //resets player's shield health
 //resets planet's size
 //switches off the game timer, and resets the number of seconds
-//erases any remaning enemies
 function resetGame() {
   clearInterval(spawnTimer);
   newSpawnInterval = spawnInterval;
-  clearInterval(gameTimer);
+  clearInterval(gameClock);
   secondsToArrival = gameTime;
   secondsPassed = 0;
+  bossStage = 0;
   player.shieldHealth = player.maxShieldHealth;
   planetAmazon.reset();
 }

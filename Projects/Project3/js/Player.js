@@ -36,15 +36,21 @@ class Player {
     // Display properties
     this.fillColor = fillColor;
     this.size = size;
+    this.shieldHealthyColor = 210;
+    this.shieldDamagedColor = 0;
+    this.shieldColor = this.shieldHealthyColor;
+    this.shieldIndcatorColor = this.shieldHealthyColor;
+    this.shieldAnimation;
     // Input properties
     this.upKey = UP_ARROW;
     this.downKey = DOWN_ARROW;
     this.leftKey = LEFT_ARROW;
     this.rightKey = RIGHT_ARROW;
-
   }
 
-  // handleInput
+  //================================//
+  //        handleInput
+  //================================//
   //
   // Checks if an arrow key is pressed and sets the player's
   // velocity appropriately.
@@ -67,10 +73,11 @@ class Player {
     }
   }
 
-  // move
+  //================================//
+  //            move()
+  //================================//
   //
-  // Updates the position according to velocity
-  // Handles wrapping
+  // Updates the position according to velocity, handles screen wrapping
   // Increases sield health.. cause the shield is powered by.... movement?
   move() {
     // Update position
@@ -83,7 +90,9 @@ class Player {
     this.handleWrapping();
   }
 
-  // handleWrapping
+  //================================//
+  //       handleWrapping()
+  //================================//
   //
   // Checks if the player has gone off the canvas and
   // wraps it to the other side if so
@@ -102,9 +111,11 @@ class Player {
     }
   }
 
-  //detectCollision()
+  //================================//
+  //      detectCollision()
+  //================================//
   //
-  //Checks to see if an enemy cas collided with player,
+  //Checks to see if an enemy has collided with player,
   detectCollision() {
     //cycle through all enemies
     for (let e = 0; e < enemies.length; e++){
@@ -116,6 +127,10 @@ class Player {
           crash.playMode('untilDone');
           crash.play();
           enemies.splice(e, 1);
+          //change the shield color
+          this.shieldColor = this.shieldDamagedColor;
+          this.shieldAnimation = setTimeout(playerShieldRecover, 1000);
+          console.log('crash');
           this.updateHealth();
         } else {
           enemies.splice(e, 1);
@@ -125,10 +140,13 @@ class Player {
     }
   }
 
-  // Update health()
-  //
+
+  //================================//
+  //        Update health()
+  //================================//
   //
   //updates the player's health only on event
+  //temporarily changes the shield color to red
   updateHealth() {
     this.shieldHealth = this.shieldHealth - this.healthLossPerHit;
     this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);
@@ -139,22 +157,36 @@ class Player {
     }
   }
 
-  // displayHealth()
+
+  //================================//
+  //       displayHealth()
+  //================================//
   //
   //Displays the shield health of the player
   //Displays the seconds remining before reaching planet Amazon
   displayHealth() {
     push();
+    //shield level
     textAlign(CENTER, CENTER);
     textSize(width * 1 / 100);
-    fill(210, 255, 255);
+    fill(this.shieldIndicatorColor, 255, 255);
     text("SHIELD", width / 2 - 37.5, height - this.shieldHealth - 10);
     rectMode(CORNERS);
-    fill(210, 255, 255, 150);
+    fill(this.shieldIndicatorColor, 255, 255, 150);
     strokeWeight(7);
-    stroke(210, 255, 255, 150);
+    stroke(this.shieldIndcatorColor, 255, 255, 150);
     rect(width / 2 - 25, height, width / 2 - 50, height - this.shieldHealth);
 
+      if (this.shieldHealth < 25*this.maxShieldHealth/100){
+        this.shieldIndicatorColor = this.shieldDamagedColor
+      } else {
+        this.shieldIndicatorColor = this.shieldHealthyColor;
+      }
+    pop();
+
+    push();
+    //seconds to planet
+    textAlign(CENTER, CENTER);
     noStroke();
     fill(0, 255, 255, 150);
     rectMode(CENTER);
@@ -165,8 +197,9 @@ class Player {
     pop();
   }
 
-  //displayCharge()
-  //
+  //================================//
+  //        displayCharge()
+  //================================//
   //
   //Displays's and updates player's phazer charge level, as well as monitoring
   //if the player has run out of charge, requiring them to wait until full again
@@ -195,9 +228,9 @@ class Player {
     pop();
   }
 
-
-  //updateCharge()
-  //
+  //================================//
+  //        updateCharge()
+  //================================//
   //
   //is executed whenever a phazer is fired
   //returns a boolean telling the keyPressed() function id draw if the phazer charge is empty
@@ -208,7 +241,9 @@ class Player {
     }
   }
 
-  //firePhazer()
+  //================================//
+  //         firePhazer()
+  //================================//
   //
   //puts a new phazer object out into the world (in the appropriate array of course)
   //and play thelaser blasting sound. update the amount of charge left in current laser "clip"
@@ -227,13 +262,23 @@ class Player {
     }
   }
 
-  // display
+  //================================//
+  //          display()
+  //================================//
   //
   // Draw the player's icon as crosshairs on the canvas
+  // Draw the cockpit
   display() {
     push();
     imageMode(CENTER);
+    rectMode(CENTER);
+    noStroke();
+    //transucent shield which toggles to red on impact
+    fill(this.shieldColor, 255, 255, 75);
+    rect(width/2, height/2, width, height);
+    //crosshairs
     image(this.crosshairs, this.x, this.y, this.size, this.size);
+    //cockpit
     image(this.cockpit, width/2, height/2, width, height);
     pop();
     this.displayHealth();

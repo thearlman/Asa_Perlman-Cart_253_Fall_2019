@@ -1,15 +1,15 @@
-// Prey
+// Boss
 //
-// A class that represents an enemy (woah that sounded kind of problematic)
-// It can move around on screen based on a noise() function, and gets bigger
-// to simulate it coming towards you. It can be targeted, and destroyed by the
-//  player.
+// A class that represents the boss  It  moves around on screen based on the
+// noise() function, with varying speeds based on which stage, gets bigger and smaller
+// to simulate it coming towards you, and running away.
+// and throws boxes at you. It can be targeted, and (eventually) destroyed by the player.
 
-class Enemy {
+class Boss {
 
   // constructor
   //
-  // Sets the initial values for the enemy's properties
+  // Sets the initial values for the boss' properties
   // Either sets default values or uses the arguments provided
   constructor(x, y, speed, startingSize) {
     // Position
@@ -28,7 +28,7 @@ class Enemy {
     //healthProperties
     this.hitCount = 0;
     // Display properties
-      //**The enemy's images are stored in an array (script.js), and iterates through based
+      //**The enemies image is stored in an array, and iterates through based
       //on its hitCount
   }
 
@@ -72,21 +72,8 @@ class Enemy {
     } else if (this.y > cockpitVerticalMask) {
       this.y = 0;
     }
-
-    //~~~~~~~~~~~try and do this later: have enemies stay within screen~~~~~~~~~
-    // if (this.x <= 0 || this.x >= width){
-    //   this.speed = -this.speed;
-    //   this.vx = -this.vx
-    // }
-    //
-    // if (this.y <= 0 || this.y >= width*75/100){
-    //   this.speed = -this.speed;
-    //   this.vy = -this.vy
-    // }
-    // this.x = constrain(this.x, 0, width);
-    // this.y = constrain(this.y, 0, height*75/100);
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   }
+
 
   // display()
   //
@@ -96,7 +83,7 @@ class Enemy {
   display() {
     push();
     imageMode(CENTER)
-    image(enemyImage[this.hitCount], this.x, this.y, this.size * 2, this.size * 2);
+    image(bossImage[0], this.x, this.y, this.size * 2, this.size * 2);
     pop();
   }
 
@@ -108,14 +95,4 @@ class Enemy {
     }
   }
 
-  // reset
-  //
-  // Set the position to a random location and reset health (size)
-  reset() {
-    // Random position
-    this.x = random(0, width);
-    this.y = random(0, height);
-    // Default health
-    this.size = this.startingSize;
-  }
 }

@@ -28,7 +28,7 @@ class Enemy {
     //healthProperties
     this.hitCount = 0;
     // Display properties
-      //**The enemy's images are stored in an array (script.js), and iterates through based
+      //**The enemies image is stored in an array, and iterates through based
       //on its hitCount
   }
 
