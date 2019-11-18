@@ -57,7 +57,7 @@ let gameOverBells;
 //**Variable  assigned to the setInterval function (controlling game timer)
 let gameClock;
 //**variables to set the amount of time until planet has been reached
-let gameTime = 30;
+let gameTime = 60;
 let secondsToArrival = gameTime;
 //**variable for seconds passed, to control frequency of enemy spawn
 let secondsPassed = 0;
@@ -87,6 +87,8 @@ function preload() {
   enemyImage[0] = loadImage('assets/images/drone0Damage.png');
   enemyImage[1] = loadImage('assets/images/drone1Damage.png');
   bossImage[0] = loadImage('assets/images/boss0damage.png');
+  bossImage[1] = loadImage('assets/images/boss1damage.png');
+  bossImage[2] = loadImage('assets/images/boss2damage.png');
 
   //sounds
   ambience = loadSound('assets/sounds/ambience.mp3');
@@ -144,8 +146,6 @@ function setup() {
   //create the player
   player = new Player(crosshairs, cockpit, width / 2, height / 2,
     1.5 * height / 100,color(200, 200, 0), 50);
-
-  boss = new Boss (random(0, width), random(0, cockpitVerticalMask), width * .25 / 100, 1);
   //create the target planet object
   planetAmazon = new PlanetAmazon(planetAmazonImg, width / 2, 0,
     height * .03 / 100, 10, height * .05 / 100, 120);
@@ -183,8 +183,11 @@ function draw() {
     handlePhazers();
     //detects if player has collided with enemy
     player.detectCollision();
-    //displays boss (if applicable)
-    displayBoss();
+
+    // if( bossStage === true){
+    //   displayBossStage();
+    // }
+
     //displays the players crosshairs, and the ship
     player.display();
 
@@ -226,22 +229,14 @@ function displayEnemies() {
 }
 
 //================================//
-//       displayBoss()
+//       displayBossStage()
 //================================//
 //
 //
 // checks for current boss state and displays accordingly
-function displayBoss(){
-  if (bossStage === 2){
-    clearInterval(gameClock);
-    console.log('bossStage1');
+function displayBossStage(){
     boss.move();
     boss.display();
-  } else if (bossStage === 4){
-    console.log("bossStage2");
-  } else if (bossStage === 6){
-    console.log('boss stage 3');
-  }
 }
 
 //================================//
@@ -263,16 +258,16 @@ function handlePhazers() {
   //intersect. Again, we go backwards. see above.
   for (let p = phazers.length - 1; p >= 0; p--) {
     for (let e = enemies.length - 1; e >= 0; e--) {
-      let result = phazers[p].hit(enemies[e]);
+      let hitResult = phazers[p].hit(enemies[e]);
       //if the above happened, && the phazer's size is half the size of the eney's (to help with the 3D effect)
       //play the crash sound, and add 1 to the enemy's hit count, and change the enemy's image to the damaged version
-      if (result && phazers[p].size < enemies[e].size / 2) {
+      if (hitResult && phazers[p].size < enemies[e].size / 2) {
         enemies[e].hitCount++;
         phazers.splice(p, 1);
         firstHit.play();
         //if the enemy's hitcount reaches 2, play the explosion sound and
         //remove the enemy and the phazer from their respective arrays
-        if (enemies[e].hitCount >= 2) {
+        if (enemies[e].hitCount >= enemies[e].maxHitcount) {
           secondHit.play();
           enemies.splice(e, 1);
           phazers.splice(p, 1);
@@ -307,18 +302,33 @@ function gameTimer() {
   secondsToArrival -= 1;
   secondsPassed++
 
-  if (secondsPassed > 33*gameTime / 100) {
+  if (secondsPassed  === 25 * gameTime / 100) {
     newSpawnInterval -= 1000;
-    console.log('new time');
-    enemyTimer(newSpawnInterval);
-    bossStage++;
-    secondsPassed = 0;
-  } else if (secondsToArrival === 0) {
-    gameState = "gameWon";
-    resetGame();
+    console.log('spawing every '+ newSpawnInterval);
+    startEnemyTimer(newSpawnInterval);
+
+  } else if (secondsPassed === 50 * gameTime / 100){
+    newSpawnInterval -= 1500;
+    console.log('spawing every '+ newSpawnInterval);
+    startEnemyTimer(newSpawnInterval)
+
+  } else if (secondsPassed === 75 * gameTime / 100){
+    console.log('BOSS BATTLE');
+    clearInterval(spawnTimer);
+    spawnNewBoss();
+    bossStage = true;
+
   }
+  // } else if (secondsToArrival === 0) {
+  //   gameState = "gameWon";
+  //   resetGame();
+  // }
 }
 
+function spawnNewBoss(){
+  let boss = new Boss (random(0, width), random(0, cockpitVerticalMask), width * .25 / 100, 1);
+  enemies.unshift(boss);
+}
 
 //================================//
 //        playerShieldRecover()
@@ -333,12 +343,12 @@ function playerShieldRecover(){
 
 
 //================================//
-//        enemyTimer()
+//        startEnemyTimer()
 //================================//
 //
 //resets the spawn timer interval (which calls spawnNewEnemy())
 //on call with argument (number of milliseconds) provided
-function enemyTimer(interval) {
+function startEnemyTimer(interval) {
   clearInterval(spawnTimer);
   spawnTimer = setInterval(spawnNewEnemy, interval);
 }
@@ -357,7 +367,10 @@ function spawnNewEnemy() {
 //================================//
 //        keyPressed()
 //================================//
-//
+////switched off spawn timer, resets spawn interval
+//resets player's shield health
+//resets planet's size
+//switches off the game timer, and resets the number of seconds
 // Checks for keyboard events calls appropriate functions
 function keyPressed() {
   //if the spacebar is pressed (while the game is in play) call the players phazerire function

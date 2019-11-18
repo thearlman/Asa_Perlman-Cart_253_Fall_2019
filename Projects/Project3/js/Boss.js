@@ -27,6 +27,7 @@ class Boss {
     this.size = startingSize;
     //healthProperties
     this.hitCount = 0;
+    this.maxHitcount = bossImage.length;
     // Display properties
       //**The enemies image is stored in an array, and iterates through based
       //on its hitCount
@@ -77,18 +78,17 @@ class Boss {
 
   // display()
   //
-  // Draw the enemy as a sinister amazon delivery space drone on the canvas
-  // with a size that increases based on the very poorly named variable "health"
-  //which I should have renamed something more representative
+  //
   display() {
     push();
     imageMode(CENTER)
-    image(bossImage[0], this.x, this.y, this.size * 2, this.size * 2);
+    image(bossImage[this.hitCount], this.x, this.y, this.size * 2, this.size * 2);
     pop();
   }
 
   destroyed(){
     if (this.hitCount >= enemyImage.length){
+      startEnemyTimer(newSpawnInterval);
       return true;
     } else {
       return false;

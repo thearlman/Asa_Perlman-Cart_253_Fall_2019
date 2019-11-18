@@ -84,7 +84,7 @@ class Player {
     this.x += this.vx;
     this.y += this.vy;
     //increase shield health slowly, constraining it within max and min
-    this.shieldHealth += .05*this.maxShieldHealth/100;
+    this.shieldHealth += .08*this.maxShieldHealth/100;
     this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);
     // Handle wrapping
     this.handleWrapping();
@@ -165,27 +165,28 @@ class Player {
   //Displays the shield health of the player
   //Displays the seconds remining before reaching planet Amazon
   displayHealth() {
-    push();
     //shield level
+    push();
     textAlign(CENTER, CENTER);
     textSize(width * 1 / 100);
     fill(this.shieldIndicatorColor, 255, 255);
     text("SHIELD", width / 2 - 37.5, height - this.shieldHealth - 10);
     rectMode(CORNERS);
     fill(this.shieldIndicatorColor, 255, 255, 150);
-    strokeWeight(7);
     stroke(this.shieldIndcatorColor, 255, 255, 150);
+    strokeWeight(7);
     rect(width / 2 - 25, height, width / 2 - 50, height - this.shieldHealth);
+    //while shield level is below 25% of max, display indicator as red
+    if (this.shieldHealth < 25*this.maxShieldHealth/100){
+      this.shieldIndicatorColor = this.shieldDamagedColor
+    } else {
+      this.shieldIndicatorColor = this.shieldHealthyColor;
+    }
 
-      if (this.shieldHealth < 25*this.maxShieldHealth/100){
-        this.shieldIndicatorColor = this.shieldDamagedColor
-      } else {
-        this.shieldIndicatorColor = this.shieldHealthyColor;
-      }
     pop();
 
-    push();
     //seconds to planet
+    push();
     textAlign(CENTER, CENTER);
     noStroke();
     fill(0, 255, 255, 150);
@@ -236,7 +237,7 @@ class Player {
   //returns a boolean telling the keyPressed() function id draw if the phazer charge is empty
   updateCharge() {
     this.charge += -5 * this.maxCharge / 100;
-    if (this.charge <= 50 * this.maxCharge / 100) {
+    if (this.charge <= 25 * this.maxCharge / 100) {
       this.chargeEmpty = true;
     }
   }

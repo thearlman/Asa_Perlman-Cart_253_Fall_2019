@@ -66,7 +66,7 @@ class ScreenIntro2 {
       siren.stop(7);
       //start the timer for spawning new enemies, setting it to an
       //initial interval (in milliseconds)
-      enemyTimer(newSpawnInterval);
+      startEnemyTimer(newSpawnInterval);
       //start the planet countdown timeSignature
       resetGameTimer();
       //set game state

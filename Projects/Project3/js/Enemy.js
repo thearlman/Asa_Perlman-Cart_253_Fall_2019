@@ -27,6 +27,7 @@ class Enemy {
     this.size = startingSize;
     //healthProperties
     this.hitCount = 0;
+    this.maxHitcount = enemyImage.length;
     // Display properties
       //**The enemy's images are stored in an array (script.js), and iterates through based
       //on its hitCount
@@ -100,13 +101,14 @@ class Enemy {
     pop();
   }
 
-  destroyed(){
-    if (this.hitCount >= enemyImage.length){
-      return true;
-    } else {
-      return false;
-    }
-  }
+  // destroyed(destroyedResult){
+  //   if (destroyedResult >= this.maxHitcount){
+  //     log('destroyed')
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
   // reset
   //
