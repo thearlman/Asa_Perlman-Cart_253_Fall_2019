@@ -5,7 +5,7 @@
 // to simulate it coming towards you. It can be targeted, and destroyed by the
 //  player.
 
-class Enemy {
+class BossBullet {
 
   // constructor
   //
@@ -27,8 +27,9 @@ class Enemy {
     this.size = startingSize;
     //healthProperties
     this.hitCount = 0;
+    this.maxHitcount = bossBulletImg.length;
     // Display properties
-      //**The enemies image is stored in an array, and iterates through based
+      //**The enemy's images are stored in an array (script.js), and iterates through based
       //on its hitCount
   }
 
@@ -46,10 +47,10 @@ class Enemy {
     this.x += this.vx;
     this.y += this.vy;
     // Update time properties
-    this.tx += 0.01;
-    this.ty += 0.01;
+    this.tx += 0.001;
+    this.ty += 0.001;
     //increases enemy's size every frame,
-    this.size += this.speed / 10;
+    this.size += this.speed / 5;
     // Handle wrapping
     this.handleWrapping();
   }
@@ -96,17 +97,10 @@ class Enemy {
   display() {
     push();
     imageMode(CENTER)
-    image(enemyImage[this.hitCount], this.x, this.y, this.size * 2, this.size * 2);
+    image(bossBulletImg[this.hitCount], this.x, this.y, this.size * 2, this.size * 2);
     pop();
   }
 
-  destroyed(){
-    if (this.hitCount >= enemyImage.length){
-      return true;
-    } else {
-      return false;
-    }
-  }
 
   // reset
   //

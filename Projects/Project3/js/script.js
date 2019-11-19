@@ -39,6 +39,7 @@ let cockpit;
 let planetAmazonImg
 let enemyImage = [];
 let bossImage = [];
+let bossBulletImg = [];
 //~~~~~~~~Sound variables~~~~~~~~~~~//
 
 let ambience;
@@ -57,7 +58,7 @@ let gameOverBells;
 //**Variable  assigned to the setInterval function (controlling game timer)
 let gameClock;
 //**variables to set the amount of time until planet has been reached
-let gameTime = 60;
+let gameTime = 100;
 let secondsToArrival = gameTime;
 //**variable for seconds passed, to control frequency of enemy spawn
 let secondsPassed = 0;
@@ -89,6 +90,7 @@ function preload() {
   bossImage[0] = loadImage('assets/images/boss0damage.png');
   bossImage[1] = loadImage('assets/images/boss1damage.png');
   bossImage[2] = loadImage('assets/images/boss2damage.png');
+  bossBulletImg[0] = loadImage('assets/images/bossBullet.png');
 
   //sounds
   ambience = loadSound('assets/sounds/ambience.mp3');
@@ -232,15 +234,6 @@ function displayEnemies() {
   }
 }
 
-// //================================//
-// //       displayBossStage()
-// //================================//
-// //
-// // checks for current boss state and displays accordingly
-// function displayBossStage(){
-//     boss.move();
-//     boss.display();
-// }
 
 //================================//
 //        handePhazers()
@@ -321,12 +314,13 @@ function gameTimer() {
     console.log('spawing every '+ newSpawnInterval);
     startEnemyTimer(newSpawnInterval)
 
-  } else if (secondsPassed === 75 * gameTime / 100){
+  } else if (secondsPassed === 95 * gameTime / 100){
     console.log('BOSS BATTLE');
     clearInterval(spawnTimer);
     clearInterval(gameClock);
     planetAmazon.pause();
     spawnNewBoss();
+    let bossBulletTimer = setInterval(spawnNewBossBullet, 3000);
     bossStage = true;
 
   } else if (secondsToArrival === 0) {
@@ -341,12 +335,21 @@ function gameTimer() {
 //
 //spawns a new boss, and unshifts it into the enemy array
 function spawnNewBoss(){
-  let boss = new Boss (random(0, width), random(0, cockpitVerticalMask), width * .25 / 100, 1);
+  let boss = new Boss (random(0, width), random(0, cockpitVerticalMask), width * .5 / 100, 1);
   enemies.unshift(boss);
 }
 
+
 function spawnNewBossBullet(){
-  let enemyBullet = new Enemy(boss.x, boss.y, bos.startingSize/2);
+  for (let e = enemies.length; e >= enemies.length -1; e--){
+    if (enemies[e] instanceof Boss){
+      let bossX = enemies[e].x;
+      let bossY = enemies[e].y;
+      let bossSize = enemies[e].size;
+      let bossBullet = new BossBullet(bossX, bossY, width * .5 / 100, bossSize/2);
+      enemies.push(bossBullet);
+    }
+  }
 }
 
 //================================//
