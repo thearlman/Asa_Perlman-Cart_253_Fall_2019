@@ -47,5 +47,7 @@ class PlanetAmazon {
   reset() {
     this.y = this.startY;
     this.size = this.startSize;
+    this.vy = this.vyRun;
+    this.growSpeed = this.growSpeedRun;
   }
 }

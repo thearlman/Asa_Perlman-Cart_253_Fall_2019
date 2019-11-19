@@ -271,7 +271,7 @@ function handlePhazers() {
         //if the enemy's hitcount reaches 2, play the explosion sound and
         //remove the enemy and the phazer from their respective arrays
         if(enemies[e].hitCount >= enemies[e].maxHitcount && enemies[e] instanceof Boss){
-          setInterval(gameTimer, 1000);
+          startGameTimer();
           planetAmazon.resume();
           enemies.splice(e, 1);
           phazers.splice(p, 1);
@@ -346,7 +346,7 @@ function spawnNewBoss(){
 }
 
 function spawnNewBossBullet(){
-  let enemyBullet = new Enemy()
+  let enemyBullet = new Enemy(boss.x, boss.y, bos.startingSize/2);
 }
 
 //================================//

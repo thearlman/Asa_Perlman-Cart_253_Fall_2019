@@ -152,8 +152,8 @@ class Player {
     this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);
     //if shields have reached 0, chgange gameState to gameOver
     if(this.shieldHealth === 0){
-      gameState = "gameOver";
       resetGame();
+      gameState = "gameOver";
     }
   }
 
