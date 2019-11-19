@@ -5,7 +5,7 @@
 let gameState = "intro1";
   //**controls the current state of the boss battle stage, which
   //  occur on top of the playing function will be set to either 1, 2, or 3
-  // depending on hwo much time has passed in the game. Controlled in gameTimer()
+  //  depending on how many times the boss has been hit
 let bossStage = 0;
 
 //~~~~Variables for the transition screens~~~~//
@@ -148,7 +148,7 @@ function setup() {
     1.5 * height / 100,color(200, 200, 0), 50);
   //create the target planet object
   planetAmazon = new PlanetAmazon(planetAmazonImg, width / 2, 0,
-    height * .03 / 100, 10, height * .05 / 100, 120);
+    10, 120);
 }
 
 
@@ -184,11 +184,15 @@ function draw() {
     //detects if player has collided with enemy
     player.detectCollision();
 
-    // if( bossStage === true){
-    //   displayBossStage();
+    // if(bossStage === true){
+    //   if(boss.hitCount > bossImage.length){
+    //     bossStage = false;
+    //     gameState = "gameWon";
+    //
+    //   }
     // }
 
-    //displays the players crosshairs, and the ship
+    //displays the player's crosshairs, and the ship
     player.display();
 
 
@@ -228,16 +232,15 @@ function displayEnemies() {
   }
 }
 
-//================================//
-//       displayBossStage()
-//================================//
-//
-//
-// checks for current boss state and displays accordingly
-function displayBossStage(){
-    boss.move();
-    boss.display();
-}
+// //================================//
+// //       displayBossStage()
+// //================================//
+// //
+// // checks for current boss state and displays accordingly
+// function displayBossStage(){
+//     boss.move();
+//     boss.display();
+// }
 
 //================================//
 //        handePhazers()
@@ -267,7 +270,13 @@ function handlePhazers() {
         firstHit.play();
         //if the enemy's hitcount reaches 2, play the explosion sound and
         //remove the enemy and the phazer from their respective arrays
-        if (enemies[e].hitCount >= enemies[e].maxHitcount) {
+        if(enemies[e].hitCount >= enemies[e].maxHitcount && enemies[e] instanceof Boss){
+          setInterval(gameTimer, 1000);
+          planetAmazon.resume();
+          enemies.splice(e, 1);
+          phazers.splice(p, 1);
+          break;
+        }else if (enemies[e].hitCount >= enemies[e].maxHitcount) {
           secondHit.play();
           enemies.splice(e, 1);
           phazers.splice(p, 1);
@@ -281,11 +290,11 @@ function handlePhazers() {
 
 
 //================================//
-//        resetGameTimer()
+//        startGameTimer()
 //================================//
 //
 //resets game timer
-function resetGameTimer() {
+function startGameTimer() {
   clearInterval(gameClock);
   gameClock = setInterval(gameTimer, 1000);
 }
@@ -315,19 +324,29 @@ function gameTimer() {
   } else if (secondsPassed === 75 * gameTime / 100){
     console.log('BOSS BATTLE');
     clearInterval(spawnTimer);
+    clearInterval(gameClock);
+    planetAmazon.pause();
     spawnNewBoss();
     bossStage = true;
 
+  } else if (secondsToArrival === 0) {
+    resetGame();
+    gameState = "gameWon";
   }
-  // } else if (secondsToArrival === 0) {
-  //   gameState = "gameWon";
-  //   resetGame();
-  // }
 }
 
+//================================//
+//        spawnNewBoss()
+//================================//
+//
+//spawns a new boss, and unshifts it into the enemy array
 function spawnNewBoss(){
   let boss = new Boss (random(0, width), random(0, cockpitVerticalMask), width * .25 / 100, 1);
   enemies.unshift(boss);
+}
+
+function spawnNewBossBullet(){
+  let enemyBullet = new Enemy()
 }
 
 //================================//

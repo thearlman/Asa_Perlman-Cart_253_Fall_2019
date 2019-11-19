@@ -68,7 +68,7 @@ class ScreenIntro2 {
       //initial interval (in milliseconds)
       startEnemyTimer(newSpawnInterval);
       //start the planet countdown timeSignature
-      resetGameTimer();
+      startGameTimer();
       //set game state
       gameState = "playing";
 

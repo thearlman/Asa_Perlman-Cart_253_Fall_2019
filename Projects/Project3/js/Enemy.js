@@ -101,14 +101,16 @@ class Enemy {
     pop();
   }
 
-  // destroyed(destroyedResult){
-  //   if (destroyedResult >= this.maxHitcount){
-  //     log('destroyed')
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
+
+  destroyed(destroyedResult){
+    if (destroyedResult >= this.maxHitcount){
+      log('destroyed')
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 
   // reset
   //

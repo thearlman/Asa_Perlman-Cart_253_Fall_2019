@@ -4,15 +4,18 @@
 //where we will all end up one day ;-).
 // Takes an image, X and Y coordinates, a Y velocity, a size, and a growSpeed
 class PlanetAmazon {
-  constructor(img, x, startY, vy, startSize, growSpeed) {
+  constructor(img, x, startY, startSize) {
     this.img = img;
     this.x = x;
     this.startY = startY;
     this.y = this.startY;
-    this.vy = vy;
+    this.vyRun = height * .03 / 100;
+    this.vy = this.vyRun;
     this.startSize = startSize;
     this.size = this.startSize;
-    this.growSpeed = growSpeed;
+    this.growSpeedRun = height * .05 / 100;
+    this.growSpeed = this.growSpeedRun;
+
   }
 
   //PlanetAmazon.display()
@@ -26,6 +29,18 @@ class PlanetAmazon {
     image(this.img, this.x, this.y, this.size, this.size);
     pop()
   }
+
+  pause(){
+      this.vy = 0;
+      this.growSpeed = 0;
+  }
+
+  resume(){
+    this.vy = this.vyRun * 4;
+    this.growSpeed = this.growSpeedRun * 4;
+
+  }
+
   //reset()
   //
   //resets the two important parameters when the game is reset

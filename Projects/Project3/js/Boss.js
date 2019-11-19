@@ -25,6 +25,7 @@ class Boss {
     // Size properties
     this.startingSize = startingSize;
     this.size = startingSize;
+    this.maxsize = 15 * height / 100;
     //healthProperties
     this.hitCount = 0;
     this.maxHitcount = bossImage.length;
@@ -51,6 +52,7 @@ class Boss {
     this.ty += 0.01;
     //increases enemy's size every frame,
     this.size += this.speed / 10;
+    this.size = constrain(this.size, 0, this.maxsize);
     // Handle wrapping
     this.handleWrapping();
   }
@@ -86,9 +88,9 @@ class Boss {
     pop();
   }
 
+
   destroyed(){
-    if (this.hitCount >= enemyImage.length){
-      startEnemyTimer(newSpawnInterval);
+    if (this.hitCount >= this.maxHitcount){
       return true;
     } else {
       return false;
