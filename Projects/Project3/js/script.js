@@ -349,7 +349,7 @@ function gameTimer() {
     console.log('spawing every ' + newSpawnInterval);
     startEnemyTimer(newSpawnInterval)
     // boss battle
-  } else if (secondsPassed === 95 * gameTime / 100) {
+  } else if (secondsPassed === 90 * gameTime / 100) {
     console.log('BOSS BATTLE');
     //stop the enemy spawn timer
     clearInterval(spawnTimer);
