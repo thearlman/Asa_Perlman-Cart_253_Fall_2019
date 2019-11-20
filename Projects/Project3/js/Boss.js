@@ -35,9 +35,10 @@ class Boss {
       //on its hitCount
   }
 
-  // move
-  //
-  // Sets velocity based on the noise() function and the enemy's speed
+  //================================//
+  //            move()
+  //================================//
+  // Sets velocity based on the noise() function and the boss' speed
   // Moves based on the resulting velocity and handles wrapping
   // Grows in size, or "moves" closer to the player
   // Checks how many times it has been hit, and changes its image accordingly
@@ -59,10 +60,10 @@ class Boss {
     this.handleWrapping();
   }
 
-
-  // handleWrapping
-  //
-  // Checks if the enemy has gone off the canvas and
+  //================================//
+  //      handleWrapping()
+  //================================//
+  // Checks if the boss has gone off the canvas and
   // wraps it to the other side if so
   handleWrapping() {
     //Off the left or right
@@ -79,24 +80,14 @@ class Boss {
     }
   }
 
-
-  // display()
-  //
-  //
+  //================================//
+  //            display()
+  //================================//
+  // draws the boss on the screen
   display() {
     push();
     imageMode(CENTER)
     image(bossImage[this.hitCount], this.x, this.y, this.size * 2, this.size * 2);
     pop();
   }
-
-
-  destroyed(){
-    if (this.hitCount >= this.maxHitcount){
-      return true;
-    } else {
-      return false;
-    }
-  }
-
 }

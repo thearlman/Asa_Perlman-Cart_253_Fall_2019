@@ -10,9 +10,10 @@ class ScreenGameWon {
     this.d;
   }
 
-  //display()
-  //
-  // plays the victory song
+  //================================//
+  //            display()
+  //================================//
+  //plays the victory song
   //displays the background image and the button to reset the game
   //checks to see if the button is being hovered over, changing the fill brightness
   display() {
@@ -41,9 +42,9 @@ class ScreenGameWon {
     pop()
   }
 
-  //mousePressed()
-  //
-  //
+  //================================//
+  //        mousePressed()
+  //================================//
   // Is called when the mouse is pressed, & checks to see if the mouse and button are overlapping.
   mousePressed() {
     if (this.d < this.buttonWidth && this.d < this.buttonHeight && gameState === "gameWon") {

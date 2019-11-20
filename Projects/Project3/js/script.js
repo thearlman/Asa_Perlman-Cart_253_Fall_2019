@@ -1,7 +1,7 @@
 //~~~~~~gameState control variables; or "state machines?"~~~~~~~//
-// Is set to the appropriate string based on the
-// current state of the game. Should be set to one of the following:
-// intro1, intro2, playing, gameWon, gameOver
+  // Is set to the appropriate string based on the
+  // current state of the game. Should be set to one of the following:
+  // intro1, intro2, playing, gameWon, gameOver
 let gameState = "intro1";
   //**controls the current state of the boss battle stage, which
   //  occur on top of the playing function will be set to either 1, 2, or 3
@@ -40,6 +40,7 @@ let planetAmazonImg
 let enemyImage = [];
 let bossImage = [];
 let bossBulletImg = [];
+
 //~~~~~~~~Sound variables~~~~~~~~~~~//
 
 let ambience;
@@ -185,15 +186,6 @@ function draw() {
     handlePhazers();
     //detects if player has collided with enemy
     player.detectCollision();
-
-    // if(bossStage === true){
-    //   if(boss.hitCount > bossImage.length){
-    //     bossStage = false;
-    //     gameState = "gameWon";
-    //
-    //   }
-    // }
-
     //displays the player's crosshairs, and the ship
     player.display();
 
@@ -261,7 +253,7 @@ function handlePhazers() {
         enemies[e].hitCount++;
         phazers.splice(p, 1);
         firstHit.play();
-        //if the enemy's hitcount reaches 2, play the explosion sound and
+        //if the boss' hitcount reaches its max, play the explosion sound and
         //remove the enemy and the phazer from their respective arrays
         if(enemies[e].hitCount >= enemies[e].maxHitcount && enemies[e] instanceof Boss){
           startGameTimer();
@@ -269,7 +261,10 @@ function handlePhazers() {
           enemies.splice(e, 1);
           phazers.splice(p, 1);
           break;
-        }else if (enemies[e].hitCount >= enemies[e].maxHitcount) {
+        }
+        //if the enemy's hitcount reaches its max, play the explosion sound and
+        //remove the enemy and the phazer from their respective arrays
+        else if (enemies[e].hitCount >= enemies[e].maxHitcount) {
           secondHit.play();
           enemies.splice(e, 1);
           phazers.splice(p, 1);
@@ -286,7 +281,7 @@ function handlePhazers() {
 //        startGameTimer()
 //================================//
 //
-//resets game timer
+//resets and resets game timer
 function startGameTimer() {
   clearInterval(gameClock);
   gameClock = setInterval(gameTimer, 1000);
@@ -297,32 +292,34 @@ function startGameTimer() {
 //================================//
 //
 //reduces the number of seconds until the player has reached the planet and won.
-//checks for ^^this^^ to be true and changes gameState accordingly
+// checks for ^^this^^ to be true and changes gameState accordingly
 // also keeps track of time passed, increasing frequency enemies are spawned as the game progresses
-//triggers boos battles periodically.
+//triggers boss battle.
 function gameTimer() {
   secondsToArrival -= 1;
   secondsPassed++
-
+  // first phase of battle
   if (secondsPassed  === 25 * gameTime / 100) {
     newSpawnInterval -= 1000;
     console.log('spawing every '+ newSpawnInterval);
     startEnemyTimer(newSpawnInterval);
-
+  // second phase of battle
   } else if (secondsPassed === 50 * gameTime / 100){
     newSpawnInterval -= 1500;
     console.log('spawing every '+ newSpawnInterval);
     startEnemyTimer(newSpawnInterval)
-
+  // boss battle
   } else if (secondsPassed === 95 * gameTime / 100){
     console.log('BOSS BATTLE');
+    //stop the enemy spawn timer
     clearInterval(spawnTimer);
+    //stop the game clock
     clearInterval(gameClock);
+    //pause planet amazons movement
     planetAmazon.pause();
+    //spawn the boss
     spawnNewBoss();
-    let bossBulletTimer = setInterval(spawnNewBossBullet, 3000);
-    bossStage = true;
-
+    //game won
   } else if (secondsToArrival === 0) {
     resetGame();
     gameState = "gameWon";
@@ -339,7 +336,12 @@ function spawnNewBoss(){
   enemies.unshift(boss);
 }
 
-
+//================================//
+//        spawnNewBossBullet()
+//================================//
+//
+//spawns a new boss "bullet" when called,
+//and pushes it into the enemy array
 function spawnNewBossBullet(){
   for (let e = enemies.length; e >= enemies.length -1; e--){
     if (enemies[e] instanceof Boss){

@@ -6,9 +6,9 @@
 //  player.
 
 class Enemy {
-
-  // constructor
-  //
+  //================================//
+  //        constructor()
+  //================================//
   // Sets the initial values for the enemy's properties
   // Either sets default values or uses the arguments provided
   constructor(x, y, speed, startingSize) {
@@ -33,8 +33,9 @@ class Enemy {
       //on its hitCount
   }
 
-  // move
-  //
+  //================================//
+  //            move()
+  //================================//
   // Sets velocity based on the noise() function and the enemy's speed
   // Moves based on the resulting velocity and handles wrapping
   // Grows in size, or "moves" closer to the player
@@ -55,9 +56,9 @@ class Enemy {
     this.handleWrapping();
   }
 
-
-  // handleWrapping
-  //
+  //================================//
+  //       handleWrapping()
+  //================================//
   // Checks if the enemy has gone off the canvas and
   // wraps it to the other side if so
   handleWrapping() {
@@ -89,8 +90,9 @@ class Enemy {
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   }
 
-  // display()
-  //
+  //================================//
+  //           display()
+  //================================//
   // Draw the enemy as a sinister amazon delivery space drone on the canvas
   // with a size that increases based on the very poorly named variable "health"
   //which I should have renamed something more representative
@@ -101,25 +103,4 @@ class Enemy {
     pop();
   }
 
-
-  destroyed(destroyedResult){
-    if (destroyedResult >= this.maxHitcount){
-      log('destroyed')
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-
-  // reset
-  //
-  // Set the position to a random location and reset health (size)
-  reset() {
-    // Random position
-    this.x = random(0, width);
-    this.y = random(0, height);
-    // Default health
-    this.size = this.startingSize;
-  }
 }

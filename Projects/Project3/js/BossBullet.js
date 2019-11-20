@@ -1,6 +1,6 @@
-// Prey
+// BossBullet()
 //
-// A class that represents an enemy (woah that sounded kind of problematic)
+// A class that represents a boss "bullet"
 // It can move around on screen based on a noise() function, and gets bigger
 // to simulate it coming towards you. It can be targeted, and destroyed by the
 //  player.
@@ -29,16 +29,16 @@ class BossBullet {
     this.hitCount = 0;
     this.maxHitcount = bossBulletImg.length;
     // Display properties
-      //**The enemy's images are stored in an array (script.js), and iterates through based
-      //on its hitCount
+      //**The bullet's image is stored in an array (script.js), and iterates
+      //through based on a random draw
   }
 
-  // move
-  //
+  //================================//
+  //              move()
+  //================================//
   // Sets velocity based on the noise() function and the enemy's speed
   // Moves based on the resulting velocity and handles wrapping
   // Grows in size, or "moves" closer to the player
-  // Checks how many times it has been hit, and changes its image accordingly
   move() {
     // Set velocity via noise()
     this.vx = map(noise(this.tx), 0, 1, -this.speed, this.speed);
@@ -47,18 +47,18 @@ class BossBullet {
     this.x += this.vx;
     this.y += this.vy;
     // Update time properties
-    this.tx += 0.001;
-    this.ty += 0.001;
+    this.tx += 0.01;
+    this.ty += 0.01;
     //increases enemy's size every frame,
     this.size += this.speed / 5;
     // Handle wrapping
     this.handleWrapping();
   }
 
-
-  // handleWrapping
-  //
-  // Checks if the enemy has gone off the canvas and
+  //================================//
+  //        handleWrapping()
+  //================================//
+  // Checks if the bullet has gone off the canvas and
   // wraps it to the other side if so
   handleWrapping() {
     //Off the left or right
@@ -89,11 +89,10 @@ class BossBullet {
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   }
 
-  // display()
-  //
-  // Draw the enemy as a sinister amazon delivery space drone on the canvas
-  // with a size that increases based on the very poorly named variable "health"
-  //which I should have renamed something more representative
+  //================================//
+  //            display()
+  //================================//
+  // Draw the bullet as a piece of amazon space trash on the canvas
   display() {
     push();
     imageMode(CENTER)
@@ -101,15 +100,4 @@ class BossBullet {
     pop();
   }
 
-
-  // reset
-  //
-  // Set the position to a random location and reset health (size)
-  reset() {
-    // Random position
-    this.x = random(0, width);
-    this.y = random(0, height);
-    // Default health
-    this.size = this.startingSize;
-  }
 }

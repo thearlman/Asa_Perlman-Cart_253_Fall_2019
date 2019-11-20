@@ -9,8 +9,10 @@ class Phazers {
     this.y = player.y;
     this.size = player.size;
   }
-  //display()
-  //
+
+  //================================//
+  //          display()
+  //================================//
   //displays the phazer as transulect blue circle
   display() {
     push()
@@ -20,8 +22,10 @@ class Phazers {
     pop();
     this.size = this.size - 1;
   }
-  //hit()
-  //
+
+  //================================//
+  //            hit()
+  //================================//
   //checks the distance between itself, and the enemy which has been passed to it
   //from the for loop in script.js:draw() returns true or false
   hit(enemy) {

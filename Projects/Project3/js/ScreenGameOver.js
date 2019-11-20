@@ -12,8 +12,9 @@ class ScreenGameOver {
     this.d;
   }
 
-  //display()
-  //
+  //================================//
+  //          display()
+  //================================//
   //plays the sad game over bells
   //displays the background image and the button to reset the game
   //checks to see if the button is being hovered over, changing the fill brightness
@@ -43,9 +44,9 @@ class ScreenGameOver {
     pop()
   }
 
-  //mousePressed()
-  //
-  //
+  //================================//
+  //        mousePressed()
+  //================================//
   // Is called when the mouse is pressed, & checks to see if the mouse and button are overlapping.
   mousePressed() {
     if (this.d < this.buttonWidth && this.d < this.buttonHeight && gameState === "gameOver") {

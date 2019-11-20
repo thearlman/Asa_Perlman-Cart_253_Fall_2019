@@ -1,7 +1,7 @@
 //Intro1()
 //
 //
-// A class that class to display the first intro screen
+// A class to display the first intro screen
 // It displays text, and image, plays sounds, and can detect
 // when its button has been pressed.
 
@@ -20,10 +20,11 @@ class ScreenIntro1 {
     this.d;
   }
 
-  //display()
-  //
+  //================================//
+  //          display()
+  //================================//
   //displays  the background image and the button to advance to the next screen.
-  //and checks to see if the button is being hovered ove,r changing the fill brightness
+  //and checks to see if the button is being hovered over and changes text
   display() {
     // play the ambient sound effect
     ambience.playMode('untilDone');
@@ -44,7 +45,6 @@ class ScreenIntro1 {
     //fill color accordingly.
     this.d = dist(this.buttonX, this.buttonY, mouseX, mouseY);
     if (this.d < this.buttonWidth && this.d < this.buttonHeight) {
-      //text(this.buttonHover, width / 2 + 12, height - height * 15 / 100);
       this.buttonText = this.buttonHover;
       this.buttonBrightness = 255;
     } else {
@@ -54,9 +54,9 @@ class ScreenIntro1 {
     pop()
   }
 
-  //mousePressed()
-  //
-  //
+  //================================//
+  //        mousePressed()
+  //================================//
   // Is called when the mouse is pressed, & checks to see if the mouse and button are overlapping.
   //
   mousePressed() {

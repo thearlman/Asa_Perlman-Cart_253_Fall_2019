@@ -19,8 +19,9 @@ class ScreenIntro2 {
     this.d;
   }
 
-  //display()
-  //
+  //================================//
+  //           display()
+  //================================//
   //displays  the background image and the button to advance to the next screen.
   //and checks to see if the button is being hovered ove,r changing the fill brightness
   display() {
@@ -55,11 +56,11 @@ class ScreenIntro2 {
     pop()
   }
 
-  //mousePressed()
-  //
-  //
+  //================================//
+  //         mousePressed()
+  //================================//
   // Is called when the mouse is pressed, & checks to see if the mouse and button are overlapping.
-  mousePressed(){
+  mousePressed() {
     if (this.d < this.buttonWidth && this.d < this.buttonHeight && gameState === "intro2") {
       //fade out and stop the siren
       siren.fade(0, 7);
@@ -71,10 +72,6 @@ class ScreenIntro2 {
       startGameTimer();
       //set game state
       gameState = "playing";
-
-}
-
+    }
   }
-
-
 }

@@ -18,8 +18,9 @@ class PlanetAmazon {
 
   }
 
-  //PlanetAmazon.display()
-  //
+  //================================//
+  //          display()
+  //================================//
   // Displays the planet, growing in size, and moving down to create a sense of motion
   display() {
     push();
@@ -30,19 +31,28 @@ class PlanetAmazon {
     pop()
   }
 
+  //================================//
+  //          pause()
+  //================================//
+  // Pauses the planet's growth
   pause(){
       this.vy = 0;
       this.growSpeed = 0;
   }
 
+  //================================//
+  //          resume()
+  //================================//
+  // Resumes the plantes growth
   resume(){
     this.vy = this.vyRun * 4;
     this.growSpeed = this.growSpeedRun * 4;
 
   }
 
-  //reset()
-  //
+  //================================//
+  //            reset()
+  //================================//
   //resets the two important parameters when the game is reset
   reset() {
     this.y = this.startY;
