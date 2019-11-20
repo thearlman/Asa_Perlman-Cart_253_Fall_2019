@@ -3,7 +3,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
    Much has changed in the last few weeks, but a lot of it has been re writing functions,
-   tweaking variables and fixing little bugs, adding fun extra things (like a red flash when hit by an enemy.
+   tweaking variables, fixing little bugs, and adding fun extra things (like a red flash when hit by an enemy.
    I would say the real "prototype" for EX8, is the game timer, and its integration with the boss battle.***
 
 ***If it's too difficult to make it to the boss battle (I've been playing on my little laptop screen),
