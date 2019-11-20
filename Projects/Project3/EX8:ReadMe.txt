@@ -3,8 +3,8 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
    Much has changed in the last few weeks, but a lot of it has been re writing functions,
-   tweaking variables and fixing little bugs, I would say the real "prototype" is the game timer,
-   and its integration with the boss battle.***
+   tweaking variables and fixing little bugs, adding fun extra things (like a red flash when hit by an enemy.
+   I would say the real "prototype" for EX8, is the game timer, and its integration with the boss battle.***
 
 ***If it's too difficult to make it to the boss battle (I've been playing on my little laptop screen),
    changing the value of gameTime in script.js at (approximately line 67), from 100 to 10, should
