@@ -27,8 +27,6 @@ class ScreenIntro1 {
   //and checks to see if the button is being hovered over and changes text
   display() {
     // play the ambient sound effect
-    ambience.playMode('untilDone');
-    ambience.play();
     background(this.bgImg);
     push()
     rectMode(CENTER);

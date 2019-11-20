@@ -11,7 +11,7 @@ class BossBullet {
   //
   // Sets the initial values for the enemy's properties
   // Either sets default values or uses the arguments provided
-  constructor(x, y, speed, startingSize) {
+  constructor(img, x, y, speed, startingSize) {
     // Position
     this.x = x;
     this.y = y;
@@ -27,10 +27,9 @@ class BossBullet {
     this.size = startingSize;
     //healthProperties
     this.hitCount = 0;
-    this.maxHitcount = bossBulletImg.length;
+    this.maxHitcount = 1;
     // Display properties
-      //**The bullet's image is stored in an array (script.js), and iterates
-      //through based on a random draw
+    this.bulletImg = img;
   }
 
   //================================//
@@ -96,7 +95,7 @@ class BossBullet {
   display() {
     push();
     imageMode(CENTER)
-    image(bossBulletImg[this.hitCount], this.x, this.y, this.size * 2, this.size * 2);
+    image(this.bulletImg, this.x, this.y, this.size * 2, this.size * 2);
     pop();
   }
 

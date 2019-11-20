@@ -1,11 +1,11 @@
 //~~~~~~gameState control variables; or "state machines?"~~~~~~~//
-  // Is set to the appropriate string based on the
-  // current state of the game. Should be set to one of the following:
-  // intro1, intro2, playing, gameWon, gameOver
+// Is set to the appropriate string based on the
+// current state of the game. Should be set to one of the following:
+// intro1, intro2, playing, gameWon, gameOver
 let gameState = "intro1";
-  //**controls the current state of the boss battle stage, which
-  //  occur on top of the playing function will be set to either 1, 2, or 3
-  //  depending on how many times the boss has been hit
+//**controls the current state of the boss battle stage, which
+//  occur on top of the playing function will be set to either 1, 2, or 3
+//  depending on how many times the boss has been hit
 let bossStage = 0;
 
 //~~~~Variables for the transition screens~~~~//
@@ -52,18 +52,23 @@ let secondHit;
 let crash;
 let laserCharging;
 let gameWonSong;
+let bossHello;
+let bossDeath;
+let evilLaugh;
 let gameOverBells;
 
 //~~~~~~~~TIMING VARIABLES~~~~~~~~~~//
 
 //**Variable  assigned to the setInterval function (controlling game timer)
 let gameClock;
+//**Variable  assigned to the setInterval function (controlling boss bullet timer)
+let bossBulletTimer
 //**variables to set the amount of time until planet has been reached
 let gameTime = 100;
 let secondsToArrival = gameTime;
 //**variable for seconds passed, to control frequency of enemy spawn
 let secondsPassed = 0;
-//**variable for the spawn timer
+//**Variable  assigned to the setInterval function (controlling spawn timer)
 let spawnTimer;
 //number of milliseconds between enemy Spawns
 let spawnInterval = 4000;
@@ -89,21 +94,29 @@ function preload() {
   enemyImage[0] = loadImage('assets/images/drone0Damage.png');
   enemyImage[1] = loadImage('assets/images/drone1Damage.png');
   bossImage[0] = loadImage('assets/images/boss0damage.png');
-  bossImage[1] = loadImage('assets/images/boss1damage.png');
-  bossImage[2] = loadImage('assets/images/boss2damage.png');
-  bossBulletImg[0] = loadImage('assets/images/bossBullet.png');
+  bossImage[1] = loadImage('assets/images/boss0damage.png');
+  bossImage[2] = loadImage('assets/images/boss1damage.png');
+  bossImage[3] = loadImage('assets/images/boss1damage.png');
+  bossImage[4] = loadImage('assets/images/boss2damage.png');
+  bossImage[5] = loadImage('assets/images/boss2damage.png');
+  bossBulletImg[0] = loadImage('assets/images/bossBullet0.png');
+  bossBulletImg[1] = loadImage('assets/images/bossBullet1.png');
+  bossBulletImg[2] = loadImage('assets/images/bossBullet2.png');
 
   //sounds
   ambience = loadSound('assets/sounds/ambience.mp3');
   ambience.playMode('untilDone');
 
   siren = loadSound('assets/sounds/siren.mp3');
+  siren.playMode('untilDone');
   siren.setVolume(.1);
 
   lowCharge = loadSound('assets/sounds/lowCharge.mp3');
+  lowCharge.playMode('untilDone');
   lowCharge.setVolume(.2);
 
   laserCharging = loadSound('assets/sounds/laserCharging.mp3');
+  laserCharging.playMode('untilDone');
   laserCharging.setVolume(2);
 
   laserBlast = loadSound('assets/sounds/laserBlast.wav');
@@ -118,8 +131,19 @@ function preload() {
   crash = loadSound('assets/sounds/crash.wav');
 
   gameWonSong = loadSound('assets/sounds/gameWonSong.mp3');
+  gameWonSong.playMode('untilDone');
+
+  bossHello = loadSound('assets/sounds/bossHello.wav');
+  bossHello.playMode('untilDone');
+
+  evilLaugh = loadSound('assets/sounds/evilLaugh.wav');
+  evilLaugh.playMode('untilDone');
+
+  bossDeath = loadSound('assets/sounds/bossDeath.wav');
+  bossDeath.playMode('untilDone');
 
   gameOverBells = loadSound('assets/sounds/gameOverBells.mp3');
+  gameOverBells.playMode('untilDone')
 }
 
 
@@ -131,7 +155,7 @@ function preload() {
 // Creates player and enemy objects, planet object, sets color mode
 function setup() {
   //make things fullscreen
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth - 10, windowHeight - 10);
   //define the vertical area of screen we want to mask as 50%
   cockpitVerticalMask = height * 50 / 100;
   //sets color mode to hsb(HUGH, SATURATION, BRIGHTNESS)
@@ -148,7 +172,7 @@ function setup() {
     height - height * 15 / 100, width * 10 / 100, height * 8 / 100);
   //create the player
   player = new Player(crosshairs, cockpit, width / 2, height / 2,
-    1.5 * height / 100,color(200, 200, 0), 50);
+    1.5 * height / 100, color(200, 200, 0), 50);
   //create the target planet object
   planetAmazon = new PlanetAmazon(planetAmazonImg, width / 2, 0,
     10, 120);
@@ -160,13 +184,20 @@ function setup() {
 //================================//
 //
 function draw() {
-
   //~~~ intro 1 ~~~//
   if (gameState === "intro1") {
+    // play the ambient sound effect
+    ambience.play();
+    //display the screen
     introScreen1.display();
 
     //~~~ intro 2 ~~~//
   } else if (gameState === "intro2") {
+    // play the ambient sound effect
+    ambience.play();
+    //play the siren sound effect
+    siren.play();
+    //display the screen
     introScreen2.display();
 
     //~~~ playing ~~~//
@@ -192,6 +223,10 @@ function draw() {
 
     //~~~ game Over ~~~//
   } else if (gameState === "gameOver") {
+    //play the gameover bells
+    gameOverBells.play();
+    //play the evil evilLaugh
+    evilLaugh.play();
     //display the game over screen
     gameOverScreen.display();
     //remove any stray enemies
@@ -250,13 +285,18 @@ function handlePhazers() {
       //if the above happened, && the phazer's size is half the size of the eney's (to help with the 3D effect)
       //play the crash sound, and add 1 to the enemy's hit count, and change the enemy's image to the damaged version
       if (hitResult && phazers[p].size < enemies[e].size / 2) {
+        if(enemies[e] instanceof Boss){
+          enemies[e].x = random(0, width);
+          enemies[e].y = random(0, cockpitVerticalMask);
+        }
         enemies[e].hitCount++;
         phazers.splice(p, 1);
         firstHit.play();
         //if the boss' hitcount reaches its max, play the explosion sound and
         //remove the enemy and the phazer from their respective arrays
-        if(enemies[e].hitCount >= enemies[e].maxHitcount && enemies[e] instanceof Boss){
+        if (enemies[e].hitCount >= enemies[e].maxHitcount && enemies[e] instanceof Boss) {
           startGameTimer();
+          bossDeath.play();
           planetAmazon.resume();
           enemies.splice(e, 1);
           phazers.splice(p, 1);
@@ -299,17 +339,17 @@ function gameTimer() {
   secondsToArrival -= 1;
   secondsPassed++
   // first phase of battle
-  if (secondsPassed  === 25 * gameTime / 100) {
+  if (secondsPassed === 25 * gameTime / 100) {
     newSpawnInterval -= 1000;
-    console.log('spawing every '+ newSpawnInterval);
+    console.log('spawing every ' + newSpawnInterval);
     startEnemyTimer(newSpawnInterval);
-  // second phase of battle
-  } else if (secondsPassed === 50 * gameTime / 100){
+    // second phase of battle
+  } else if (secondsPassed === 50 * gameTime / 100) {
     newSpawnInterval -= 1500;
-    console.log('spawing every '+ newSpawnInterval);
+    console.log('spawing every ' + newSpawnInterval);
     startEnemyTimer(newSpawnInterval)
-  // boss battle
-  } else if (secondsPassed === 95 * gameTime / 100){
+    // boss battle
+  } else if (secondsPassed === 95 * gameTime / 100) {
     console.log('BOSS BATTLE');
     //stop the enemy spawn timer
     clearInterval(spawnTimer);
@@ -331,8 +371,13 @@ function gameTimer() {
 //================================//
 //
 //spawns a new boss, and unshifts it into the enemy array
-function spawnNewBoss(){
-  let boss = new Boss (random(0, width), random(0, cockpitVerticalMask), width * .5 / 100, 1);
+function spawnNewBoss() {
+  //announce that the boss is on its way
+  bossHello.play();
+  // start timer for the boss bullets
+  bossBulletTimer = setInterval(spawnNewBossBullet, 1);
+  //create boss & unshift
+  let boss = new Boss(random(0, width), random(0, cockpitVerticalMask), width * .5 / 100, 1);
   enemies.unshift(boss);
 }
 
@@ -342,13 +387,15 @@ function spawnNewBoss(){
 //
 //spawns a new boss "bullet" when called,
 //and pushes it into the enemy array
-function spawnNewBossBullet(){
-  for (let e = enemies.length; e >= enemies.length -1; e--){
-    if (enemies[e] instanceof Boss){
+function spawnNewBossBullet() {
+  console.log('bullet');
+  for (let e = enemies.length; e >= enemies.length - 1; e--) {
+    if (enemies[e] instanceof Boss) {
       let bossX = enemies[e].x;
       let bossY = enemies[e].y;
       let bossSize = enemies[e].size;
-      let bossBullet = new BossBullet(bossX, bossY, width * .5 / 100, bossSize/2);
+      let bossBullet = new BossBullet(bossBulletImg[int(random(bossBulletImg.length))], bossX,
+        bossY, width * .5 / 100, bossSize / 2);
       enemies.push(bossBullet);
     }
   }
@@ -361,7 +408,7 @@ function spawnNewBossBullet(){
 //resets the spawn timer interval (which calls spawnNewEnemy())
 //on call with argument (number of milliseconds) provided
 //set player's shield color to healthy again
-function playerShieldRecover(){
+function playerShieldRecover() {
   player.shieldColor = player.shieldHealthyColor;
 }
 
@@ -428,6 +475,7 @@ function resetGame() {
   clearInterval(spawnTimer);
   newSpawnInterval = spawnInterval;
   clearInterval(gameClock);
+  clearInterval(bossBulletTimer);
   secondsToArrival = gameTime;
   secondsPassed = 0;
   bossStage = 0;

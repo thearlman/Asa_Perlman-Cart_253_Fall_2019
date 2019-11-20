@@ -25,12 +25,6 @@ class ScreenIntro2 {
   //displays  the background image and the button to advance to the next screen.
   //and checks to see if the button is being hovered ove,r changing the fill brightness
   display() {
-    // play the ambient sound effect
-    ambience.playMode('untilDone');
-    ambience.play();
-    //play the siren sound effect
-    siren.playMode('untilDone');
-    siren.play();
     background(this.bgImg);
     push()
     rectMode(CENTER);

@@ -19,8 +19,6 @@ class ScreenGameOver {
   //displays the background image and the button to reset the game
   //checks to see if the button is being hovered over, changing the fill brightness
   display() {
-    gameOverBells.playMode('untilDone');
-    gameOverBells.play();
     background(this.bgImg);
     push()
     rectMode(CENTER);

@@ -18,7 +18,7 @@ class Boss {
     // Velocity and speed
     this.vx = 0;
     this.vy = 0;
-    this.baseSpeed = speed;
+    this.startingSpeed = speed;
     this.speed = this.baseSpeed;
     // Time properties for noise() function
     this.tx = random(0, 100); // To make x and y noise different
@@ -43,7 +43,7 @@ class Boss {
   // Grows in size, or "moves" closer to the player
   // Checks how many times it has been hit, and changes its image accordingly
   move() {
-    this.speed = this.baseSpeed * (this.hitCount+1);
+    this.speed = this.startingSpeed * (this.hitCount+1);
     // Set velocity via noise()
     this.vx = map(noise(this.tx), 0, 1, -this.speed, this.speed);
     this.vy = map(noise(this.ty), 0, 1, -this.speed, this.speed);

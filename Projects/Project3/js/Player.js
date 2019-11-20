@@ -237,7 +237,7 @@ class Player {
   //returns a boolean telling the keyPressed() function id draw if the phazer charge is empty
   updateCharge() {
     this.charge += -5 * this.maxCharge / 100;
-    if (this.charge <= 25 * this.maxCharge / 100) {
+    if (this.charge <= 5 * this.maxCharge / 100) {
       this.chargeEmpty = true;
     }
   }
