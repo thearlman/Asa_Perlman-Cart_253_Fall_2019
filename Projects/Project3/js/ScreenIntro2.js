@@ -54,16 +54,18 @@ class ScreenIntro2 {
   //         mousePressed()
   //================================//
   // Is called when the mouse is pressed, & checks to see if the mouse and button are overlapping.
-  mousePressed() {
+    mousePressed() {
     if (this.d < this.buttonWidth && this.d < this.buttonHeight && gameState === "intro2") {
       //fade out and stop the siren
       siren.fade(0, 7);
       siren.stop(7);
+      //start the planet countdown timeSignature
+      startGameTimer();
       //start the timer for spawning new enemies, setting it to an
       //initial interval (in milliseconds)
       startEnemyTimer(newSpawnInterval);
-      //start the planet countdown timeSignature
-      startGameTimer();
+      //remove the cursor
+      noCursor();
       //set game state
       gameState = "playing";
     }

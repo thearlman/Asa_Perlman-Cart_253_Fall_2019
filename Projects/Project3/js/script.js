@@ -3,10 +3,7 @@
 // current state of the game. Should be set to one of the following:
 // intro1, intro2, playing, gameWon, gameOver
 let gameState = "intro1";
-//**controls the current state of the boss battle stage, which
-//  occur on top of the playing function will be set to either 1, 2, or 3
-//  depending on how many times the boss has been hit
-let bossStage = 0;
+
 
 //~~~~Variables for the transition screens~~~~//
 
@@ -63,6 +60,9 @@ let gameOverBells;
 let gameClock;
 //**Variable  assigned to the setInterval function (controlling boss bullet timer)
 let bossBulletTimer
+//**Vatiable setting about of time between boss bullet shots (milliseconds)
+let bossBulletStartInterval = 5000;
+let bossBulletInterval = bossBulletStartInterval;
 //**variables to set the amount of time until planet has been reached
 let gameTime = 100;
 let secondsToArrival = gameTime;
@@ -154,10 +154,11 @@ function preload() {
 // Sets up a canvas
 // Creates player and enemy objects, planet object, sets color mode
 function setup() {
+  cursor('crosshair');
   //make things fullscreen
   createCanvas(windowWidth - 10, windowHeight - 10);
   //define the vertical area of screen we want to mask as 50%
-  cockpitVerticalMask = height * 50 / 100;
+  cockpitVerticalMask = height * 75 / 100;
   //sets color mode to hsb(HUGH, SATURATION, BRIGHTNESS)
   colorMode(HSB, 360);
   //create the two intro screens
@@ -172,7 +173,7 @@ function setup() {
     height - height * 15 / 100, width * 10 / 100, height * 8 / 100);
   //create the player
   player = new Player(crosshairs, cockpit, width / 2, height / 2,
-    1.5 * height / 100, color(200, 200, 0), 50);
+    color(200, 200, 0), 50);
   //create the target planet object
   planetAmazon = new PlanetAmazon(planetAmazonImg, width / 2, 0,
     10, 120);
@@ -282,13 +283,19 @@ function handlePhazers() {
   for (let p = phazers.length - 1; p >= 0; p--) {
     for (let e = enemies.length - 1; e >= 0; e--) {
       let hitResult = phazers[p].hit(enemies[e]);
-      //if the above happened, && the phazer's size is half the size of the eney's (to help with the 3D effect)
+      //if the above happened, && the phazer's size is half the size of the enemy (to help with the 3D effect)
       //play the crash sound, and add 1 to the enemy's hit count, and change the enemy's image to the damaged version
-      if (hitResult && phazers[p].size < enemies[e].size / 2) {
+      if (hitResult && phazers[p].size < enemies[e].size / 3) {
+        //if the enemy is an instance of the boss, reset the boss's position
+        //and increase the frequency of boss bullets
         if(enemies[e] instanceof Boss){
+          console.log('boss');
+          bossBulletInterval += -1000;
+          resetBossBulletTimer(bossBulletInterval);
           enemies[e].x = random(0, width);
           enemies[e].y = random(0, cockpitVerticalMask);
         }
+        //increase enmy hitcount, remove phazer, play sound
         enemies[e].hitCount++;
         phazers.splice(p, 1);
         firstHit.play();
@@ -338,17 +345,17 @@ function startGameTimer() {
 function gameTimer() {
   secondsToArrival -= 1;
   secondsPassed++
-  // first phase of battle
+  // FIRST PHASE OF BATTLE
   if (secondsPassed === 25 * gameTime / 100) {
     newSpawnInterval -= 1000;
     console.log('spawing every ' + newSpawnInterval);
     startEnemyTimer(newSpawnInterval);
-    // second phase of battle
+    // SECOND PHASE OF BATTLE
   } else if (secondsPassed === 50 * gameTime / 100) {
     newSpawnInterval -= 1500;
     console.log('spawing every ' + newSpawnInterval);
     startEnemyTimer(newSpawnInterval)
-    // boss battle
+    //BOSS BATTLE
   } else if (secondsPassed === 90 * gameTime / 100) {
     console.log('BOSS BATTLE');
     //stop the enemy spawn timer
@@ -359,7 +366,7 @@ function gameTimer() {
     planetAmazon.pause();
     //spawn the boss
     spawnNewBoss();
-    //game won
+    //GAME WON
   } else if (secondsToArrival === 0) {
     resetGame();
     gameState = "gameWon";
@@ -375,10 +382,22 @@ function spawnNewBoss() {
   //announce that the boss is on its way
   bossHello.play();
   // start timer for the boss bullets
-  bossBulletTimer = setInterval(spawnNewBossBullet, 1);
+  resetBossBulletTimer(bossBulletInterval);
   //create boss & unshift
   let boss = new Boss(random(0, width), random(0, cockpitVerticalMask), width * .5 / 100, 1);
   enemies.unshift(boss);
+}
+
+//================================//
+//      resetBossBulletTimer()
+//================================//
+//
+//resets the frequency of the boss bullets, based on arguments passed
+function resetBossBulletTimer(interval){
+  //clear the boss bullets interval
+  clearInterval(bossBulletTimer);
+  // start timer for the boss bullets
+  bossBulletTimer = setInterval(spawnNewBossBullet, interval);
 }
 
 //================================//
@@ -389,6 +408,7 @@ function spawnNewBoss() {
 //and pushes it into the enemy array
 function spawnNewBossBullet() {
   console.log('bullet');
+  console.log(bossBulletInterval);
   for (let e = enemies.length; e >= enemies.length - 1; e--) {
     if (enemies[e] instanceof Boss) {
       let bossX = enemies[e].x;
@@ -472,13 +492,14 @@ function mousePressed() {
 //resets planet's size
 //switches off the game timer, and resets the number of seconds
 function resetGame() {
+  cursor('crosshair');
   clearInterval(spawnTimer);
   newSpawnInterval = spawnInterval;
-  clearInterval(gameClock);
   clearInterval(bossBulletTimer);
+  bossBulletInterval = bossBulletStartInterval;
+  clearInterval(gameClock);
   secondsToArrival = gameTime;
   secondsPassed = 0;
-  bossStage = 0;
   player.shieldHealth = player.maxShieldHealth;
   planetAmazon.reset();
 }

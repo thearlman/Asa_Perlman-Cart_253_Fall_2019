@@ -11,17 +11,17 @@ class Player {
   //
   // Sets the initial values for the Player's properties
   // Either sets default values or uses the arguments provided
-  constructor(crosshairs, cockpit, x, y, speed, fillColor, size) {
+  constructor(crosshairs, cockpit, x, y, fillColor, size) {
     // Position
-    this.x = x;
-    this.y = y;
+    this.x = mouseX;
+    this.y = mouseY;
     //the players crosshairs, and ship
     this.crosshairs = crosshairs;
     this.cockpit = cockpit;
     // Velocity and speed
     this.vx = 0;
     this.vy = 0;
-    this.speed = speed;
+    this.speed = 2.2 * height / 100;
 
     // Shield Health properties
     this.maxShieldHealth = 25 * height / 100;
@@ -81,8 +81,13 @@ class Player {
   // Increases sield health.. cause the shield is powered by.... movement?
   move() {
     // Update position
-    this.x += this.vx;
-    this.y += this.vy;
+    // this.x += this.vx;
+    // this.y += this.vy;
+    this.x = mouseX;
+    this.y = mouseY;
+
+    this.x = constrain(this.x, 0, width);
+    this.y = constrain(this.y, 0, cockpitVerticalMask);
     //increase shield health slowly, constraining it within max and min
     this.shieldHealth += .08*this.maxShieldHealth/100;
     this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);

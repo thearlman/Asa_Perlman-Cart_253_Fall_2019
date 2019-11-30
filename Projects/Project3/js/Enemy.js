@@ -44,6 +44,16 @@ class Enemy {
     // Set velocity via noise()
     this.vx = map(noise(this.tx), 0, 1, -this.speed, this.speed);
     this.vy = map(noise(this.ty), 0, 1, -this.speed, this.speed);
+
+    if (this.x + this.vx < 0 + this.size / 2 || this.x + this.vx > width - this.size /2){
+      this.vx = -this.vx;
+    }
+
+    if (this.y + this.vy < 0 + this.size || this.y + this.vy > cockpitVerticalMask - this.size){
+      //this.speed = -this.speed;
+      this.vy = -this.vy;
+    }
+
     // Update position
     this.x += this.vx;
     this.y += this.vy;
@@ -52,43 +62,12 @@ class Enemy {
     this.ty += 0.01;
     //increases enemy's size every frame,
     this.size += this.speed / 10;
-    // Handle wrapping
-    this.handleWrapping();
+    //constrain enemies on screen
+    this.x = constrain(this.x, 0, width);
+    this.y = constrain(this.y, 0, height*75/100);
   }
 
-  //================================//
-  //       handleWrapping()
-  //================================//
-  // Checks if the enemy has gone off the canvas and
-  // wraps it to the other side if so
-  handleWrapping() {
-    //Off the left or right
-    if (this.x < 0) {
-      this.x += width;
-    } else if (this.x > width) {
-      this.x -= width;
-    }
-    // Off the top or bottom (wrapps at 75%)
-    if (this.y < 0) {
-      this.y += cockpitVerticalMask;
-    } else if (this.y > cockpitVerticalMask) {
-      this.y = 0;
-    }
 
-    //~~~~~~~~~~~try and do this later: have enemies stay within screen~~~~~~~~~
-    // if (this.x <= 0 || this.x >= width){
-    //   this.speed = -this.speed;
-    //   this.vx = -this.vx
-    // }
-    //
-    // if (this.y <= 0 || this.y >= width*75/100){
-    //   this.speed = -this.speed;
-    //   this.vy = -this.vy
-    // }
-    // this.x = constrain(this.x, 0, width);
-    // this.y = constrain(this.y, 0, height*75/100);
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  }
 
   //================================//
   //           display()

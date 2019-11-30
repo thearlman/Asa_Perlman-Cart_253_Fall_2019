@@ -18,7 +18,8 @@ class Phazers {
     push()
     noStroke()
     fill(100, 200, 255, 255);
-    ellipse(this.x, this.y, this.size);
+    ellipse(this.x -this.size *2.5, this.y + this.size*10, this.size);
+    ellipse(this.x + this.size *2.5, this.y + this.size*10, this.size);
     pop();
     this.size = this.size - 1;
   }
