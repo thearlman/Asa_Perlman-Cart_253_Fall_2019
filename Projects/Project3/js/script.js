@@ -72,7 +72,7 @@ let gameClock;
 //**Variable  assigned to the setInterval function (controlling boss bullet timer)
 let bossBulletTimer
 //**Vatiable setting about of time between boss bullet shots (milliseconds)
-let bossBulletStartInterval = 5000;
+let bossBulletStartInterval = 6000;
 let bossBulletInterval = bossBulletStartInterval;
 //**variables to set the amount of time until planet has been reached
 let gameTime = 100;
@@ -82,7 +82,7 @@ let secondsPassed = 0;
 //**Variable  assigned to the setInterval function (controlling spawn timer)
 let spawnTimer;
 //number of milliseconds between enemy Spawns
-let spawnInterval = 4000;
+let spawnInterval = 3000;
 let newSpawnInterval = spawnInterval;
 
 
@@ -94,8 +94,8 @@ let newSpawnInterval = spawnInterval;
 // Preloads the various images and sounds for the game
 function preload() {
   //images
-  intro1BgImg = loadImage('assets/images/borderPt1.jpg');
-  intro2BgImg = loadImage('assets/images/borderPt2.jpg');
+  intro1BgImg = loadImage('assets/images/stage1.jpg');
+  intro2BgImg = loadImage('assets/images/stage2.jpg');
   gameOverBgImg = loadImage('assets/images/gameOverImg.jpg');
   gameWonBgImg = loadImage('assets/images/gameWonImg.jpg');
   backgroundImage = loadImage('assets/images/backgroundImg.jpg');
@@ -106,10 +106,16 @@ function preload() {
   enemyImage[1] = loadImage('assets/images/drone1Damage.png');
   bossImage[0] = loadImage('assets/images/boss0damage.png');
   bossImage[1] = loadImage('assets/images/boss0damage.png');
-  bossImage[2] = loadImage('assets/images/boss1damage.png');
-  bossImage[3] = loadImage('assets/images/boss1damage.png');
-  bossImage[4] = loadImage('assets/images/boss2damage.png');
-  bossImage[5] = loadImage('assets/images/boss2damage.png');
+  bossImage[2] = loadImage('assets/images/boss0damage.png');
+  bossImage[3] = loadImage('assets/images/boss0damage.png');
+  bossImage[4] = loadImage('assets/images/boss1damage.png');
+  bossImage[5] = loadImage('assets/images/boss1damage.png');
+  bossImage[6] = loadImage('assets/images/boss1damage.png');
+  bossImage[7] = loadImage('assets/images/boss1damage.png');
+  bossImage[8] = loadImage('assets/images/boss2damage.png');
+  bossImage[9] = loadImage('assets/images/boss2damage.png');
+  bossImage[10] = loadImage('assets/images/boss2damage.png');
+  bossImage[11] = loadImage('assets/images/boss2damage.png');
   bossBulletImg[0] = loadImage('assets/images/bossBullet0.png');
   bossBulletImg[1] = loadImage('assets/images/bossBullet1.png');
   bossBulletImg[2] = loadImage('assets/images/bossBullet2.png');
@@ -146,12 +152,14 @@ function preload() {
 
   bossHello = loadSound('assets/sounds/bossHello.wav');
   bossHello.playMode('untilDone');
+  bossHello.setVolume(2);
 
   evilLaugh = loadSound('assets/sounds/evilLaugh.wav');
   evilLaugh.playMode('untilDone');
 
   bossDeath = loadSound('assets/sounds/bossDeath.wav');
   bossDeath.playMode('untilDone');
+  bossDeath.setVolume(2);
 
   gameOverBells = loadSound('assets/sounds/gameOverBells.mp3');
   gameOverBells.playMode('untilDone')
@@ -290,7 +298,6 @@ function displayExplosions() {
   //we iterate through the array ,
   for (let ex = 0; ex < explosions.length; ex++) {
     explosions[ex].display();
-    console.log(explosions[ex].currentFrame);
     if (explosions[ex].currentFrame >= explosionMaxFrame){
       explosions[ex].image.reset();
       explosions.splice(ex, 1);
@@ -328,7 +335,10 @@ function handlePhazers() {
         //and increase the frequency of boss bullets
         if(enemies[e] instanceof Boss){
           console.log('boss');
+
           bossBulletInterval += -1000;
+          let explosion = new BossExplosion(enemies[e].x, enemies[e].y, enemies[e].size);
+          explosions.push(explosion);
           resetBossBulletTimer(bossBulletInterval);
           enemies[e].x = random(0, width);
           enemies[e].y = random(0, cockpitVerticalMask);
@@ -340,17 +350,21 @@ function handlePhazers() {
         //if the boss' hitcount reaches its max, play the explosion sound and
         //remove the enemy and the phazer from their respective arrays
         if (enemies[e].hitCount >= enemies[e].maxHitcount && enemies[e] instanceof Boss) {
-          startGameTimer();
           bossDeath.play();
+          for (let i = 0; i < 60; i++){
+            let explosion = new BossExplosion(enemies[e].x + random(-100, 100), enemies[e].y + random(-100, 100), enemies[e].size);
+            explosions.push(explosion);
+          }
           planetAmazon.resume();
           enemies.splice(e, 1);
           phazers.splice(p, 1);
+          startGameTimer();
           break;
         }
         //if the enemy's hitcount reaches its max, play the explosion sound and
         //remove the enemy and the phazer from their respective arrays
         else if (enemies[e].hitCount >= enemies[e].maxHitcount) {
-            let explosion = new EnemyExplosion(enemies[e].x, enemies[e].y, enemies[e].size);
+            let explosion = new EnemyExplosion(enemies[e].x, enemies[e].y, enemies[e].size * 2);
             explosions.push(explosion);
             secondHit.play();
             enemies.splice(e, 1);
@@ -388,14 +402,19 @@ function gameTimer() {
   secondsPassed++
   // FIRST PHASE OF BATTLE
   if (secondsPassed === 25 * gameTime / 100) {
-    newSpawnInterval -= 1000;
+    newSpawnInterval = 75 * spawnInterval / 100;
     console.log('spawing every ' + newSpawnInterval);
     startEnemyTimer(newSpawnInterval);
     // SECOND PHASE OF BATTLE
   } else if (secondsPassed === 50 * gameTime / 100) {
-    newSpawnInterval -= 1500;
+    newSpawnInterval = 50 * spawnInterval / 100;
     console.log('spawing every ' + newSpawnInterval);
     startEnemyTimer(newSpawnInterval)
+    //third stage of battle
+  } else if (secondsPassed === 75 * gameTime / 100) {
+      newSpawnInterval = 25 * spawnInterval / 100;
+      console.log('spawing every ' + newSpawnInterval);
+      startEnemyTimer(newSpawnInterval)
     //BOSS BATTLE
   } else if (secondsPassed === 90 * gameTime / 100) {
     console.log('BOSS BATTLE');
@@ -491,7 +510,7 @@ function startEnemyTimer(interval) {
 //
 //Spawns a new enemy, by creating a new enemy object, and pushing it to the enemies[] array
 function spawnNewEnemy() {
-  let newEnemy = new Enemy(random(0, width), random(0, cockpitVerticalMask), width * .25 / 100, 1);
+  let newEnemy = new Enemy(random(0, width), random(0, cockpitVerticalMask), width * .30 / 100, 1);
   //put the new enemy at the beginning of the array(unshift), so it will be displayed behind oldest enemies
   enemies.unshift(newEnemy);
 }
@@ -542,5 +561,6 @@ function resetGame() {
   secondsToArrival = gameTime;
   secondsPassed = 0;
   player.shieldHealth = player.maxShieldHealth;
+  player.charge = player.maxCharge;
   planetAmazon.reset();
 }

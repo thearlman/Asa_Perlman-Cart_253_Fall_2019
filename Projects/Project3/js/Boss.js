@@ -91,3 +91,30 @@ class Boss {
     pop();
   }
 }
+
+//==========================
+// ~~~~~BossExplosion~~~~~~
+//==========================
+// This class simply displays the explosion gif when the bos has been hit.
+// When the boss has reached it's max hitcount, the explosions go apeshit.
+class BossExplosion {
+  constructor(x, y, size) {
+    this.image = explosionGif;
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.currentFrame;
+  }
+
+  //================================//
+  //           display()
+  //================================//
+  // Displays the gif, and keeps track as to which frame it is on.
+  display(){
+    push();
+    imageMode(CENTER);
+    image(this.image, this.x, this.y, this.size * 2, this.size * 2);
+    this.currentFrame = this.image.getCurrentFrame();
+    pop();
+  }
+}
