@@ -77,12 +77,14 @@ class Player {
   //            move()
   //================================//
   //
-  // Updates the position according to velocity, handles screen wrapping
+  // Updates the position according to velocity,
   // Increases sield health.. cause the shield is powered by.... movement?
   move() {
     // Update position
     // this.x += this.vx;
     // this.y += this.vy;
+
+    //update position based on mouse
     this.x = mouseX;
     this.y = mouseY;
 
@@ -91,30 +93,9 @@ class Player {
     //increase shield health slowly, constraining it within max and min
     this.shieldHealth += .08*this.maxShieldHealth/100;
     this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);
-    // Handle wrapping
-    this.handleWrapping();
+
   }
 
-  //================================//
-  //       handleWrapping()
-  //================================//
-  //
-  // Checks if the player has gone off the canvas and
-  // wraps it to the other side if so
-  handleWrapping() {
-    // Off the left or right
-    if (this.x < 0) {
-      this.x += width;
-    } else if (this.x > width) {
-      this.x -= width;
-    }
-    // Off the top or bottom (using 75% value to account for obstructed view by cockpit)
-    if (this.y < 0) {
-      this.y += height * 75 / 100;
-    } else if (this.y > height * 75 / 100) {
-      this.y = 0;
-    }
-  }
 
   //================================//
   //      detectCollision()

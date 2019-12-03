@@ -1,10 +1,11 @@
-// Prey
-//
+//=================
+// ~~~~~Enemy~~~~~~
+//=================
 // A class that represents an enemy (woah that sounded kind of problematic)
 // It can move around on screen based on a noise() function, and gets bigger
 // to simulate it coming towards you. It can be targeted, and destroyed by the
 //  player.
-
+//
 class Enemy {
   //================================//
   //        constructor()
@@ -31,6 +32,7 @@ class Enemy {
     // Display properties
       //**The enemy's images are stored in an array (script.js), and iterates through based
       //on its hitCount
+      this.image;
   }
 
   //================================//
@@ -68,18 +70,44 @@ class Enemy {
   }
 
 
-
   //================================//
   //           display()
   //================================//
   // Draw the enemy as a sinister amazon delivery space drone on the canvas
-  // with a size that increases based on the very poorly named variable "health"
-  //which I should have renamed something more representative
+  // with a size that increases with every frame
   display() {
     push();
+    this.image = enemyImage[this.hitCount]
     imageMode(CENTER)
-    image(enemyImage[this.hitCount], this.x, this.y, this.size * 2, this.size * 2);
+    image(this.image, this.x, this.y, this.size * 2, this.size * 2);
     pop();
   }
+}
 
+
+
+//==========================
+// ~~~~~EnemyExplosion~~~~~~
+//==========================
+// This class simply displays the explosion gif when the enemy has reached it's max hitcount.
+class EnemyExplosion {
+  constructor(x, y, size) {
+    this.image = explosionGif;
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.currentFrame;
+  }
+
+  //================================//
+  //           display()
+  //================================//
+  // Displays the gif, and keeps track as to which frame it is on.
+  display(){
+    push();
+    imageMode(CENTER);
+    image(this.image, this.x, this.y, this.size * 2, this.size * 2);
+    this.currentFrame = this.image.getCurrentFrame();
+    pop();
+  }
 }

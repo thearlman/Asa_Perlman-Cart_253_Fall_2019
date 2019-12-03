@@ -13,7 +13,7 @@ class Phazers {
   //================================//
   //          display()
   //================================//
-  //displays the phazer as transulect blue circle
+  //displays the phazer as transulecent blue circle
   display() {
     push()
     noStroke()

@@ -1,3 +1,10 @@
+//https://giphy.com/stickers/transparent-fire-explosion-ahza0v6s5pSxy
+
+
+
+
+
+
 //~~~~~~gameState control variables; or "state machines?"~~~~~~~//
 // Is set to the appropriate string based on the
 // current state of the game. Should be set to one of the following:
@@ -37,6 +44,10 @@ let planetAmazonImg
 let enemyImage = [];
 let bossImage = [];
 let bossBulletImg = [];
+let explosionGif;
+let explosionMaxFrame;
+let explosions = [];
+
 
 //~~~~~~~~Sound variables~~~~~~~~~~~//
 
@@ -102,7 +113,7 @@ function preload() {
   bossBulletImg[0] = loadImage('assets/images/bossBullet0.png');
   bossBulletImg[1] = loadImage('assets/images/bossBullet1.png');
   bossBulletImg[2] = loadImage('assets/images/bossBullet2.png');
-
+  explosionGif = loadImage('assets/images/explosion.gif');
   //sounds
   ambience = loadSound('assets/sounds/ambience.mp3');
   ambience.playMode('untilDone');
@@ -177,6 +188,10 @@ function setup() {
   //create the target planet object
   planetAmazon = new PlanetAmazon(planetAmazonImg, width / 2, 0,
     10, 120);
+  //how many frames the explosion gif will play for (I divided it in half)'
+  //uncomment below to have full animation
+  // explosionMaxFrame = explosionGif.numFrames() -1;
+  explosionMaxFrame = 7;
 }
 
 
@@ -210,6 +225,8 @@ function draw() {
     planetAmazon.display();
     //display the enemies
     displayEnemies();
+    //display the explosions
+    displayExplosions();
     // Handle directional input for the player (shooting is handled in mousePressed)
     player.handleInput();
     // Handle movment of the player
@@ -264,6 +281,27 @@ function displayEnemies() {
 
 
 //================================//
+//       displayExplosions()
+//================================//
+//
+//
+// Display the exploding enemies
+function displayExplosions() {
+  //we iterate through the array ,
+  for (let ex = 0; ex < explosions.length; ex++) {
+    explosions[ex].display();
+    console.log(explosions[ex].currentFrame);
+    if (explosions[ex].currentFrame >= explosionMaxFrame){
+      explosions[ex].image.reset();
+      explosions.splice(ex, 1);
+      break;
+    }
+  }
+}
+
+
+
+//================================//
 //        handePhazers()
 //================================//
 //
@@ -312,9 +350,12 @@ function handlePhazers() {
         //if the enemy's hitcount reaches its max, play the explosion sound and
         //remove the enemy and the phazer from their respective arrays
         else if (enemies[e].hitCount >= enemies[e].maxHitcount) {
-          secondHit.play();
-          enemies.splice(e, 1);
-          phazers.splice(p, 1);
+            let explosion = new EnemyExplosion(enemies[e].x, enemies[e].y, enemies[e].size);
+            explosions.push(explosion);
+            secondHit.play();
+            enemies.splice(e, 1);
+            phazers.splice(p, 1);
+
         }
         //break out of the for loop so that we can look through the array(s) again post re indexing
         break;
