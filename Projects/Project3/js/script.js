@@ -174,9 +174,8 @@ function preload() {
 // Creates player and enemy objects, planet object, sets color mode
 function setup() {
   cursor('crosshair');
-  //make things fullscreen
-  let canvDims = document.getElementById('game');
-  console.log(canvDims.offsetWidth);
+  pixelDensity(1);
+  //make things it inside the container
   let canvas = createCanvas(960, 540);
   canvas.parent('game');
   //define the vertical area of screen we want to mask as 50%

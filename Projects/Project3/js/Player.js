@@ -91,7 +91,7 @@ class Player {
     this.x = constrain(this.x, 0, width);
     this.y = constrain(this.y, 0, cockpitVerticalMask);
     //increase shield health slowly, constraining it within max and min
-    this.shieldHealth += .01*this.maxShieldHealth/100;
+    this.shieldHealth += .03*this.maxShieldHealth/100;
     this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);
 
   }
