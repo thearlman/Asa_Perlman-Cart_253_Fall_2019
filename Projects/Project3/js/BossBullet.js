@@ -1,7 +1,7 @@
 // BossBullet()
 //
 // A class that represents a boss "bullet"
-// It can move around on screen based on a noise() function, and gets bigger
+// It can move around on screen based on the noise() function, and gets bigger
 // to simulate it coming towards you. It can be targeted, and destroyed by the
 //  player.
 
@@ -72,20 +72,6 @@ class BossBullet {
     } else if (this.y > cockpitVerticalMask) {
       this.y = 0;
     }
-
-    //~~~~~~~~~~~try and do this later: have enemies stay within screen~~~~~~~~~
-    // if (this.x <= 0 || this.x >= width){
-    //   this.speed = -this.speed;
-    //   this.vx = -this.vx
-    // }
-    //
-    // if (this.y <= 0 || this.y >= width*75/100){
-    //   this.speed = -this.speed;
-    //   this.vy = -this.vy
-    // }
-    // this.x = constrain(this.x, 0, width);
-    // this.y = constrain(this.y, 0, height*75/100);
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   }
 
   //================================//
@@ -98,5 +84,4 @@ class BossBullet {
     image(this.bulletImg, this.x, this.y, this.size * 2, this.size * 2);
     pop();
   }
-
 }

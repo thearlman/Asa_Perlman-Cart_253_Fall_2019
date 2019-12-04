@@ -1,12 +1,10 @@
-//Intro1()
+//ScreenIntro1
 //
 //
 // A class to display the first intro screen
 // It displays text, and image, plays sounds, and can detect
 // when its button has been pressed.
-
 class ScreenIntro1 {
-
   constructor(bgImg, buttonX, buttonY, buttonWidth, buttonHeight) {
     this.bgImg = bgImg;
     this.buttonX = buttonX;

@@ -1,11 +1,36 @@
-//https://giphy.com/stickers/transparent-fire-explosion-ahza0v6s5pSxy
+//==============================================================================
 
+// ============TrashGalaxy 2024: Journey to the Planet Amazon===================
 
-
-
-
-
-//~~~~~~gameState control variables; or "state machines?"~~~~~~~//
+//==============================================================================
+// Author: Asa Perlman. Original template by: Pippin Barr
+// (special; thanks to Daniel Shiffman's p5.js youtube tuts)
+//
+// Static Images created by Asa Perlman and Gabriel Dupras as part of DART 349-ConcordiaUniversity
+//
+// All sound effects used under Creative Commons license
+// Winning song: Fly Me To The Moon (8-bit Cover) by Jump Ship:
+// https://jumpshipmusic.bandcamp.com/track/fly-me-to-the-moon-8-bit-cover
+// Explosion gif (unknown author):
+// https://giphy.com/stickers/transparent-fire-explosion-ahza0v6s5pSxy
+//
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~In Brief~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//
+// Having escaped the -earth on fire- you are confronted by the Amaberg Gates.
+// You must fight to escape Bezos' evil space regieme... But is there anything out there
+// left to find?? On your way you will encounter a barage of death delivery drones, before
+// facing off with the emperor himself, who will do everything in his power to defeat you
+// with a reletless assault of packing materials
+//
+// The players crosshairs are controlled by the mouse; the phasers are fired with the spacebar.
+// The difficulty of the game can be tuned by:
+//  - adjusting the rate at which the players shield regenerates (Player.js:Player():move())
+//  - reducing the number of images in the bossImage[] array
+//  - probably in other ways as well....
+//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//
+////~~~~~~gameState control variables; or "state machine?"~~~~~~~//
 // Is set to the appropriate string based on the
 // current state of the game. Should be set to one of the following:
 // intro1, intro2, playing, gameWon, gameOver
@@ -26,7 +51,7 @@ let gameWonScreen;
 let player;
 //*the phazer objects*
 let phazers = [];
-//*the enemies (to be stored in this array)**
+//*the enemies*
 let enemies = [];
 //*The planet object*
 let planetAmazon;
@@ -120,6 +145,7 @@ function preload() {
   bossBulletImg[1] = loadImage('assets/images/bossBullet1.png');
   bossBulletImg[2] = loadImage('assets/images/bossBullet2.png');
   explosionGif = loadImage('assets/images/explosion.gif');
+
   //sounds
   ambience = loadSound('assets/sounds/ambience.mp3');
   ambience.playMode('untilDone');
@@ -171,14 +197,17 @@ function preload() {
 //          setup()
 //================================//
 // Sets up a canvas
-// Creates player and enemy objects, planet object, sets color mode
+// Creates player, intro screens, planet objects, sets color mode, deals with a
+// couple other niceties
 function setup() {
+  //set the curosor to be a set of crosshairs
   cursor('crosshair');
+  //make the pixel ratio 1:1 (to help with lagging on high resolution screens)
   pixelDensity(1);
-  //make things it inside the container
+  //make the canvas a child of a container in the html
   let canvas = createCanvas(960, 540);
   canvas.parent('game');
-  //define the vertical area of screen we want to mask as 50%
+  //define the vertical area of screen we want to mask as 75%
   cockpitVerticalMask = height * 75 / 100;
   //sets color mode to hsb(HUGH, SATURATION, BRIGHTNESS)
   colorMode(HSB, 360);
@@ -209,6 +238,8 @@ function setup() {
 //          draw()
 //================================//
 //
+// Deals with all functions which require constant looping.
+// The specifics of each function is eithr outlined below, or in its parent class
 function draw() {
   //~~~ intro 1 ~~~//
   if (gameState === "intro1") {
@@ -237,8 +268,6 @@ function draw() {
     displayEnemies();
     //display the explosions
     displayExplosions();
-    // Handle directional input for the player (shooting is handled in mousePressed)
-    player.handleInput();
     // Handle movment of the player
     player.move();
     // display the phazers, and check for collision with enemies
@@ -280,9 +309,10 @@ function draw() {
 //================================//
 //
 //
-// Handle movement, health, collision detection and displaying of enemies
+// Handle movement, and displaying of enemies
 function displayEnemies() {
-  //we iterate through the array ,
+  //we iterate through the array, only displaying the enemies which exist inside
+  //the array (possibillity of 0)
   for (let e = 0; e < enemies.length; e++) {
     enemies[e].move();
     enemies[e].display();
@@ -295,12 +325,14 @@ function displayEnemies() {
 //================================//
 //
 //
-// Display the exploding enemies
+// Display the The explosion effect: the explosions are objects (like the enemies)
+// and are dealt with in the same fashion.
 function displayExplosions() {
-  //we iterate through the array ,
   for (let ex = 0; ex < explosions.length; ex++) {
     explosions[ex].display();
-    if (explosions[ex].currentFrame >= explosionMaxFrame){
+    //when the explosion gif has reached the desired number of frames, reset it,
+    //and remove the object from the array
+    if (explosions[ex].currentFrame >= explosionMaxFrame) {
       explosions[ex].image.reset();
       explosions.splice(ex, 1);
       break;
@@ -331,29 +363,34 @@ function handlePhazers() {
     for (let e = enemies.length - 1; e >= 0; e--) {
       let hitResult = phazers[p].hit(enemies[e]);
       //if the above happened, && the phazer's size is half the size of the enemy (to help with the 3D effect)
-      //play the crash sound, and add 1 to the enemy's hit count, and change the enemy's image to the damaged version
+      //play the crash sound, and add 1 to the enemy's hit count, and change the enemy's image to the next
+      // damaged version stored in the array
       if (hitResult && phazers[p].size < enemies[e].size / 3) {
+
         //if the enemy is an instance of the boss, reset the boss's position
         //and increase the frequency of boss bullets
-        if(enemies[e] instanceof Boss){
-          console.log('boss');
-
+        if (enemies[e] instanceof Boss) {
           bossBulletInterval += -1000;
+          // also play the explosion gif, to help register the hit:
+          // create the explosion object in the same place as the boss
           let explosion = new BossExplosion(enemies[e].x, enemies[e].y, enemies[e].size);
+          //push it to the array
           explosions.push(explosion);
+          //increase frequency of bullets
           resetBossBulletTimer(bossBulletInterval);
           enemies[e].x = random(0, width);
           enemies[e].y = random(0, cockpitVerticalMask);
         }
-        //increase enmy hitcount, remove phazer, play sound
+        //increase enemy hitcount (boss or not), remove phazer, play sound
         enemies[e].hitCount++;
         phazers.splice(p, 1);
         firstHit.play();
         //if the boss' hitcount reaches its max, play the explosion sound and
-        //remove the enemy and the phazer from their respective arrays
+        //remove the boss and the phazer from their respective arrays
         if (enemies[e].hitCount >= enemies[e].maxHitcount && enemies[e] instanceof Boss) {
           bossDeath.play();
-          for (let i = 0; i < 60; i++){
+          //play 60 explosion gifs all around where hte boss was, as a dramatic finish
+          for (let i = 0; i < 60; i++) {
             let explosion = new BossExplosion(enemies[e].x + random(-100, 100), enemies[e].y + random(-100, 100), enemies[e].size);
             explosions.push(explosion);
           }
@@ -363,14 +400,14 @@ function handlePhazers() {
           startGameTimer();
           break;
         }
-        //if the enemy's hitcount reaches its max, play the explosion sound and
+        //if an enemy's hitcount reaches its max, play the explosion sound, display an explosion gif, and
         //remove the enemy and the phazer from their respective arrays
         else if (enemies[e].hitCount >= enemies[e].maxHitcount) {
-            let explosion = new EnemyExplosion(enemies[e].x, enemies[e].y, enemies[e].size * 2);
-            explosions.push(explosion);
-            secondHit.play();
-            enemies.splice(e, 1);
-            phazers.splice(p, 1);
+          let explosion = new EnemyExplosion(enemies[e].x, enemies[e].y, enemies[e].size * 2);
+          explosions.push(explosion);
+          secondHit.play();
+          enemies.splice(e, 1);
+          phazers.splice(p, 1);
 
         }
         //break out of the for loop so that we can look through the array(s) again post re indexing
@@ -414,9 +451,9 @@ function gameTimer() {
     startEnemyTimer(newSpawnInterval)
     //third stage of battle
   } else if (secondsPassed === 75 * gameTime / 100) {
-      newSpawnInterval = 25 * spawnInterval / 100;
-      console.log('spawing every ' + newSpawnInterval);
-      startEnemyTimer(newSpawnInterval)
+    newSpawnInterval = 25 * spawnInterval / 100;
+    console.log('spawing every ' + newSpawnInterval);
+    startEnemyTimer(newSpawnInterval)
     //BOSS BATTLE
   } else if (secondsPassed === 90 * gameTime / 100) {
     console.log('BOSS BATTLE');
@@ -454,8 +491,8 @@ function spawnNewBoss() {
 //      resetBossBulletTimer()
 //================================//
 //
-//resets the frequency of the boss bullets, based on arguments passed
-function resetBossBulletTimer(interval){
+//resets the frequency of the boss bullets, based on argument passed
+function resetBossBulletTimer(interval) {
   //clear the boss bullets interval
   clearInterval(bossBulletTimer);
   // start timer for the boss bullets
@@ -463,14 +500,12 @@ function resetBossBulletTimer(interval){
 }
 
 //================================//
-//        spawnNewBossBullet()
+//       spawnNewBossBullet()
 //================================//
 //
 //spawns a new boss "bullet" when called,
 //and pushes it into the enemy array
 function spawnNewBossBullet() {
-  console.log('bullet');
-  console.log(bossBulletInterval);
   for (let e = enemies.length; e >= enemies.length - 1; e--) {
     if (enemies[e] instanceof Boss) {
       let bossX = enemies[e].x;
@@ -520,13 +555,9 @@ function spawnNewEnemy() {
 //================================//
 //        keyPressed()
 //================================//
-////switched off spawn timer, resets spawn interval
-//resets player's shield health
-//resets planet's size
-//switches off the game timer, and resets the number of seconds
 // Checks for keyboard events calls appropriate functions
 function keyPressed() {
-  //if the spacebar is pressed (while the game is in play) call the players phazerire function
+  //if the spacebar is pressed (while the game is in play) call the players firePhazer function
   if (keyCode === 32 && gameState === "playing") {
     player.firePhazer();
   }
@@ -536,12 +567,16 @@ function keyPressed() {
 //        mousePressed()
 //================================//
 //
-// Detects mouse press events, and calls appropriate functions
+// Detects mouse press events, and calls class specific mousePressed functions
 function mousePressed() {
   introScreen1.mousePressed();
   introScreen2.mousePressed();
   gameWonScreen.mousePressed();
   gameOverScreen.mousePressed();
+  //secret "mobile friendly" option
+  if (gameState === "playing"){
+    player.firePhazer();
+  }
 }
 
 
@@ -549,12 +584,8 @@ function mousePressed() {
 //          resetGame()
 //================================//
 //
-//switched off spawn timer, resets spawn interval
-//resets player's shield health
-//resets planet's size
-//switches off the game timer, and resets the number of seconds
+//resets all variables required for reboot
 function resetGame() {
-  cursor('crosshair');
   clearInterval(spawnTimer);
   newSpawnInterval = spawnInterval;
   clearInterval(bossBulletTimer);

@@ -30,9 +30,9 @@ class Enemy {
     this.hitCount = 0;
     this.maxHitcount = enemyImage.length;
     // Display properties
-      //**The enemy's images are stored in an array (script.js), and iterates through based
-      //on its hitCount
-      this.image;
+    //**The enemy's images are stored in an array (script.js), and iterates through based
+    //on its hitCount
+    this.image;
   }
 
   //================================//
@@ -47,11 +47,11 @@ class Enemy {
     this.vx = map(noise(this.tx), 0, 1, -this.speed, this.speed);
     this.vy = map(noise(this.ty), 0, 1, -this.speed, this.speed);
 
-    if (this.x + this.vx < 0 + this.size / 2 || this.x + this.vx > width - this.size /2){
+    if (this.x + this.vx < 0 + this.size / 2 || this.x + this.vx > width - this.size / 2) {
       this.vx = -this.vx;
     }
 
-    if (this.y + this.vy < 0 + this.size || this.y + this.vy > cockpitVerticalMask - this.size){
+    if (this.y + this.vy < 0 + this.size || this.y + this.vy > cockpitVerticalMask - this.size) {
       //this.speed = -this.speed;
       this.vy = -this.vy;
     }
@@ -66,15 +66,14 @@ class Enemy {
     this.size += this.speed / 10;
     //constrain enemies on screen
     this.x = constrain(this.x, 0, width);
-    this.y = constrain(this.y, 0, height*75/100);
+    this.y = constrain(this.y, 0, height * 75 / 100);
   }
 
 
   //================================//
   //           display()
   //================================//
-  // Draw the enemy as a sinister amazon delivery space drone on the canvas
-  // with a size that increases with every frame
+  // Draw the enemy as a sinister amazon death delivery space drone on the canvas
   display() {
     push();
     this.image = enemyImage[this.hitCount]
@@ -84,12 +83,13 @@ class Enemy {
   }
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-//==========================
-// ~~~~~EnemyExplosion~~~~~~
-//==========================
-// This class simply displays the explosion gif when the enemy has reached it's max hitcount.
+//   EnemyExplosion()
+//
+// This class simply displays the explosion gif when the enemy has reached it's
+// max hitcount. (see script.js:handlePhasers())
 class EnemyExplosion {
   constructor(x, y, size) {
     this.image = explosionGif;
@@ -103,7 +103,7 @@ class EnemyExplosion {
   //           display()
   //================================//
   // Displays the gif, and keeps track as to which frame it is on.
-  display(){
+  display() {
     push();
     imageMode(CENTER);
     image(this.image, this.x, this.y, this.size * 2, this.size * 2);

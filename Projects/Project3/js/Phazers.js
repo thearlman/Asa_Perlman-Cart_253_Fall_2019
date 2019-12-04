@@ -20,7 +20,7 @@ class Phazers {
     fill(100, 200, 255, 255);
     // ellipse(this.x -this.size *2.5, this.y + this.size*10, this.size);
     // ellipse(this.x + this.size *2.5, this.y + this.size*10, this.size);
-    ellipse(this.x, this.y, this.size*2);
+    ellipse(this.x, this.y, this.size * 2);
     pop();
     this.size = this.size - 1;
   }
@@ -29,14 +29,13 @@ class Phazers {
   //            hit()
   //================================//
   //checks the distance between itself, and the enemy which has been passed to it
-  //from the for loop in script.js:draw() returns true or false
+  //from script.js:handlePhasers(). Returns true or false.
   hit(enemy) {
     let d = dist(this.x, this.y, enemy.x, enemy.y)
     if (d < this.size / 2 + enemy.size / 2) {
       return true;
     } else {
       return false;
-
     }
   }
 }

@@ -1,8 +1,8 @@
 //PlanetAmazon()
 //
 // A class which defines Planet Amazon, the destination for the game and arguably
-//where we will all end up one day ;-).
-// Takes an image, X and Y coordinates, a Y velocity, a size, and a growSpeed
+//  where we will all end up one day ;-).
+// Uses an image, X and Y coordinates, a Y velocity, a size, and a growSpeed
 class PlanetAmazon {
   constructor(img, x, startY, startSize) {
     this.img = img;
@@ -35,16 +35,16 @@ class PlanetAmazon {
   //          pause()
   //================================//
   // Pauses the planet's growth
-  pause(){
-      this.vy = 0;
-      this.growSpeed = 0;
+  pause() {
+    this.vy = 0;
+    this.growSpeed = 0;
   }
 
   //================================//
   //          resume()
   //================================//
   // Resumes the plantes growth
-  resume(){
+  resume() {
     this.vy = this.vyRun * 4;
     this.growSpeed = this.growSpeedRun * 4;
 

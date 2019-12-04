@@ -1,10 +1,8 @@
-//Intro1()
-//
+// ScreenIntro2
 //
 // A class that class to display the second intro screen
 // It displays text, and images, plays sounds, and can detect
 // when its button has been pressed.
-
 class ScreenIntro2 {
 
   constructor(bgImg, buttonX, buttonY, buttonWidth, buttonHeight) {
@@ -23,7 +21,7 @@ class ScreenIntro2 {
   //           display()
   //================================//
   //displays  the background image and the button to advance to the next screen.
-  //and checks to see if the button is being hovered ove,r changing the fill brightness
+  //and checks to see if the button is being hovered over changing the fill brightness
   display() {
     background(this.bgImg);
     push()
@@ -54,7 +52,7 @@ class ScreenIntro2 {
   //         mousePressed()
   //================================//
   // Is called when the mouse is pressed, & checks to see if the mouse and button are overlapping.
-    mousePressed() {
+  mousePressed() {
     if (this.d < this.buttonWidth && this.d < this.buttonHeight && gameState === "intro2") {
       //fade out and stop the siren
       siren.fade(0, 7);

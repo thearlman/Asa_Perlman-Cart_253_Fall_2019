@@ -1,6 +1,6 @@
 // Player
 //
-//This class handles the displaying of the players visual components (crosshairs,
+//This class handles the display of the players visual components (crosshairs,
 //ship, health and phaser charge status)
 //It also checks for collisions between the player and the enemy objects, calling
 //a game over when the player's shield health is critically low.
@@ -18,10 +18,6 @@ class Player {
     //the players crosshairs, and ship
     this.crosshairs = crosshairs;
     this.cockpit = cockpit;
-    // Velocity and speed
-    this.vx = 0;
-    this.vy = 0;
-    this.speed = 2.2 * height / 100;
 
     // Shield Health properties
     this.maxShieldHealth = 25 * height / 100;
@@ -42,56 +38,25 @@ class Player {
     this.shieldIndcatorColor = this.shieldHealthyColor;
     this.shieldAnimation;
     // Input properties
-    this.upKey = UP_ARROW;
-    this.downKey = DOWN_ARROW;
-    this.leftKey = LEFT_ARROW;
-    this.rightKey = RIGHT_ARROW;
-  }
-
-  //================================//
-  //        handleInput
-  //================================//
-  //
-  // Checks if an arrow key is pressed and sets the player's
-  // velocity appropriately.
-  handleInput() {
-    // Horizontal movement
-    if (keyIsDown(this.leftKey)) {
-      this.vx = -this.speed;
-    } else if (keyIsDown(this.rightKey)) {
-      this.vx = this.speed;
-    } else {
-      this.vx = 0;
-    }
-    // Vertical movement
-    if (keyIsDown(this.upKey)) {
-      this.vy = -this.speed;
-    } else if (keyIsDown(this.downKey)) {
-      this.vy = this.speed;
-    } else {
-      this.vy = 0;
-    }
+    //***INPUT IS HANDLLED BY THE MOUSE,
+    // with the spacebar triggering the phazer fire
   }
 
   //================================//
   //            move()
   //================================//
   //
-  // Updates the position according to velocity,
+  // Updates the position according to mouse position,
   // Increases sield health.. cause the shield is powered by.... movement?
   move() {
-    // Update position
-    // this.x += this.vx;
-    // this.y += this.vy;
-
     //update position based on mouse
     this.x = mouseX;
     this.y = mouseY;
-
+    //prevent the crosshairs from going off the edge of the screen (or past the vertical mask)
     this.x = constrain(this.x, 0, width);
     this.y = constrain(this.y, 0, cockpitVerticalMask);
     //increase shield health slowly, constraining it within max and min
-    this.shieldHealth += .06*this.maxShieldHealth/100;
+    this.shieldHealth += .09 * this.maxShieldHealth / 100;
     this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);
 
   }
@@ -104,10 +69,10 @@ class Player {
   //Checks to see if an enemy has collided with player,
   detectCollision() {
     //cycle through all enemies
-    for (let e = 0; e < enemies.length; e++){
+    for (let e = 0; e < enemies.length; e++) {
       //if size is greater than 25% of viewport
-      if (enemies[e].size > 25*height/100) {
-        //and enemy is within the masking range of cockpit window
+      if (enemies[e].size > 25 * height / 100) {
+        //if enemy is within the masking range of cockpit window (first and last 10%)
         if (enemies[e].x > width * 10 / 100 && enemies[e].x < width * 90 / 100) {
           //play crashing sound, and remove enemy from array
           crash.playMode('untilDone');
@@ -116,8 +81,9 @@ class Player {
           //change the shield color
           this.shieldColor = this.shieldDamagedColor;
           this.shieldAnimation = setTimeout(playerShieldRecover, 1000);
-          console.log('crash');
           this.updateHealth();
+          //if the enemy is not within the masking range, remove it from the array
+          //spawn a new one just for fun
         } else {
           enemies.splice(e, 1);
           spawnNewEnemy();
@@ -131,13 +97,12 @@ class Player {
   //        Update health()
   //================================//
   //
-  //updates the player's health only on event
-  //temporarily changes the shield color to red
+  //updates the player's health on event called in detect collision.
   updateHealth() {
     this.shieldHealth = this.shieldHealth - this.healthLossPerHit;
     this.shieldHealth = constrain(this.shieldHealth, 0, this.maxShieldHealth);
     //if shields have reached 0, chgange gameState to gameOver
-    if(this.shieldHealth === 0){
+    if (this.shieldHealth === 0) {
       resetGame();
       gameState = "gameOver";
     }
@@ -163,7 +128,7 @@ class Player {
     strokeWeight(7);
     rect(width / 2 - 25, height, width / 2 - 50, height - this.shieldHealth);
     //while shield level is below 25% of max, display indicator as red
-    if (this.shieldHealth < 25*this.maxShieldHealth/100){
+    if (this.shieldHealth < 25 * this.maxShieldHealth / 100) {
       this.shieldIndicatorColor = this.shieldDamagedColor
     } else {
       this.shieldIndicatorColor = this.shieldHealthyColor;
@@ -220,7 +185,7 @@ class Player {
   //================================//
   //
   //is executed whenever a phazer is fired
-  //returns a boolean telling the keyPressed() function id draw if the phazer charge is empty
+  //returns a boolean telling the keyPressed() function if the phazer charge is empty
   updateCharge() {
     this.charge += -5 * this.maxCharge / 100;
     if (this.charge <= 5 * this.maxCharge / 100) {
@@ -233,19 +198,18 @@ class Player {
   //================================//
   //
   //puts a new phazer object out into the world (in the appropriate array of course)
-  //and play thelaser blasting sound. update the amount of charge left in current laser "clip"
-  firePhazer(){
-    if (this.chargeEmpty === false){
+  //and play thelaser blasting sound. updates the amount of charge left in current laser "clip"
+  firePhazer() {
+    if (this.chargeEmpty === false) {
       let newPhazer = new Phazers();
       player.updateCharge();
       phazers.push(newPhazer);
       laserBlast.play();
     }
-
     //if the player tries to fire the phaser while charge is empty, play the empty battery sound
-    else{
-    lowCharge.playMode('untilDone');
-    lowCharge.play();
+    else {
+      lowCharge.playMode('untilDone');
+      lowCharge.play();
     }
   }
 
@@ -253,8 +217,10 @@ class Player {
   //          display()
   //================================//
   //
-  // Draw the player's icon as crosshairs on the canvas
+  // Draw the player's as crosshairs on the canvas
   // Draw the cockpit
+  // The display properties for the health and chrge are included here to clean up
+  // draw() (just a little)
   display() {
     push();
     imageMode(CENTER);
@@ -262,11 +228,11 @@ class Player {
     noStroke();
     //transucent shield which toggles to red on impact
     fill(this.shieldColor, 255, 255, 75);
-    rect(width/2, height/2, width, height);
+    rect(width / 2, height / 2, width, height);
     //crosshairs
     image(this.crosshairs, this.x, this.y, this.size, this.size);
     //cockpit
-    image(this.cockpit, width/2, height/2, width, height);
+    image(this.cockpit, width / 2, height / 2, width, height);
     pop();
     this.displayHealth();
     this.displayCharge();

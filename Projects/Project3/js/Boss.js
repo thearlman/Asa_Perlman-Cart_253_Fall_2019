@@ -1,12 +1,9 @@
 // Boss
 //
-// A class that represents the boss  It  moves around on screen based on the
-// noise() function, with varying speeds based on which stage, gets bigger and smaller
-// to simulate it coming towards you, and running away.
-// and throws boxes at you. It can be targeted, and (eventually) destroyed by the player.
-
+// A class that represents the boss. It moves around on screen based on the
+// noise() function, with varying speeds based on its damage level, gets bigger and smaller
+// and throws packing materials at you. It can be targeted, and (eventually) destroyed by the player.
 class Boss {
-
   // constructor
   //
   // Sets the initial values for the boss' properties
@@ -31,8 +28,8 @@ class Boss {
     this.hitCount = 0;
     this.maxHitcount = bossImage.length;
     // Display properties
-      //**The enemies image is stored in an array, and iterates through based
-      //on its hitCount
+    //**The enemies image is stored in an array, and iterates through based
+    //on its hitCount
   }
 
   //================================//
@@ -43,7 +40,7 @@ class Boss {
   // Grows in size, or "moves" closer to the player
   // Checks how many times it has been hit, and changes its image accordingly
   move() {
-    this.speed = this.startingSpeed * (this.hitCount+1);
+    this.speed = this.startingSpeed * (this.hitCount + 1);
     // Set velocity via noise()
     this.vx = map(noise(this.tx), 0, 1, -this.speed, this.speed);
     this.vy = map(noise(this.ty), 0, 1, -this.speed, this.speed);
@@ -64,7 +61,7 @@ class Boss {
   //      handleWrapping()
   //================================//
   // Checks if the boss has gone off the canvas and
-  // wraps it to the other side if so
+  // wraps it to the other side
   handleWrapping() {
     //Off the left or right
     if (this.x < 0) {
@@ -72,7 +69,7 @@ class Boss {
     } else if (this.x > width) {
       this.x -= width;
     }
-    // Off the top or bottom (wrapps at 75%)
+    // Off the top or bottom mask
     if (this.y < 0) {
       this.y += cockpitVerticalMask;
     } else if (this.y > cockpitVerticalMask) {
@@ -93,10 +90,10 @@ class Boss {
 }
 
 //==========================
-// ~~~~~BossExplosion~~~~~~
+//       BossExplosion
 //==========================
-// This class simply displays the explosion gif when the bos has been hit.
-// When the boss has reached it's max hitcount, the explosions go apeshit.
+// This class simply displays the explosion gif when the boss has been hit.
+// When the boss has reached it's max hitcount, the explosions go apeShit (see script.sj:handlePhasers()).
 class BossExplosion {
   constructor(x, y, size) {
     this.image = explosionGif;
@@ -110,7 +107,7 @@ class BossExplosion {
   //           display()
   //================================//
   // Displays the gif, and keeps track as to which frame it is on.
-  display(){
+  display() {
     push();
     imageMode(CENTER);
     image(this.image, this.x, this.y, this.size * 2, this.size * 2);

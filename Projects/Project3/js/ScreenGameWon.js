@@ -1,3 +1,7 @@
+//ScreenGameWon
+//
+// Congratulations! if you are reading this, it's because you won the game!
+// but also sorry because you're also probably reading this because there's a bug :-()
 class ScreenGameWon {
   constructor(bgImg, buttonX, buttonY, buttonWidth, buttonHeight) {
     this.bgImg = bgImg;
