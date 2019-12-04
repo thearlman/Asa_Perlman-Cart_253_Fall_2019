@@ -174,7 +174,7 @@ function preload() {
 // Creates player and enemy objects, planet object, sets color mode
 function setup() {
   cursor('crosshair');
-  pixelDensity(.5);
+  pixelDensity(1);
   //make things it inside the container
   let canvas = createCanvas(960, 540);
   canvas.parent('game');
