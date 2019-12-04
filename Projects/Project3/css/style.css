@@ -9,4 +9,40 @@ so the canvas is flush with the top left corner.
 body {
   padding: 0;
   margin: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+#gameWrapper{
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  background: url(../assets/images/webBg.jpg);
+  align-items: center;
+  justify-content: center;
+  z-index: -10;
+}
+
+#game {
+  z-index: 10;
+  border: 10px solid green;
+  position: fixed;
+  max-width: 960px;
+  max-height: 540px;
+
+}
+#asaLink{
+  z-index: -5;
+  position: fixed;
+  left: 5%;
+  bottom: 5%;
+  font-size: 5vh;
+  text-decoration: none;
+  color: cadetblue;
+}
+
+  a{
+  text-decoration: none;
+  color: cadetblue;
+
 }

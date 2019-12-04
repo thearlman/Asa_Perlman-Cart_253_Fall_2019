@@ -175,7 +175,10 @@ function preload() {
 function setup() {
   cursor('crosshair');
   //make things fullscreen
-  createCanvas(windowWidth - 10, windowHeight - 10);
+  let canvDims = document.getElementById('game');
+  console.log(canvDims.offsetWidth);
+  let canvas = createCanvas(960, 540);
+  canvas.parent('game');
   //define the vertical area of screen we want to mask as 50%
   cockpitVerticalMask = height * 75 / 100;
   //sets color mode to hsb(HUGH, SATURATION, BRIGHTNESS)
